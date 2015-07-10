@@ -9,27 +9,28 @@
 
 int main(int argc, char **argv) 
 {
-	int i;
-	short p_ord = 20,opt_order;
-	size_t elements;
+	int i,j,k;
+	const short p_ord = 32;
+	short opt_order;
+	int elements;
 
 	if(argc < 3)
 	{
 		fprintf(stderr,"Usage : %s <input.wav> <output.wav>\n",argv[0]);
-		fprintf(stderr,"Supports 16 bit mono wav files only.\n");
 		return -1;
 	}
 	
 	FILE *infile = fopen(argv[1],"rb");
 	if(infile == NULL)
 	{
-		fprintf(stderr,"Error while opening input file");
+		fprintf(stderr,"Error while opening input file\n");
 		return -1;
 	}
+
 	FILE *outfile = fopen(argv[2],"wb");
 	if(infile == NULL)
 	{
-		fprintf(stderr,"Error while opening output file");
+		fprintf(stderr,"Error while opening output file\n");
 		return -1;
 	}
 
@@ -37,15 +38,15 @@ int main(int argc, char **argv)
 	size_t bytes = fread(header,sizeof(char),44,infile);
 	(void)bytes;
 
+	//Sample Rate
 	int *sample_rate = (int *)(header + 24);
 	fprintf(stderr,"Sample rate = %d Hz\n",*sample_rate);
+
+	//Channels
 	short *channels = (short *)(header + 22);
-	if(*channels != 1)
-	{
-		fprintf(stderr,"Not a mono wav file.");
-		return -1;
-	}
 	fprintf(stderr,"Channels = %d\n",*channels);
+
+	//Bits per sample
 	short *bps = (short *)(header + 34);
 	if(*bps != 16)
 	{
@@ -59,9 +60,11 @@ int main(int argc, char **argv)
 
 	fwrite(&hdr,sizeof(wav_header),1,outfile);
 	
-	short *samples = (short *)malloc(sizeof(short)*SAMPLES);
-	double *qsamples = (double *)malloc(sizeof(double)*SAMPLES);
-	short *esamples = (short *)malloc(sizeof(short)*SAMPLES);
+	short *samples = (short *)malloc(sizeof(short)*SAMPLES*(*channels));
+	double *qsamples = (double *)malloc(sizeof(double)*SAMPLES*(*channels));
+
+	double *rsamples = (double *)malloc(sizeof(double)*SAMPLES*(*channels));
+	short *esamples = (short *)malloc(sizeof(short)*SAMPLES*(*channels));
 
 	while(1)
 	{
@@ -69,36 +72,55 @@ int main(int argc, char **argv)
 			break;
 
 		//Read Samples from audio
-		elements = fread(samples,sizeof(short),SAMPLES,infile);
+		elements = (int)fread(samples,sizeof(short),(*channels * SAMPLES),infile);
 		
 		//Quantize samples
 		for(i = 0; i < elements; i++)
 			qsamples[i] = (double)samples[i]/SHORT_MAX;
-		
-		//Get autocorrelation data
-		double rxx[p_ord+1];
-		acf(qsamples,elements,p_ord,1,rxx);
 
-		//get lpc coefficients
-		double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-		opt_order = compute_lpc_coefs_est(rxx,p_ord,lpc_mat);
-		double lpc[opt_order];
-		for(i = 0; i < opt_order; i++)
-			lpc[i] = lpc_mat[opt_order - 1][i];
+		int samples_per_channel = elements/(*channels);
+		double *temp = (double *)malloc(sizeof(double)*samples_per_channel);
+		for(k = 0; k < *channels; k++)
+		{
+			//Split channels
+			for(j = 0; j < samples_per_channel; j++)
+				temp[j] = qsamples[*channels * j + k];
 
-		//Calculate residue signal
-		double residue[elements];
-		calc_residue(qsamples,elements,lpc,opt_order,residue);
+			//Get autocorrelation data
+			double rxx[MAX_LPC_ORDER+1];
+			acf(temp,samples_per_channel,p_ord,1,rxx);
 
-		//Get back original
-		double est_rcv[elements];
+			//get lpc coefficients
+			double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
+			opt_order = compute_lpc_coefs_est(rxx,p_ord,lpc_mat);
+			double *lpc = (double *)malloc(sizeof(double)*opt_order);;
+			for(j = 0; j < opt_order; j++)
+				lpc[j] = lpc_mat[opt_order - 1][j];
+
+			//Calculate residue signal
+			double *residue = (double *)malloc(sizeof(double)*samples_per_channel);;
+			calc_residue(temp,samples_per_channel,lpc,opt_order,residue);
+
+			//<--------------ENCODER ENDS------------------>//
+			//<--------------DECODER STARTS---------------->//
+
+			//Get back original
+			double *est_rcv = (double *)malloc(sizeof(double)*samples_per_channel);;
+			calc_original(residue,samples_per_channel,lpc,opt_order,est_rcv);
+
+			//Merge channels
+			for(j = 0; j < samples_per_channel; j++)
+				rsamples[*channels * j + k] = temp[j];
+
+			free(lpc);
+			free(residue);
+			free(est_rcv);
+		}
+		free(temp);
+
+		//Rescale samples
 		for(i = 0; i < elements; i++)
-			est_rcv[i] = 0;
-		calc_original(residue,elements,lpc,opt_order,est_rcv);
-		
-		//Upscale samples
-		for(i = 0; i < elements; i++)
-			esamples[i] = est_rcv[i]*SHORT_MAX;
+			esamples[i] = (short)(rsamples[i]*SHORT_MAX);
 
 		//Write estimates to output
 		fwrite(esamples,sizeof(short),elements,outfile);
@@ -110,20 +132,8 @@ int main(int argc, char **argv)
 				fprintf(stderr,"Original[%d] = %f\n",i+1,qsamples[i]);
 			
 			fprintf(stderr,"\n");
-			for(i = 0; i < p_ord; i++)
-				fprintf(stderr,"rxx[%d] = %f\n",i+1,rxx[i]);
-			
-			fprintf(stderr,"\n");
-			for(i = 0; i < opt_order; i++)
-				fprintf(stderr,"lpc[%d] = %f\n",i+1,lpc[i]);
-			
-			fprintf(stderr,"\n");
 			for(i = 0; i < elements; i++)
-				fprintf(stderr,"Residue[%d] = %f\n",i+1,residue[i]);
-			
-			fprintf(stderr,"\n");
-			for(i = 0; i < elements; i++)
-				fprintf(stderr,"Received[%d] = %f\n",i+1,est_rcv[i]);
+				fprintf(stderr,"Received[%d] = %f\n",i+1,rsamples[i]);
 			
 			break;
 		
@@ -139,6 +149,8 @@ int main(int argc, char **argv)
 	
 	fclose(infile);
 	fclose(outfile);
-	
+
+	//getchar();
+
 	return 0;
 }
