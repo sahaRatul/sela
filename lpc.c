@@ -3,7 +3,7 @@
 #include "lpc.h"
 
 //autocorrelation function
-void acf(double *x, long N, long k, short norm, double *rxx)
+void acf(double *x,int N, long k, short norm, double *rxx)
 {
     long i, n;
     double sum = 0,mean = 0;
@@ -68,6 +68,7 @@ void levinson(double *autoc, int max_order, double *ref,double lpc[][MAX_LPC_ORD
     }
 }
 
+//Calculate linear prediction coefficients
 int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORDER])
 {
     int i, j;
@@ -115,19 +116,20 @@ int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORD
     return order_est;
 }
 
+//Calculate residues from samples and linear prediction coefficients
 void calc_residue(const double *samples,int N,double *lpc,short order,double *residue)
 {
-    int i,j,k;
+    int i,k;
     double y = 0;
     residue[0] = 0;
 
     residue[0] = samples[0];
-    for (k = 0; k < N; k++)
+    for (k = 0; k < N-1; k++)
     {
         for (i = 0; i < order; i++)
         {
             y += lpc[i] * samples[k-i];
-            if((k-i)==0)
+            if((k-i) == 0)
             	break;
         }
         residue[k+1] = samples[k+1] - y;
@@ -135,18 +137,19 @@ void calc_residue(const double *samples,int N,double *lpc,short order,double *re
     }
 }
 
+//Calculate samples from residues and linear prediction coefficients
 void calc_original(const double *residue,int N,double *lpc,short order,double *samples)
 {
-    int i,j,k;
+    int i,k;
     double y = 0;
 
     samples[0] = residue[0];
-    for (k = 0; k < N; k++)
+    for (k = 0; k < N-1; k++)
     {
         for (i = 0; i < order; i++)
         {
-            y -= lpc[i]*samples[k-i];
-            if((k-i)==0)
+            y -= lpc[i] * samples[k-i];
+            if((k-i) == 0)
             	break;
     	}
         samples[k+1] = residue[k+1] - y;
