@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include "lpc.h"
 
-//autocorrelation function
+/*autocorrelation function*/
 void acf(double *x,int N, long k, short norm, double *rxx)
 {
     long i, n;
     double sum = 0,mean = 0;
     
-    for (i = 0; i <= N; i++)
+    for (i = 0; i < N; i++)
     	sum += x[i];
     mean = sum/N;
 
@@ -27,7 +27,7 @@ void acf(double *x,int N, long k, short norm, double *rxx)
     }
 }
 
-//levinson recursion algorithm(shamelessly copied from libflake)
+/*Levinson recursion algorithm(shamelessly copied from libflake)*/
 void levinson(double *autoc, int max_order, double *ref,double lpc[][MAX_LPC_ORDER])
 {
     int i, j, i2;
@@ -68,7 +68,7 @@ void levinson(double *autoc, int max_order, double *ref,double lpc[][MAX_LPC_ORD
     }
 }
 
-//Calculate linear prediction coefficients
+/*Calculate linear prediction coefficients*/
 int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORDER])
 {
     int i, j;
@@ -77,7 +77,7 @@ int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORD
     double ref[MAX_LPC_ORDER];
     int order_est;
 
-    //Schurr recursion
+    /*Schurr recursion*/
     for(i=0; i<max_order; i++)
         gen[0][i] = gen[1][i] = autoc[i+1];
     error = autoc[0];
@@ -99,7 +99,7 @@ int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORD
 			fprintf(stderr,"REF[%d] = %f\n",i,ref[i]);
 	#endif
 
-    //Estimate optimal order using reflection coefficients
+    /*Estimate optimal order using reflection coefficients*/
     order_est = 1;
     for(i=max_order-1; i>=0; i--)
     {
@@ -110,13 +110,13 @@ int compute_lpc_coefs_est(double *autoc, int max_order, double lpc[][MAX_LPC_ORD
         }
     }
 
-    //Levinson recursion
+    /*Levinson recursion*/
     levinson(NULL,order_est,ref,lpc);
 
     return order_est;
 }
 
-//Calculate residues from samples and linear prediction coefficients
+/*Calculate residues from samples and linear prediction coefficients*/
 void calc_residue(const double *samples,int N,double *lpc,short order,double *residue)
 {
     int i,k;
@@ -137,7 +137,7 @@ void calc_residue(const double *samples,int N,double *lpc,short order,double *re
     }
 }
 
-//Calculate samples from residues and linear prediction coefficients
+/*Calculate samples from residues and linear prediction coefficients*/
 void calc_original(const double *residue,int N,double *lpc,short order,double *samples)
 {
     int i,k;
