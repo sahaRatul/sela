@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <malloc.h>
-
 #include "rice.h"
 
 /*signed data to unsigned data*/
