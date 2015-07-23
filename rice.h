@@ -21,6 +21,6 @@ int signed_to_unsigned(const unsigned int data_size,const short *input,unsigned 
 int unsigned_to_signed(const unsigned int data_size,const unsigned short *input,short *output);
 unsigned short get_opt_rice_param(const unsigned short *data,int data_size,unsigned int *req_bits);
 unsigned int rice_encode_block(short param,const unsigned short *input,int size,unsigned short *encoded);
-unsigned int rice_decode_block(short param,const unsigned short *encoded,int size,unsigned short *decoded);
+unsigned int rice_decode_block(short param,const unsigned short *encoded,int count,unsigned short *decoded);
 
 #endif
