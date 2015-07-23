@@ -20,6 +20,7 @@ typedef struct wav_header
 }wav_header;
 
 void initialize_header(wav_header *hdr,int channels,int rate,int bps);
+void write_header(FILE *fp,wav_header *header);
 void finalize_file(FILE *fp);
 
 #endif
