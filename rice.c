@@ -165,7 +165,6 @@ unsigned int rice_decode_block(short param,const unsigned short *encoded,int cou
 				break;
 			q++;
 		}
-		decoded[k] = 0;
 		decoded[k] = q << param; //x = q * 2^k
 
 		//Read out the last 'param' bits of input
