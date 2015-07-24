@@ -7,11 +7,11 @@ My ongoing project about writing a lossless audio encoder
 ![Decoder](https://cloud.githubusercontent.com/assets/12273725/8868418/cbb6a1dc-31f5-11e5-91f6-8290766baa34.png)
 
 ###Main Components
-#####Linear prediction filter (lpc.c)
-#####Golomb Rice compressor and decompressor (rice.c)
-#####Encoder (encoder.c)
-#####Decoder (decoder.c)
-#####Command line player (selaplay.c)
+* #####Linear prediction filter (lpc.c)
+* #####Golomb Rice compressor and decompressor (rice.c)
+* #####Encoder (encoder.c)
+* #####Decoder (decoder.c)
+* #####Command line player (selaplay.c)
 
 ###Build requirements
 * clang (gcc also works but you will have to tweak the Makefile).
