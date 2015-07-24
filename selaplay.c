@@ -138,6 +138,7 @@ int main(int argc,char **argv)
 		}
 	}
 	pthread_join(play_thread,NULL);
+	destroy_pulse();
 	fclose(infile);
 	return 0;
 }
