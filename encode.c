@@ -76,6 +76,7 @@ int main(int argc,char **argv)
 			return -1;
 		default:
 			fprintf(stderr,"Some error occured. Exiting.......\n");
+			return -1;
 	}
 
 	//Print media info
