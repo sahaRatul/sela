@@ -1,6 +1,6 @@
 #SELA
 ###SimplE Lossless Audio
-My ongoing project about writing a lossless audio encoder
+My ongoing project about writing a lossless audio codec
 
 ###Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
@@ -14,6 +14,6 @@ My ongoing project about writing a lossless audio encoder
 * Command line player (selaplay.c)
 
 ###Build requirements
-* clang (gcc also works but you will have to tweak the Makefile).
+* clang (gcc/MinGW also works but you will have to tweak the Makefile).
 * Standard math library for building the encoder and decoder.
 * POSIX threading and pulseaudio developement libraries for building the command line player.
