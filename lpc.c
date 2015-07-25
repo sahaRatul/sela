@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <malloc.h>
 #include <stdint.h>
 #include <limits.h>
 #include <math.h>
