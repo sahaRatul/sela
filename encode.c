@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 
@@ -9,7 +10,7 @@
 #define SHORT_MAX 32767
 #define BLOCK_SIZE 2048
 
-int check_wav_file(FILE *fp,int *sample_rate,short *channels,short *bps);
+int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps);
 
 int main(int argc,char **argv)
 {
@@ -22,41 +23,45 @@ int main(int argc,char **argv)
 
 	FILE *infile = fopen(argv[1],"rb");
 	FILE *outfile = fopen(argv[2],"wb");
-	FILE *logfile = fopen("coffs_enc.txt","w");
 
 	if(infile == NULL || outfile == NULL)
 	{
 		fprintf(stderr,"Error open input or output file.Exiting.......\n");
 		return -1;
 	}
+	else
+	{
+		fprintf(stderr,"Input : %s\n",argv[1]);
+		fprintf(stderr,"Output : %s\n",argv[2]);
+	}
 
 	//Variables and arrays
-	unsigned char opt_lpc_order = 0;
-	short channels,bps;
-	unsigned char rice_param_ref,rice_param_residue;
-	unsigned short req_shorts_ref,req_shorts_residues,samples_per_channel;
-	const short Q = 20;
-	const int corr = 1 << 20;
-	int i,j,frame_count = 0;
-	int sample_rate,read_size;
-	const int frame_sync = 0xAA55FF00;
-	unsigned int req_bits_ref,req_bits_residues;
+	uint8_t opt_lpc_order = 0;
+	int16_t channels,bps;
+	uint8_t rice_param_ref,rice_param_residue;
+	const char magic_number[4] = {'S','e','L','a'};
+	uint16_t req_int_ref,req_int_residues,samples_per_channel;
+	const int16_t Q = 20;
+	const int32_t corr = 1 << 20;
+	int32_t i,j;
+	int32_t sample_rate,read_size;
+	const uint32_t frame_sync = 0xAA55FF00;
+	uint32_t req_bits_ref,req_bits_residues;
 
-	short short_samples[BLOCK_SIZE];
-	short qtz_ref_coeffs[MAX_LPC_ORDER];
-	short s_residues[BLOCK_SIZE];
-	unsigned short unsigned_ref[MAX_LPC_ORDER];
-	unsigned short encoded_ref[MAX_LPC_ORDER];
-	unsigned short u_residues[BLOCK_SIZE];
-	unsigned short encoded_residues[BLOCK_SIZE];
-	int spar[MAX_LPC_ORDER];
-	int lpc[MAX_LPC_ORDER+1];
+	int16_t short_samples[BLOCK_SIZE];
+	int32_t qtz_ref_coeffs[MAX_LPC_ORDER];
+	uint32_t unsigned_ref[MAX_LPC_ORDER];
+	uint32_t encoded_ref[MAX_LPC_ORDER];
+	uint32_t u_residues[BLOCK_SIZE];
+	uint32_t encoded_residues[BLOCK_SIZE];
+	int32_t spar[MAX_LPC_ORDER];
+	int32_t lpc[MAX_LPC_ORDER+1];
 	double qtz_samples[BLOCK_SIZE];
 	double autocorr[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-	int int_samples[BLOCK_SIZE];
-	short residues[BLOCK_SIZE];
+	int32_t int_samples[BLOCK_SIZE];
+	int32_t residues[BLOCK_SIZE];
 
 	//Check the wav file
 	int is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
@@ -76,12 +81,16 @@ int main(int argc,char **argv)
 			return -1;
 		default:
 			fprintf(stderr,"Some error occured. Exiting.......\n");
+			return -1;
 	}
 
 	//Print media info
 	fprintf(stderr,"Sampling Rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
 	fprintf(stderr,"Channels : %d\n",channels);
+
+	//Write magic number to output
+	fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
 
 	//Write Media info to output
 	fwrite(&sample_rate,sizeof(int),1,outfile);
@@ -105,9 +114,6 @@ int main(int argc,char **argv)
 
 		for(i = 0; i < channels; i++)
 		{
-			//Write channel number to output
-			fwrite((char *)&i,sizeof(char),1,outfile);
-
 			//Separate channels
 			for(j = 0; j < samples_per_channel; j++)
 				short_samples[j] = buffer[channels * j + i];
@@ -135,7 +141,7 @@ int main(int argc,char **argv)
 			req_bits_ref = rice_encode_block(rice_param_ref,unsigned_ref,opt_lpc_order,encoded_ref);
 
 			//Determine shorts
-			req_shorts_ref = ceil((double)(req_bits_ref)/(sizeof(unsigned short) * 8));
+			req_int_ref = ceil((double)(req_bits_ref)/(sizeof(unsigned short) * 8));
 
 			//Dequantize reflection
 			dqtz_ref_cof(qtz_ref_coeffs,opt_lpc_order,Q,ref);
@@ -163,31 +169,33 @@ int main(int argc,char **argv)
 			req_bits_residues = rice_encode_block(rice_param_residue,u_residues,samples_per_channel,encoded_residues);
 
 			//Determine shorts
-			req_shorts_residues = ceil((double)(req_bits_residues)/(sizeof(unsigned short) * 8));
+			req_int_residues = ceil((double)(req_bits_residues)/(sizeof(unsigned short) * 8));
+
+			//Write channel number to output
+			fwrite((char *)&i,sizeof(char),1,outfile);
 
 			//Write rice_params,bytes,encoded lpc_coeffs to output
-			fwrite(&rice_param_ref,sizeof(unsigned char),1,outfile);
-			fwrite(&req_shorts_ref,sizeof(unsigned short),1,outfile);
-			fwrite(&opt_lpc_order,sizeof(unsigned char),1,outfile);
-			fwrite(encoded_ref,sizeof(unsigned short),req_shorts_ref,outfile);
+			fwrite(&rice_param_ref,sizeof(uint8_t),1,outfile);
+			fwrite(&req_int_ref,sizeof(uint16_t),1,outfile);
+			fwrite(&opt_lpc_order,sizeof(uint8_t),1,outfile);
+			fwrite(encoded_ref,sizeof(uint32_t),req_int_ref,outfile);
 
 			//Write rice_params,bytes,encoded residues to output
-			fwrite(&rice_param_residue,sizeof(unsigned char),1,outfile);
-			fwrite(&req_shorts_residues,sizeof(unsigned short),1,outfile);
-			fwrite(&samples_per_channel,sizeof(unsigned short),1,outfile);
-			fwrite(encoded_residues,sizeof(unsigned short),req_shorts_residues,outfile);
+			fwrite(&rice_param_residue,sizeof(uint8_t),1,outfile);
+			fwrite(&req_int_residues,sizeof(uint16_t),1,outfile);
+			fwrite(&samples_per_channel,sizeof(uint16_t),1,outfile);
+			fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,outfile);
 		}
 	}
 
 	free(buffer);
 	fclose(infile);
 	fclose(outfile);
-	fclose(logfile);
 
 	return 0;
 }
 
-int check_wav_file(FILE *fp,int *sample_rate,short *channels,short *bps)
+int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps)
 {
 	fseek(fp,0,SEEK_SET);
 	char header[44];
