@@ -5,22 +5,22 @@
 
 typedef struct rice_encode_context
 {
-	unsigned short buffer;
-	unsigned short filled;
-	unsigned int bits;
+	uint32_t buffer;
+	uint32_t filled;
+	uint32_t bits;
 }rice_encode_context;
 
 typedef struct rice_decode_context
 {
-	unsigned short buffer;
-	unsigned short filled;
-	unsigned int bytes;
+	uint32_t buffer;
+	uint32_t filled;
+	uint32_t bytes;
 }rice_decode_context;
 
-int signed_to_unsigned(const unsigned int data_size,const short *input,unsigned short *output);
-int unsigned_to_signed(const unsigned int data_size,const unsigned short *input,short *output);
-unsigned short get_opt_rice_param(const unsigned short *data,int data_size,unsigned int *req_bits);
-unsigned int rice_encode_block(short param,const unsigned short *input,int size,unsigned short *encoded);
-unsigned int rice_decode_block(short param,const unsigned short *encoded,int count,unsigned short *decoded);
+int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_t *output);
+int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output);
+uint16_t get_opt_rice_param(const uint32_t *data,int32_t data_size,uint32_t *req_bits);
+uint32_t rice_encode_block(int16_t param,const uint32_t *input,int32_t size,uint32_t *encoded);
+uint32_t rice_decode_block(int16_t param,const uint32_t *encoded,int32_t count,uint32_t *decoded);
 
 #endif
