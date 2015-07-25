@@ -1,13 +1,15 @@
 #ifndef _PACKET_QUEUE_H_
 #define _PACKET_QUEUE_H_
+
 #include <pthread.h>
+#include <stdint.h>
 
 #define MAX_PACKET_SIZE 18432
 
 typedef struct PacketNode
 {
 	char *packet;
-	short packet_size;
+	int16_t packet_size;
 	struct PacketNode *next;
 }PacketNode;
 
@@ -15,8 +17,8 @@ typedef struct PacketList
 {
 	PacketNode *first;
 	PacketNode *last;
-	int num_packets;
-	int total_packets_count;
+	int32_t num_packets;
+	int32_t total_packets_count;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
 }PacketList;
