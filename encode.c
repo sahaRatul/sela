@@ -140,8 +140,8 @@ int main(int argc,char **argv)
 			//Encode ref coeffs
 			req_bits_ref = rice_encode_block(rice_param_ref,unsigned_ref,opt_lpc_order,encoded_ref);
 
-			//Determine shorts
-			req_int_ref = ceil((double)(req_bits_ref)/(sizeof(unsigned short) * 8));
+			//Determine number of inta required for storage
+			req_int_ref = ceil((double)(req_bits_ref)/(32));
 
 			//Dequantize reflection
 			dqtz_ref_cof(qtz_ref_coeffs,opt_lpc_order,Q,ref);
@@ -168,8 +168,8 @@ int main(int argc,char **argv)
 			//Encode residues
 			req_bits_residues = rice_encode_block(rice_param_residue,u_residues,samples_per_channel,encoded_residues);
 
-			//Determine shorts
-			req_int_residues = ceil((double)(req_bits_residues)/(sizeof(unsigned short) * 8));
+			//Determine nunber of ints required for storage
+			req_int_residues = ceil((double)(req_bits_residues)/(32));
 
 			//Write channel number to output
 			fwrite((char *)&i,sizeof(char),1,outfile);
