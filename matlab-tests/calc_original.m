@@ -9,8 +9,8 @@ function original = calc_original(residues,lpc_coeffs,Q)
     for k = 2:ord
         y = 2^(Q-1);
         for i = 2:k+1
-            y = y - (lpc_coeffs(i) * original(k-i));
-            if((k - i)==1)
+            y = y - (lpc_coeffs(i) * original(k-i+1));
+            if((k - i)==0)
                 break;
             end
         end
@@ -21,7 +21,7 @@ function original = calc_original(residues,lpc_coeffs,Q)
     for k = ord+1:N
         y = 2^(Q-1);
         for i = 1:ord
-            y = y - (lpc_coeffs(i) * original(k-i));
+            y = y - (lpc_coeffs(i) * original(k-i+1));
         end
         original(k) = residues(k) - y/2^Q;
     end
