@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "lpc.h"
@@ -11,6 +12,13 @@ int32_t check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *
 
 int main(int argc,char **argv)
 {
+
+	if(argc < 3)
+	{
+		fprintf(stderr,"Usage : %s <input.wav> <output.wav>\n",argv[0]);
+		return -1;
+	}
+
 	FILE *infile = fopen(argv[1],"rb");
 	FILE *outfile = fopen(argv[2],"wb");
 	if(infile == NULL || outfile == NULL)
@@ -18,11 +26,16 @@ int main(int argc,char **argv)
 		fprintf(stderr,"Error open input or output file.Exiting.......\n");
 		return -1;
 	}
+	else
+	{
+		fprintf(stderr,"Input : %s\n",argv[1]);
+		fprintf(stderr,"Output : %s\n",argv[2]);
+	}
 
 	int32_t sample_rate;
 	int16_t channels,bps;
-	int32_t corr = 1 << 20;
-	const int8_t Q = 20;
+	const int8_t Q = 25;
+	int32_t corr = 1 << Q;
 	
 	check_wav_file(infile,&sample_rate,&channels,&bps);
 	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
@@ -97,7 +110,7 @@ int main(int argc,char **argv)
 				lpc[j+1] = lpc_mat[opt_lpc_order - 1][j];
 			lpc[0] = 0;
 
-			int32_t int_lpc[MAX_LPC_ORDER+1];
+			int64_t int_lpc[MAX_LPC_ORDER+1];
 			for(int32_t j = 0; j <= opt_lpc_order; j++)
 				int_lpc[j] =  corr * lpc[j];
 
@@ -123,15 +136,18 @@ int main(int argc,char **argv)
 int32_t check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps)
 {
 	fseek(fp,0,SEEK_SET);
-	int8_t header[44];
-	fread(header,sizeof(int8_t),44,fp);
+	char header[44];
+	fread(header,sizeof(char),44,fp);
+	
+	char *riffmarker = (char *)header;
+	char *wavemarker = (char *)(header + 8);
 
 	/*Check RIFF header*/
-	if(strncmp(header,"RIFF",4)!=0)
+	if(strncmp(riffmarker,"RIFF",4) != 0)
 		return -1;
 
 	/*Check WAVE Header*/
-	if(strncmp((header+8),"WAVE",4)!=0)
+	if(strncmp(wavemarker,"WAVE",4) != 0)
 		return -2;
 
 	/*Sample Rate*/
