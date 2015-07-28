@@ -23,6 +23,6 @@ function residues = calc_residue(samples,lpc_coeffs,Q)
         for i = 1:ord
             y = y + (lpc_coeffs(i) * samples(k-i+1));
         end
-        residues(k) = y/2^Q;
+        residues(k) = samples(k) - y/2^Q;
     end
 end
