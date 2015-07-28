@@ -44,8 +44,8 @@ int main(int argc,char **argv)
 	uint8_t opt_lpc_order;
 	uint32_t temp;
 	const uint32_t frame_sync = 0xAA55FF00;
-	const int32_t corr = 1 << 20;
-	const int16_t Q = 20;
+	const int16_t Q = 25;
+	const int32_t corr = 1 << 25;
 	int16_t bps;
 	uint16_t num_ref_elements,num_residue_elements,samples_per_channel = 0;
 	uint8_t channels,curr_channel,rice_param_ref,rice_param_residue;
@@ -60,7 +60,7 @@ int main(int argc,char **argv)
 	int32_t s_ref[MAX_LPC_ORDER];
 	int32_t s_residues[BLOCK_SIZE];
 	int32_t rcv_samples[BLOCK_SIZE];
-	int32_t lpc[MAX_LPC_ORDER + 1];
+	int64_t lpc[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
 
@@ -121,7 +121,7 @@ int main(int argc,char **argv)
 				levinson(NULL,opt_lpc_order,ref,lpc_mat);
 				lpc[0] = 0;
 				for(int k = 0; k < opt_lpc_order; k++)
-					lpc[k+1] = (int32_t)(corr * lpc_mat[opt_lpc_order - 1][k]);
+					lpc[k+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][k]);
 
 				//lossless reconstruction
 				calc_signal(s_residues,samples_per_channel,opt_lpc_order,Q,lpc,rcv_samples);
