@@ -1,224 +1,142 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
-#include <math.h>
+#include <stdint.h>
 
-#include "lpc.h"
 #include "rice.h"
+#include "lpc.h"
+#include "wavwriter.h"
 
-#define SHORT_MAX 32767
 #define BLOCK_SIZE 2048
-
-int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps);
 
 int main(int argc,char **argv)
 {
-	if(argc < 3)
+	if(argc < 2)
 	{
-		fprintf(stderr,"Usage : %s <input.wav> <output.sela>\n",argv[0]);
-		fprintf(stderr,"Supports CD quality (16 bits/sample) WAVEform audio(*.wav) files only.\n");
+		fprintf(stderr,"Usage : %s <input.sela> <output.wav>\n",argv[0]);
 		return -1;
 	}
 
 	FILE *infile = fopen(argv[1],"rb");
 	FILE *outfile = fopen(argv[2],"wb");
-
 	if(infile == NULL || outfile == NULL)
 	{
-		fprintf(stderr,"Error open input or output file.Exiting.......\n");
+		fprintf(stderr,"Error while opening input/output.\n");
 		return -1;
 	}
 	else
 	{
 		fprintf(stderr,"Input : %s\n",argv[1]);
-		fprintf(stderr,"Output : %s\n",argv[2]);
+		fprintf(stderr, "Output : %s\n",argv[2]);
 	}
+
+	char magic_number[4];
+	fread(magic_number,sizeof(char),4,infile);
+	if(strncmp(magic_number,"SeLa",4))
+	{
+		fprintf(stderr,"Not a sela file.\n");
+		return -1;
+	}
+	else
+		fprintf(stderr,"Input : %s\n",argv[1]);
+
 
 	//Variables and arrays
-	uint8_t opt_lpc_order = 0;
-	int16_t channels,bps;
-	uint8_t rice_param_ref,rice_param_residue;
-	const char magic_number[4] = {'S','e','L','a'};
-	uint16_t req_int_ref,req_int_residues,samples_per_channel;
-	const int16_t Q = 25;
-	const int32_t corr = 1 << 25;
-	int32_t i,j;
-	int32_t sample_rate,read_size;
+	int32_t sample_rate,i;
+	uint8_t opt_lpc_order;
+	uint32_t temp;
 	const uint32_t frame_sync = 0xAA55FF00;
-	uint32_t req_bits_ref,req_bits_residues;
+	const int16_t Q = 25;
+	const int32_t corr = 1 << Q;
+	int16_t bps;
+	uint16_t num_ref_elements,num_residue_elements,samples_per_channel = 0;
+	uint8_t channels,curr_channel,rice_param_ref,rice_param_residue;
 
-	int16_t short_samples[BLOCK_SIZE];
-	int32_t qtz_ref_coeffs[MAX_LPC_ORDER];
-	uint32_t unsigned_ref[MAX_LPC_ORDER];
-	uint32_t encoded_ref[MAX_LPC_ORDER];
-	uint32_t u_residues[BLOCK_SIZE];
-	uint32_t encoded_residues[BLOCK_SIZE];
-	int32_t spar[MAX_LPC_ORDER];
-	int64_t lpc[MAX_LPC_ORDER+1];
-	double qtz_samples[BLOCK_SIZE];
-	double autocorr[MAX_LPC_ORDER + 1];
+	uint32_t compressed_ref[MAX_LPC_ORDER];
+	uint32_t compressed_residues[BLOCK_SIZE];
+	uint32_t decomp_ref[MAX_LPC_ORDER];
+	uint32_t decomp_residues[BLOCK_SIZE];
+	int32_t s_ref[MAX_LPC_ORDER];
+	int32_t s_residues[BLOCK_SIZE];
+	int32_t rcv_samples[BLOCK_SIZE];
+	int64_t lpc[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-	int32_t int_samples[BLOCK_SIZE];
-	int32_t residues[BLOCK_SIZE];
 
-	//Check the wav file
-	int is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
-	switch(is_wav)
-	{
-		case 1:
-			fprintf(stderr,"WAV file detected.\n");
-			break;
-		case -1:
-			fprintf(stderr,"RIFF header not found. Exiting......\n");
-			return -1;
-		case -2:
-			fprintf(stderr,"WAVE header not found. Exiting......\n");
-			return -1;
-		case -3:
-			fprintf(stderr,"Not a 16 bit/sample wav file. Exiting......\n");
-			return -1;
-		default:
-			fprintf(stderr,"Some error occured. Exiting.......\n");
-			return -1;
-	}
+	fread(&sample_rate,sizeof(int),1,infile);
+	fread(&bps,sizeof(short),1,infile);
+	fread(&channels,sizeof(unsigned char),1,infile);
 
-	//Print media info
-	fprintf(stderr,"Sampling Rate : %d Hz\n",sample_rate);
+	fprintf(stderr,"Sample rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
 	fprintf(stderr,"Channels : %d\n",channels);
 
-	//Write magic number to output
-	fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
+	wav_header hdr;
+	initialize_header(&hdr,channels,sample_rate,bps);
+	write_header(outfile,&hdr);
 
-	//Write Media info to output
-	fwrite(&sample_rate,sizeof(int),1,outfile);
-	fwrite(&bps,sizeof(short),1,outfile);
-	fwrite((char *)&channels,sizeof(char),1,outfile);
-
-	//Define read size
-	read_size = channels * BLOCK_SIZE;
-	short *buffer = (short *)malloc(sizeof(short) * read_size);
+	int16_t *buffer = (int16_t *)malloc(sizeof(int16_t) * BLOCK_SIZE * channels);
 
 	//Main loop
 	while(feof(infile) == 0)
 	{
-		//Read Samples from input
-		size_t read = fread(buffer,sizeof(short),read_size,infile);
+		fread(&temp,sizeof(int),1,infile);//Read from input
 
-		samples_per_channel = read/channels;
-
-		//Write frame syncword
-		fwrite(&frame_sync,sizeof(int),1,outfile);
-
-		for(i = 0; i < channels; i++)
+		if(temp == frame_sync)
 		{
-			//Separate channels
-			for(j = 0; j < samples_per_channel; j++)
-				short_samples[j] = buffer[channels * j + i];
-			
-			//Quantize sample data
-			for(j = 0; j < samples_per_channel; j++)
-				qtz_samples[j] = ((double)short_samples[j])/SHORT_MAX;
+			for(i = 0; i < channels; i++)
+			{
+				//Read channel number
+				fread(&curr_channel,sizeof(unsigned char),1,infile);
 
-			//Calculate autocorrelation data
-			acf(qtz_samples,samples_per_channel,MAX_LPC_ORDER,1,autocorr);
+				//Read rice_param,lpc_order,encoded lpc_coeffs from input
+				fread(&rice_param_ref,sizeof(uint8_t),1,infile);
+				fread(&num_ref_elements,sizeof(uint16_t),1,infile);
+				fread(&opt_lpc_order,sizeof(uint8_t),1,infile);
+				fread(compressed_ref,sizeof(uint32_t),num_ref_elements,infile);
 
-			//Calculate reflection coefficients
-			opt_lpc_order = compute_ref_coefs(autocorr,MAX_LPC_ORDER,ref);
+				//Read rice_param,num_of_residues,encoded residues from input
+				fread(&rice_param_residue,sizeof(uint8_t),1,infile);
+				fread(&num_residue_elements,sizeof(uint16_t),1,infile);
+				fread(&samples_per_channel,sizeof(uint16_t),1,infile);
+				fread(compressed_residues,sizeof(uint32_t),num_residue_elements,infile);
 
-			//Quantize reflection coefficients
-			qtz_ref_cof(ref,opt_lpc_order,qtz_ref_coeffs);
+				//Decode compressed reflection coefficients and residues
+				rice_decode_block(rice_param_ref,compressed_ref,opt_lpc_order,decomp_ref);
+				rice_decode_block(rice_param_residue,compressed_residues,samples_per_channel,decomp_residues);
 
-			//signed to unsigned
-			signed_to_unsigned(opt_lpc_order,qtz_ref_coeffs,unsigned_ref);
+				//unsigned to signed
+				unsigned_to_signed(opt_lpc_order,decomp_ref,s_ref);
+				unsigned_to_signed(samples_per_channel,decomp_residues,s_residues);
 
-			//get optimum rice param and number of bits
-			rice_param_ref = get_opt_rice_param(unsigned_ref,opt_lpc_order,&req_bits_ref);
+				//Dequantize reflection coefficients
+				dqtz_ref_cof(s_ref,opt_lpc_order,Q,ref);
 
-			//Encode ref coeffs
-			req_bits_ref = rice_encode_block(rice_param_ref,unsigned_ref,opt_lpc_order,encoded_ref);
+				//Generate lpc coefficients
+				levinson(NULL,opt_lpc_order,ref,lpc_mat);
+				lpc[0] = 0;
+				for(int k = 0; k < opt_lpc_order; k++)
+					lpc[k+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][k]);
 
-			//Determine number of inta required for storage
-			req_int_ref = ceil((double)(req_bits_ref)/(32));
+				//lossless reconstruction
+				calc_signal(s_residues,samples_per_channel,opt_lpc_order,Q,lpc,rcv_samples);
 
-			//Dequantize reflection
-			dqtz_ref_cof(qtz_ref_coeffs,opt_lpc_order,Q,ref);
-
-			//Reflection to lpc
-			levinson(NULL,opt_lpc_order,ref,lpc_mat);
-			lpc[0] = 0;
-			for(j = 0; j < opt_lpc_order; j++)
-				lpc[j+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][j]);
-
-			//Copy samples
-			for(j = 0; j < samples_per_channel; j++)
-				int_samples[j] = short_samples[j];
-
-			//Get residues
-			calc_residue(int_samples,samples_per_channel,opt_lpc_order,Q,lpc,residues);
-
-			//signed to unsigned
-			signed_to_unsigned(samples_per_channel,residues,u_residues);
-
-			//get optimum rice param and number of bits
-			rice_param_residue = get_opt_rice_param(u_residues,samples_per_channel,&req_bits_residues);
-
-			//Encode residues
-			req_bits_residues = rice_encode_block(rice_param_residue,u_residues,samples_per_channel,encoded_residues);
-
-			//Determine nunber of ints required for storage
-			req_int_residues = ceil((double)(req_bits_residues)/(32));
-
-			//Write channel number to output
-			fwrite((char *)&i,sizeof(char),1,outfile);
-
-			//Write rice_params,bytes,encoded lpc_coeffs to output
-			fwrite(&rice_param_ref,sizeof(uint8_t),1,outfile);
-			fwrite(&req_int_ref,sizeof(uint16_t),1,outfile);
-			fwrite(&opt_lpc_order,sizeof(uint8_t),1,outfile);
-			fwrite(encoded_ref,sizeof(uint32_t),req_int_ref,outfile);
-
-			//Write rice_params,bytes,encoded residues to output
-			fwrite(&rice_param_residue,sizeof(uint8_t),1,outfile);
-			fwrite(&req_int_residues,sizeof(uint16_t),1,outfile);
-			fwrite(&samples_per_channel,sizeof(uint16_t),1,outfile);
-			fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,outfile);
+				//Combine samples from all channels
+				for(int k = 0; k < samples_per_channel; k++)
+					buffer[channels * k + i] = (int16_t)rcv_samples[k];
+			}
+			fwrite(buffer,sizeof(int16_t),(samples_per_channel * channels),outfile);
+		}
+		else
+		{
+			fprintf(stderr,"Sync lost\n");
+			break;
 		}
 	}
+	finalize_file(outfile);
 
 	free(buffer);
 	fclose(infile);
 	fclose(outfile);
-
 	return 0;
-}
-
-int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps)
-{
-	fseek(fp,0,SEEK_SET);
-	char header[44];
-	fread(header,sizeof(char),44,fp);
-
-	/*Check RIFF header*/
-	if(strncmp(header,"RIFF",4)!=0)
-		return -1;
-
-	/*Check WAVE Header*/
-	if(strncmp((header+8),"WAVE",4)!=0)
-		return -2;
-
-	/*Sample Rate*/
-	*sample_rate = *((int *)(header + 24));
-
-	/*Channels*/
-	*channels = *((short *)(header + 22));
-
-	/*Bits per sample*/
-	*bps = *((short *)(header + 34));
-	if(*bps != 16)
-		return -3;
-
-	return 1;	
 }
