@@ -41,8 +41,8 @@ int main(int argc,char **argv)
 	uint8_t rice_param_ref,rice_param_residue;
 	const char magic_number[4] = {'S','e','L','a'};
 	uint16_t req_int_ref,req_int_residues,samples_per_channel;
-	const int16_t Q = 20;
-	const int32_t corr = 1 << 20;
+	const int16_t Q = 25;
+	const int32_t corr = 1 << 25;
 	int32_t i,j;
 	int32_t sample_rate,read_size;
 	const uint32_t frame_sync = 0xAA55FF00;
@@ -55,7 +55,7 @@ int main(int argc,char **argv)
 	uint32_t u_residues[BLOCK_SIZE];
 	uint32_t encoded_residues[BLOCK_SIZE];
 	int32_t spar[MAX_LPC_ORDER];
-	int32_t lpc[MAX_LPC_ORDER+1];
+	int64_t lpc[MAX_LPC_ORDER+1];
 	double qtz_samples[BLOCK_SIZE];
 	double autocorr[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
@@ -150,7 +150,7 @@ int main(int argc,char **argv)
 			levinson(NULL,opt_lpc_order,ref,lpc_mat);
 			lpc[0] = 0;
 			for(j = 0; j < opt_lpc_order; j++)
-				lpc[j+1] = corr * lpc_mat[opt_lpc_order - 1][j];
+				lpc[j+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][j]);
 
 			//Copy samples
 			for(j = 0; j < samples_per_channel; j++)
