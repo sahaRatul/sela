@@ -44,7 +44,7 @@ int main(int argc,char **argv)
 	{
 		fprintf(stderr,"Input : %s\n",argv[1]);
 		#ifdef __PULSE__
-			fprintf(stderr,"Using Pulse Audio output\n");
+			fprintf(stderr,"Using pulseaudio output\n");
 		#elif __AO__
 			fprintf(stderr,"Using Xiph.org libao output\n");
 		#endif
