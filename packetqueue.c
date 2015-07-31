@@ -1,5 +1,6 @@
 #include <pthread.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "packetqueue.h"
 
@@ -61,5 +62,6 @@ PacketNode *PacketQueueGet(PacketList *list)
 		pthread_cond_signal(&list->cond);
 	
 	pthread_mutex_unlock(&list->mutex);
+	fprintf(stderr,"%3d Packets in queue.\r",list->num_packets);
 	return packet;
 }

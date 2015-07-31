@@ -6,11 +6,10 @@
 
 #include "lpc.h"
 #include "rice.h"
+#include "wavutils.h"
 
 #define SHORT_MAX 32767
 #define BLOCK_SIZE 2048
-
-int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps);
 
 int main(int argc,char **argv)
 {
@@ -50,6 +49,8 @@ int main(int argc,char **argv)
 
 	int16_t short_samples[BLOCK_SIZE];
 	int32_t qtz_ref_coeffs[MAX_LPC_ORDER];
+	int32_t int_samples[BLOCK_SIZE];
+	int32_t residues[BLOCK_SIZE];
 	uint32_t unsigned_ref[MAX_LPC_ORDER];
 	uint32_t encoded_ref[MAX_LPC_ORDER];
 	uint32_t u_residues[BLOCK_SIZE];
@@ -60,28 +61,35 @@ int main(int argc,char **argv)
 	double autocorr[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-	int32_t int_samples[BLOCK_SIZE];
-	int32_t residues[BLOCK_SIZE];
 
 	//Check the wav file
 	int is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
 	switch(is_wav)
 	{
-		case 1:
+		case READ_STATUS_OK:
 			fprintf(stderr,"WAV file detected.\n");
 			break;
-		case -1:
+		case ERR_NO_RIFF_MARKER:
 			fprintf(stderr,"RIFF header not found. Exiting......\n");
 			return -1;
-		case -2:
+		case ERR_NO_WAVE_MARKER:
 			fprintf(stderr,"WAVE header not found. Exiting......\n");
 			return -1;
-		case -3:
-			fprintf(stderr,"Not a 16 bit/sample wav file. Exiting......\n");
+		case ERR_NO_FMT_MARKER:
+			fprintf(stderr,"No Format chunk found. Exiting......\n");
+			return -1;
+		case ERR_NOT_A_PCM_FILE:
+			fprintf(stderr,"Not a PCM file. Exiting.....\n");
 			return -1;
 		default:
 			fprintf(stderr,"Some error occured. Exiting.......\n");
 			return -1;
+	}
+
+	if(bps != 16)
+	{
+		fprintf(stderr,"Supports only 16 bits/sample WAVE files. Exiting.......\n");
+		return -1;
 	}
 
 	//Print media info
@@ -140,7 +148,7 @@ int main(int argc,char **argv)
 			//Encode ref coeffs
 			req_bits_ref = rice_encode_block(rice_param_ref,unsigned_ref,opt_lpc_order,encoded_ref);
 
-			//Determine number of inta required for storage
+			//Determine number of ints required for storage
 			req_int_ref = ceil((double)(req_bits_ref)/(32));
 
 			//Dequantize reflection
@@ -193,32 +201,4 @@ int main(int argc,char **argv)
 	fclose(outfile);
 
 	return 0;
-}
-
-int check_wav_file(FILE *fp,int32_t *sample_rate,int16_t *channels,int16_t *bps)
-{
-	fseek(fp,0,SEEK_SET);
-	char header[44];
-	fread(header,sizeof(char),44,fp);
-
-	/*Check RIFF header*/
-	if(strncmp(header,"RIFF",4)!=0)
-		return -1;
-
-	/*Check WAVE Header*/
-	if(strncmp((header+8),"WAVE",4)!=0)
-		return -2;
-
-	/*Sample Rate*/
-	*sample_rate = *((int *)(header + 24));
-
-	/*Channels*/
-	*channels = *((short *)(header + 22));
-
-	/*Bits per sample*/
-	*bps = *((short *)(header + 34));
-	if(*bps != 16)
-		return -3;
-
-	return 1;	
 }

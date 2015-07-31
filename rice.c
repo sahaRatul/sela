@@ -8,12 +8,7 @@
 int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_t *output)
 {
 	for(uint32_t i = 0; i < data_size; i++)
-	{
-		if(input[i] < 0)
-			output[i] = (-2 * input[i]) - 1;
-		if(input[i] >= 0)
-			output[i] = 2 * input[i];
-	}
+		(input[i] < 0) ? (output[i] = (-(input[i] << 1)) - 1) : (output[i] = input[i] << 1);
 	return(0);
 }
 
@@ -21,12 +16,7 @@ int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_
 int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output)
 {
 	for(uint32_t i = 0; i < data_size; i++)
-	{
-		if((input[i] & 0x01) == 0x01)//Odd number
-			output[i] = -((input[i] + 1) >> 1);
-		if((input[i] & 0x01) == 0x00)//Even number
-			output[i] = input[i] >> 1;
-	}
+		((input[i] & 0x01) == 0x01) ? (output[i] = -((input[i] + 1) >> 1)) : (output[i] = input[i] >> 1);
 	return(0);
 }
 

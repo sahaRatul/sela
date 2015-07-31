@@ -5,7 +5,7 @@
 
 #include "rice.h"
 #include "lpc.h"
-#include "wavwriter.h"
+#include "wavutils.h"
 
 #define BLOCK_SIZE 2048
 
@@ -35,11 +35,10 @@ int main(int argc,char **argv)
 	if(strncmp(magic_number,"SeLa",4))
 	{
 		fprintf(stderr,"Not a sela file.\n");
+		fclose(infile);
+		fclose(outfile);
 		return -1;
 	}
-	else
-		fprintf(stderr,"Input : %s\n",argv[1]);
-
 
 	//Variables and arrays
 	int32_t sample_rate,i;

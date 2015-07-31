@@ -7,7 +7,11 @@
 #include "rice.h"
 #include "lpc.h"
 #include "format.h"
-#include "pulse_output.h"
+#ifdef __PULSE__
+	#include "pulse_output.h"
+#elif __AO__
+	#include "ao_output.h"
+#endif
 #include "packetqueue.h"
 
 #define BLOCK_SIZE 2048
@@ -37,7 +41,14 @@ int main(int argc,char **argv)
 		return -1;
 	}
 	else
+	{
 		fprintf(stderr,"Input : %s\n",argv[1]);
+		#ifdef __PULSE__
+			fprintf(stderr,"Using Pulse Audio output\n");
+		#elif __AO__
+			fprintf(stderr,"Using Xiph.org libao output\n");
+		#endif
+	}
 
 	//Variables and arrays
 	int32_t sample_rate,i;
@@ -75,7 +86,14 @@ int main(int argc,char **argv)
 	fmt.sample_rate = sample_rate;
 	fmt.num_channels = channels;
 	fmt.bits_per_sample = bps;
-	initialize_pulse(&fmt);
+	
+	#ifdef __PULSE__
+		initialize_pulse(&fmt);
+	#elif __AO__
+		initialize_ao();
+		set_ao_format(&fmt);
+	#endif
+	
 	PacketQueueInit(&list);
 
 	//Start playback thread
@@ -143,7 +161,13 @@ int main(int argc,char **argv)
 		}
 	}
 	pthread_join(play_thread,NULL);
-	destroy_pulse();
+	
+	#ifdef __PULSE__
+		destroy_pulse();
+	#elif __AO__
+		destroy_ao();
+	#endif
+	
 	fclose(infile);
 	return 0;
 }
@@ -151,6 +175,12 @@ int main(int argc,char **argv)
 void *playback_func(void *arg)
 {
 	PacketList *list=(PacketList *)arg;
-	pulse_play(list);
+	
+	#ifdef __PULSE__
+		pulse_play(list);
+	#elif __AO__
+		play_ao(list);
+	#endif
+	
 	return NULL;
 }
