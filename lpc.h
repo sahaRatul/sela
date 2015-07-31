@@ -4,6 +4,7 @@
 #define SQRT2 1.41421356237
 #define MAX_LPC_ORDER 60
 
+int32_t check_if_constant(const int16_t *data,int32_t num_elements);
 void acf(double *x,int32_t N,int64_t k,int16_t norm,double *rxx);
 void levinson(double *autoc,uint8_t max_order,double *ref,double lpc[][MAX_LPC_ORDER]);
 uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref);
