@@ -1,0 +1,16 @@
+*.o
+*.gch
+*.sela
+*.wav
+ricetest
+lpctest
+selaplay
+encode
+decode
+*.out
+a.exe
+ricetest.exe
+lpctest.exe
+selaplay.exe
+encode.exe
+decode.exe
