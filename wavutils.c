@@ -103,8 +103,8 @@ void finalize_file(FILE *fp)
 {
 	size_t file_size = ftell(fp);
 	fseek(fp,4,SEEK_SET);
-	fwrite(&file_size,sizeof(int),1,fp);
+	fwrite(&file_size,sizeof(int32_t),1,fp);
 	fseek(fp,40,SEEK_SET);
 	size_t data_size = file_size - 44;
-	fwrite(&data_size,sizeof(int),1,fp);
+	fwrite(&data_size,sizeof(int32_t),1,fp);
 }
