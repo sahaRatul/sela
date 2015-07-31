@@ -20,11 +20,11 @@ selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o
 selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
 	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
 
-d_encoder: encode.c rice.c lpc.c
-	$(CC) encode.c rice.c lpc.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_encoder: encode.c rice.c lpc.c wavutils.c
+	$(CC) encode.c rice.c lpc.c wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
 
-d_decoder: decode.c rice.c lpc.c wavwriter.c
-	$(CC) decode.c rice.c lpc.c wavwriter.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_decoder: decode.c rice.c lpc.c wavutils.c
+	$(CC) decode.c rice.c lpc.c wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
 
 ricetest: ricetest.c rice.c
 	$(CC) -o ricetest ricetest.c rice.c $(CFLAGS) $(LINKFLAGS)
