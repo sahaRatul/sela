@@ -42,9 +42,10 @@ int main(int argc,char **argv)
 	uint16_t req_int_ref,req_int_residues,samples_per_channel;
 	const int16_t Q = 25;
 	const int32_t corr = 1 << 25;
-	int32_t i,j;
+	int32_t i,j,k = 0;
 	int32_t sample_rate,read_size;
 	const uint32_t frame_sync = 0xAA55FF00;
+	int32_t frame_sync_count = 0;
 	uint32_t req_bits_ref,req_bits_residues;
 
 	int16_t short_samples[BLOCK_SIZE];
@@ -101,30 +102,34 @@ int main(int argc,char **argv)
 	fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
 
 	//Write Media info to output
-	fwrite(&sample_rate,sizeof(int),1,outfile);
-	fwrite(&bps,sizeof(short),1,outfile);
-	fwrite((char *)&channels,sizeof(char),1,outfile);
+	fwrite(&sample_rate,sizeof(int32_t),1,outfile);
+	fwrite(&bps,sizeof(int16_t),1,outfile);
+	fwrite((int8_t *)&channels,sizeof(int8_t),1,outfile);
 
 	//Define read size
 	read_size = channels * BLOCK_SIZE;
-	short *buffer = (short *)malloc(sizeof(short) * read_size);
+	int16_t *buffer = (int16_t *)malloc(sizeof(int16_t) * read_size);
 
 	//Main loop
 	while(feof(infile) == 0)
 	{
 		//Read Samples from input
-		size_t read = fread(buffer,sizeof(short),read_size,infile);
+		size_t read = fread(buffer,sizeof(int16_t),read_size,infile);
 
 		samples_per_channel = read/channels;
 
 		//Write frame syncword
-		fwrite(&frame_sync,sizeof(int),1,outfile);
+		fwrite(&frame_sync,sizeof(int32_t),1,outfile);
+		fprintf(stderr,"Frames written %d\r",++frame_sync_count);
 
 		for(i = 0; i < channels; i++)
 		{
 			//Separate channels
 			for(j = 0; j < samples_per_channel; j++)
 				short_samples[j] = buffer[channels * j + i];
+
+			//Check if constant block
+			int32_t i = check_if_constant(short_samples,samples_per_channel);
 			
 			//Quantize sample data
 			for(j = 0; j < samples_per_channel; j++)
@@ -195,6 +200,8 @@ int main(int argc,char **argv)
 			fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,outfile);
 		}
 	}
+
+	fprintf(stderr,"%d frames written\n",frame_sync_count);
 
 	free(buffer);
 	fclose(infile);
