@@ -5,6 +5,19 @@
 
 #include "lpc.h"
 
+int32_t check_if_constant(const int16_t *data,int32_t num_elements)
+{
+	int16_t temp = data[0];
+
+	for(int32_t i = 1; i < num_elements; i++)
+	{
+		if(temp != data[i])
+			return -1;
+	}
+
+	return 0;
+}
+
 /*autocorrelation function*/
 void acf(double *x,int32_t N,int64_t k,int16_t norm,double *rxx)
 {
@@ -146,7 +159,7 @@ int32_t dqtz_ref_cof(const int32_t *q_ref,uint8_t ord,int16_t Q,double *ref)
 			temp = (((double)q_ref[i]/64) + 1)/SQRT2;
 			temp *= temp;
 			ref[i] = temp - 1;
-		}	
+		}
 		else if(i == 1)
 		{
 			temp = (((double)q_ref[i]/64) + 1)/SQRT2;
