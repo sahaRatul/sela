@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "rice.h"
 #include "lpc.h"
@@ -42,6 +43,7 @@ int main(int argc,char **argv)
 
 	//Variables and arrays
 	int32_t sample_rate,i;
+	int32_t frame_sync_count = 0;
 	uint8_t opt_lpc_order;
 	uint32_t temp;
 	const uint32_t frame_sync = 0xAA55FF00;
@@ -83,6 +85,7 @@ int main(int argc,char **argv)
 
 		if(temp == frame_sync)
 		{
+			fprintf(stderr,"Frames Read %d\r",++frame_sync_count);
 			for(i = 0; i < channels; i++)
 			{
 				//Read channel number
@@ -124,14 +127,13 @@ int main(int argc,char **argv)
 				for(int k = 0; k < samples_per_channel; k++)
 					buffer[channels * k + i] = (int16_t)rcv_samples[k];
 			}
-			fwrite(buffer,sizeof(int16_t),(samples_per_channel * channels),outfile);
+			size_t written = fwrite(buffer,sizeof(int16_t),(size_t)(samples_per_channel * channels),outfile);
+			temp = 0;
 		}
 		else
-		{
-			fprintf(stderr,"Sync lost\n");
 			break;
-		}
 	}
+	fprintf(stderr,"%d frames decoded\n",frame_sync_count);
 	finalize_file(outfile);
 
 	free(buffer);
