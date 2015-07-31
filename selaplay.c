@@ -153,12 +153,10 @@ int main(int argc,char **argv)
 			node->packet = (char *)buffer;
 			node->packet_size = (short)(samples_per_channel * channels * sizeof(int16_t));
 			PacketQueuePut(&list,node);//Insert in list
+			temp = 0;
 		}
 		else
-		{
-			fprintf(stderr,"Sync lost\n");
 			break;
-		}
 	}
 	pthread_join(play_thread,NULL);
 	
