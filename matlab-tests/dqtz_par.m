@@ -1,5 +1,5 @@
 function ref = dqtz_par(coff,opt_order)
-    ref = zeros(1,n);
+    ref = zeros(1,opt_order);
     
     if (opt_order <= 1)
       ref(1) = 0;
