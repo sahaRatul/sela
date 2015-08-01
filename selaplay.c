@@ -55,8 +55,8 @@ int main(int argc,char **argv)
 	uint8_t opt_lpc_order;
 	uint32_t temp;
 	const uint32_t frame_sync = 0xAA55FF00;
-	const int16_t Q = 25;
-	const int32_t corr = 1 << 25;
+	const int16_t Q = 35;
+	const int64_t corr = ((int64_t)1) << Q;
 	int16_t bps;
 	uint16_t num_ref_elements,num_residue_elements,samples_per_channel = 0;
 	uint8_t channels,curr_channel,rice_param_ref,rice_param_residue;
@@ -133,7 +133,7 @@ int main(int argc,char **argv)
 				unsigned_to_signed(samples_per_channel,decomp_residues,s_residues);
 
 				//Dequantize reflection coefficients
-				dqtz_ref_cof(s_ref,opt_lpc_order,Q,ref);
+				dqtz_ref_cof(s_ref,opt_lpc_order,ref);
 
 				//Generate lpc coefficients
 				levinson(NULL,opt_lpc_order,ref,lpc_mat);

@@ -34,8 +34,8 @@ int main(int argc,char **argv)
 
 	int32_t sample_rate;
 	int16_t channels,bps;
-	const int8_t Q = 25;
-	int32_t corr = 1 << Q;
+	const int8_t Q = 35;
+	int64_t corr = ((int64_t)1) << Q;
 	
 	check_wav_file(infile,&sample_rate,&channels,&bps);
 	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
@@ -100,7 +100,7 @@ int main(int argc,char **argv)
 			qtz_ref_cof(ref,opt_lpc_order,q_ref_coeffs);
 
 			//Dequantize
-			dqtz_ref_cof(q_ref_coeffs,opt_lpc_order,Q,ref);
+			dqtz_ref_cof(q_ref_coeffs,opt_lpc_order,ref);
 
 			double lpc[MAX_LPC_ORDER+1];
 			double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
@@ -112,13 +112,21 @@ int main(int argc,char **argv)
 
 			int64_t int_lpc[MAX_LPC_ORDER+1];
 			for(int32_t j = 0; j <= opt_lpc_order; j++)
-				int_lpc[j] =  corr * lpc[j];
+				int_lpc[j] =  (int64_t)corr * lpc[j];
 
 			int32_t residues[BLOCK_SIZE];
 			int32_t rcv_samples[BLOCK_SIZE];
 			calc_residue(int_samples,samples_per_channel,opt_lpc_order,Q,int_lpc,residues);
 
 			calc_signal(residues,samples_per_channel,opt_lpc_order,Q,int_lpc,rcv_samples);
+
+			int mismatch_cnt = 0;
+			for(int32_t i = 0; i < samples_per_channel; i++)
+				if(int_samples[i] != rcv_samples[i])
+					mismatch_cnt++;
+
+			if(mismatch_cnt != 0)
+				fprintf(stderr,"Mismatch %d!\n",mismatch_cnt);
 
 			for(int32_t j = 0; j < samples_per_channel; j++)
 				rcv_buffer[channels * j + i] = (int16_t)rcv_samples[j];

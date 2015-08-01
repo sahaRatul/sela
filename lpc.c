@@ -141,7 +141,7 @@ int32_t qtz_ref_cof(double *par,uint8_t ord,int32_t *q_ref)
 }
 
 /*Dequantize reflection coefficients*/
-int32_t dqtz_ref_cof(const int32_t *q_ref,uint8_t ord,int16_t Q,double *ref)
+int32_t dqtz_ref_cof(const int32_t *q_ref,uint8_t ord,double *ref)
 {
 	int32_t spar[MAX_LPC_ORDER];
 	double temp;
@@ -180,7 +180,7 @@ void calc_residue(const int32_t *samples,int64_t N,int16_t ord,int16_t Q,int64_t
 	int64_t corr;
 	int64_t y;
 
-	corr = 1 << (Q - 1);//Correction term
+	corr = ((int64_t)1) << (Q - 1);//Correction term
 
 	residues[0] = samples[0];
 	for(k = 1; k <= ord; k++)
@@ -211,7 +211,7 @@ void calc_signal(const int32_t *residues,int64_t N,int16_t ord,int16_t Q,int64_t
 	int64_t corr;
 	int64_t y;
 
-	corr = 1 << (Q - 1);//Correction term
+	corr = ((int64_t)1) << (Q - 1);//Correction term
 
 	samples[0] = residues[0];
 	for(k = 1; k <= ord; k++)

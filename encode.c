@@ -40,8 +40,8 @@ int main(int argc,char **argv)
 	uint8_t rice_param_ref,rice_param_residue;
 	const char magic_number[4] = {'S','e','L','a'};
 	uint16_t req_int_ref,req_int_residues,samples_per_channel;
-	const int16_t Q = 25;
-	const int32_t corr = 1 << 25;
+	const int16_t Q = 35;
+	const int64_t corr = ((int64_t)1) << Q;
 	int32_t i,j,k = 0;
 	int32_t sample_rate,read_size;
 	const uint32_t frame_sync = 0xAA55FF00;
@@ -57,7 +57,8 @@ int main(int argc,char **argv)
 	uint32_t u_residues[BLOCK_SIZE];
 	uint32_t encoded_residues[BLOCK_SIZE];
 	int32_t spar[MAX_LPC_ORDER];
-	int64_t lpc[MAX_LPC_ORDER+1];
+	int64_t lpc[MAX_LPC_ORDER + 1];
+	size_t written;
 	double qtz_samples[BLOCK_SIZE];
 	double autocorr[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
@@ -99,12 +100,12 @@ int main(int argc,char **argv)
 	fprintf(stderr,"Channels : %d\n",channels);
 
 	//Write magic number to output
-	fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
+	written = fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
 
 	//Write Media info to output
-	fwrite(&sample_rate,sizeof(int32_t),1,outfile);
-	fwrite(&bps,sizeof(int16_t),1,outfile);
-	fwrite((int8_t *)&channels,sizeof(int8_t),1,outfile);
+	written = fwrite(&sample_rate,sizeof(int32_t),1,outfile);
+	written = fwrite(&bps,sizeof(int16_t),1,outfile);
+	written = fwrite((int8_t *)&channels,sizeof(int8_t),1,outfile);
 
 	//Define read size
 	read_size = channels * BLOCK_SIZE;
@@ -119,7 +120,7 @@ int main(int argc,char **argv)
 		samples_per_channel = read/channels;
 
 		//Write frame syncword
-		fwrite(&frame_sync,sizeof(int32_t),1,outfile);
+		written = fwrite(&frame_sync,sizeof(int32_t),1,outfile);
 		fprintf(stderr,"Frames written %d\r",++frame_sync_count);
 
 		for(i = 0; i < channels; i++)
@@ -157,7 +158,7 @@ int main(int argc,char **argv)
 			req_int_ref = ceil((double)(req_bits_ref)/(32));
 
 			//Dequantize reflection
-			dqtz_ref_cof(qtz_ref_coeffs,opt_lpc_order,Q,ref);
+			dqtz_ref_cof(qtz_ref_coeffs,opt_lpc_order,ref);
 
 			//Reflection to lpc
 			levinson(NULL,opt_lpc_order,ref,lpc_mat);
@@ -185,19 +186,19 @@ int main(int argc,char **argv)
 			req_int_residues = ceil((double)(req_bits_residues)/(32));
 
 			//Write channel number to output
-			fwrite((char *)&i,sizeof(char),1,outfile);
+			written = fwrite((char *)&i,sizeof(char),1,outfile);
 
 			//Write rice_params,bytes,encoded lpc_coeffs to output
-			fwrite(&rice_param_ref,sizeof(uint8_t),1,outfile);
-			fwrite(&req_int_ref,sizeof(uint16_t),1,outfile);
-			fwrite(&opt_lpc_order,sizeof(uint8_t),1,outfile);
-			fwrite(encoded_ref,sizeof(uint32_t),req_int_ref,outfile);
+			written = fwrite(&rice_param_ref,sizeof(uint8_t),1,outfile);
+			written = fwrite(&req_int_ref,sizeof(uint16_t),1,outfile);
+			written = fwrite(&opt_lpc_order,sizeof(uint8_t),1,outfile);
+			written = fwrite(encoded_ref,sizeof(uint32_t),req_int_ref,outfile);
 
 			//Write rice_params,bytes,encoded residues to output
-			fwrite(&rice_param_residue,sizeof(uint8_t),1,outfile);
-			fwrite(&req_int_residues,sizeof(uint16_t),1,outfile);
-			fwrite(&samples_per_channel,sizeof(uint16_t),1,outfile);
-			fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,outfile);
+			written = fwrite(&rice_param_residue,sizeof(uint8_t),1,outfile);
+			written = fwrite(&req_int_residues,sizeof(uint16_t),1,outfile);
+			written = fwrite(&samples_per_channel,sizeof(uint16_t),1,outfile);
+			written = fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,outfile);
 		}
 	}
 
