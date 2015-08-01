@@ -64,9 +64,9 @@ int main(int argc,char **argv)
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
 
-	fread(&sample_rate,sizeof(int),1,infile);
-	fread(&bps,sizeof(short),1,infile);
-	fread(&channels,sizeof(unsigned char),1,infile);
+	fread(&sample_rate,sizeof(int32_t),1,infile);
+	fread(&bps,sizeof(int16_t),1,infile);
+	fread(&channels,sizeof(int8_t),1,infile);
 
 	fprintf(stderr,"Sample rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
@@ -89,7 +89,7 @@ int main(int argc,char **argv)
 			for(i = 0; i < channels; i++)
 			{
 				//Read channel number
-				fread(&curr_channel,sizeof(unsigned char),1,infile);
+				fread(&curr_channel,sizeof(uint8_t),1,infile);
 
 				//Read rice_param,lpc_order,encoded lpc_coeffs from input
 				fread(&rice_param_ref,sizeof(uint8_t),1,infile);
@@ -127,7 +127,7 @@ int main(int argc,char **argv)
 				for(int k = 0; k < samples_per_channel; k++)
 					buffer[channels * k + i] = (int16_t)rcv_samples[k];
 			}
-			size_t written = fwrite(buffer,sizeof(int16_t),(samples_per_channel * channels),outfile);
+			fwrite(buffer,sizeof(int16_t),(samples_per_channel * channels),outfile);
 			temp = 0;
 		}
 		else
