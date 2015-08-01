@@ -122,6 +122,9 @@ uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref)
 		}
 	}
 
+	if((order_est == 2) || (order_est == 3) || (order_est == 4))
+		order_est = 5;
+
 	return(order_est);
 }
 
