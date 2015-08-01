@@ -1,4 +1,4 @@
-CC = clang
+CC = gcc
 LINKFLAGS = -lm
 CFLAGS = -O3 -std=c99
 DEBUGFLAGS = -g -std=c99
