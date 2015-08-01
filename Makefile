@@ -20,6 +20,9 @@ selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o
 selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
 	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
 
+selaplay_debug: selaplay.c rice.c lpc.c packetqueue.c pulse_output.c
+	$(CC) -D__PULSE__ selaplay.c rice.c lpc.c packetqueue.c pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
+
 d_encoder: encode.c rice.c lpc.c wavutils.c
 	$(CC) encode.c rice.c lpc.c wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
 
