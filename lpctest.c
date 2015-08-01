@@ -112,7 +112,7 @@ int main(int argc,char **argv)
 
 			int64_t int_lpc[MAX_LPC_ORDER+1];
 			for(int32_t j = 0; j <= opt_lpc_order; j++)
-				int_lpc[j] =  (int64_t)corr * lpc[j];
+				int_lpc[j] =  corr * lpc[j];
 
 			int32_t residues[BLOCK_SIZE];
 			int32_t rcv_samples[BLOCK_SIZE];
