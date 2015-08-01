@@ -9,6 +9,7 @@ int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bit
 	int16_t fmt_type,bytes_by_capture;
 	int32_t file_size,bytes_per_sec,list_size,data_size;
 	int32_t fmt_length;
+	size_t read;
 	char riffmarker[4];
 	char wavemarker[4];
 	char formatmarker[4];
@@ -16,44 +17,44 @@ int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bit
 
 	fseek(fp,0,SEEK_SET);
 
-	fread(riffmarker,sizeof(char),4,fp);
+	read = fread(riffmarker,sizeof(char),4,fp);
 	if(strncmp(riffmarker,"RIFF",4))
 		return ERR_NO_RIFF_MARKER;
 
-	fread(&file_size,sizeof(int32_t),1,fp);
+	read = fread(&file_size,sizeof(int32_t),1,fp);
 
-	fread(wavemarker,sizeof(char),4,fp);
+	read = fread(wavemarker,sizeof(char),4,fp);
 	if(strncmp(wavemarker,"WAVE",4))
 		return ERR_NO_WAVE_MARKER;
 
 	//FORMAT chunk
-	fread(formatmarker,sizeof(char),4,fp);
+	read = fread(formatmarker,sizeof(char),4,fp);
 	if(strncmp(formatmarker,"fmt",3))
 		return ERR_NO_FMT_MARKER;
 
-	fread(&fmt_length,sizeof(int32_t),1,fp);
-	fread(&fmt_type,sizeof(int16_t),1,fp);
+	read = fread(&fmt_length,sizeof(int32_t),1,fp);
+	read = fread(&fmt_type,sizeof(int16_t),1,fp);
 	if(fmt_type != 1)
 		return ERR_NOT_A_PCM_FILE;
 	
-	fread(channels,sizeof(int16_t),1,fp);
-	fread(sample_rate,sizeof(int32_t),1,fp);
-	fread(&bytes_per_sec,sizeof(int32_t),1,fp);
-	fread(&bytes_by_capture,sizeof(int16_t),1,fp);
-	fread(bits_per_sample,sizeof(int16_t),1,fp);
+	read = fread(channels,sizeof(int16_t),1,fp);
+	read = fread(sample_rate,sizeof(int32_t),1,fp);
+	read = fread(&bytes_per_sec,sizeof(int32_t),1,fp);
+	read = fread(&bytes_by_capture,sizeof(int16_t),1,fp);
+	read = fread(bits_per_sample,sizeof(int16_t),1,fp);
 
 	//LIST/DATA chunk
-	fread(marker,sizeof(char),4,fp);
+	read = fread(marker,sizeof(char),4,fp);
 	if(strncmp(marker,"LIST",4) == 0)
 	{
-		fread(&list_size,sizeof(int32_t),1,fp);
+		read = fread(&list_size,sizeof(int32_t),1,fp);
 		fseek(fp,list_size,SEEK_CUR);//Skip list chunk
-		fread(marker,sizeof(char),4,fp);
+		read = fread(marker,sizeof(char),4,fp);
 		if(strncmp(marker,"data",4) == 0)
-			fread(&data_size,sizeof(int32_t),1,fp);
+			read = fread(&data_size,sizeof(int32_t),1,fp);
 	}
 	else
-		fread(&data_size,sizeof(int32_t),1,fp);
+		read = fread(&data_size,sizeof(int32_t),1,fp);
 
 	return READ_STATUS_OK;
 }
@@ -96,15 +97,15 @@ void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps
 void write_header(FILE *fp,wav_header *header)
 {
 	fseek(fp,0,SEEK_SET);
-	fwrite(header,sizeof(wav_header),1,fp);
+	size_t written = fwrite(header,sizeof(wav_header),1,fp);
 }
 
 void finalize_file(FILE *fp)
 {
 	size_t file_size = ftell(fp);
 	fseek(fp,4,SEEK_SET);
-	fwrite(&file_size,sizeof(int32_t),1,fp);
+	size_t written = fwrite(&file_size,sizeof(int32_t),1,fp);
 	fseek(fp,40,SEEK_SET);
 	size_t data_size = file_size - 44;
-	fwrite(&data_size,sizeof(int32_t),1,fp);
+	written = fwrite(&data_size,sizeof(int32_t),1,fp);
 }

@@ -26,6 +26,10 @@ int main(int argc,char **argv)
 	if(infile == NULL || outfile == NULL)
 	{
 		fprintf(stderr,"Error open input or output file.Exiting.......\n");
+		if(infile != NULL)
+			fclose(infile);
+		if(outfile != NULL)
+			fclose(outfile);
 		return -1;
 	}
 	else
@@ -41,22 +45,22 @@ int main(int argc,char **argv)
 	const char magic_number[4] = {'S','e','L','a'};
 	uint16_t req_int_ref,req_int_residues,samples_per_channel;
 	const int16_t Q = 35;
-	const int64_t corr = ((int64_t)1) << Q;
 	int32_t i,j,k = 0;
 	int32_t sample_rate,read_size;
 	const uint32_t frame_sync = 0xAA55FF00;
 	int32_t frame_sync_count = 0;
 	uint32_t req_bits_ref,req_bits_residues;
+	const int64_t corr = ((int64_t)1) << Q;
 
 	int16_t short_samples[BLOCK_SIZE];
 	int32_t qtz_ref_coeffs[MAX_LPC_ORDER];
 	int32_t int_samples[BLOCK_SIZE];
 	int32_t residues[BLOCK_SIZE];
+	int32_t spar[MAX_LPC_ORDER];
 	uint32_t unsigned_ref[MAX_LPC_ORDER];
 	uint32_t encoded_ref[MAX_LPC_ORDER];
 	uint32_t u_residues[BLOCK_SIZE];
 	uint32_t encoded_residues[BLOCK_SIZE];
-	int32_t spar[MAX_LPC_ORDER];
 	int64_t lpc[MAX_LPC_ORDER + 1];
 	size_t written;
 	double qtz_samples[BLOCK_SIZE];
@@ -73,15 +77,23 @@ int main(int argc,char **argv)
 			break;
 		case ERR_NO_RIFF_MARKER:
 			fprintf(stderr,"RIFF header not found. Exiting......\n");
+			fclose(infile);
+			fclose(outfile);
 			return -1;
 		case ERR_NO_WAVE_MARKER:
 			fprintf(stderr,"WAVE header not found. Exiting......\n");
+			fclose(infile);
+			fclose(outfile);
 			return -1;
 		case ERR_NO_FMT_MARKER:
 			fprintf(stderr,"No Format chunk found. Exiting......\n");
+			fclose(infile);
+			fclose(outfile);
 			return -1;
 		case ERR_NOT_A_PCM_FILE:
 			fprintf(stderr,"Not a PCM file. Exiting.....\n");
+			fclose(infile);
+			fclose(outfile);
 			return -1;
 		default:
 			fprintf(stderr,"Some error occured. Exiting.......\n");
