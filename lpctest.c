@@ -94,6 +94,8 @@ int main(int argc,char **argv)
 
 			double ref[MAX_LPC_ORDER];
 			uint8_t opt_lpc_order = compute_ref_coefs(autocorr,MAX_LPC_ORDER,ref);
+			if(opt_lpc_order <= 2)
+				fprintf(stderr,"low order : %d\n",opt_lpc_order);
 
 			//Qtz reflection
 			int32_t q_ref_coeffs[MAX_LPC_ORDER];

@@ -65,7 +65,7 @@ int main(int argc,char **argv)
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
 
 	//Check the wav file
-	int is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
+	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
 	switch(is_wav)
 	{
 		case READ_STATUS_OK:
@@ -128,9 +128,6 @@ int main(int argc,char **argv)
 			//Separate channels
 			for(j = 0; j < samples_per_channel; j++)
 				short_samples[j] = buffer[channels * j + i];
-
-			//Check if constant block
-			int32_t i = check_if_constant(short_samples,samples_per_channel);
 			
 			//Quantize sample data
 			for(j = 0; j < samples_per_channel; j++)
@@ -164,7 +161,7 @@ int main(int argc,char **argv)
 			levinson(NULL,opt_lpc_order,ref,lpc_mat);
 			lpc[0] = 0;
 			for(j = 0; j < opt_lpc_order; j++)
-				lpc[j+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][j]);
+				lpc[j+1] = corr * lpc_mat[opt_lpc_order - 1][j];
 
 			//Copy samples
 			for(j = 0; j < samples_per_channel; j++)

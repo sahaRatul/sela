@@ -115,15 +115,12 @@ uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref)
 	order_est = 1;
 	for(i = max_order - 1; i >= 0; i--)
 	{
-		if(fabs(ref[i]) > 0.10)
+		if(fabs(ref[i]) > 0.05)
 		{
 			order_est = i+1;
 			break;
 		}
 	}
-
-	if((order_est == 2) || (order_est == 3) || (order_est == 4))
-		order_est = 5;
 
 	return(order_est);
 }

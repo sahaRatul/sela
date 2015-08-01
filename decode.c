@@ -76,7 +76,7 @@ int main(int argc,char **argv)
 	initialize_header(&hdr,channels,sample_rate,bps);
 	write_header(outfile,&hdr);
 
-	int16_t *buffer = (int16_t *)malloc(sizeof(int16_t) * BLOCK_SIZE * channels);
+	int16_t *buffer = (int16_t *)calloc((BLOCK_SIZE * channels),sizeof(int16_t));
 
 	//Main loop
 	while(feof(infile) == 0)
@@ -127,7 +127,7 @@ int main(int argc,char **argv)
 				for(int k = 0; k < samples_per_channel; k++)
 					buffer[channels * k + i] = (int16_t)rcv_samples[k];
 			}
-			size_t written = fwrite(buffer,sizeof(int16_t),(size_t)(samples_per_channel * channels),outfile);
+			size_t written = fwrite(buffer,sizeof(int16_t),(samples_per_channel * channels),outfile);
 			temp = 0;
 		}
 		else
