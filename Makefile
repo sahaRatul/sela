@@ -35,6 +35,9 @@ ricetest: ricetest.c rice.c
 lpctest: lpctest.c lpc.c
 	$(CC) -o lpctest lpctest.c lpc.c $(CFLAGS) $(LINKFLAGS)
 
+wavdiff: wavdiff.o wavutils.o
+	$(CC) -o wavdiff wavdiff.o wavutils.o
+
 rice.o: rice.c rice.h
 	$(CC) -c rice.c $(CFLAGS)
 
@@ -64,3 +67,6 @@ encode.o: encode.c
 
 decode.o: decode.c
 	$(CC) -c decode.c $(CFLAGS)
+
+wavdiff.o: wavdiff.c
+	$(CC) -c wavdiff.c $(CFLAGS)
