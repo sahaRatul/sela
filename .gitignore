@@ -7,10 +7,7 @@ lpctest
 selaplay
 encode
 decode
+wavdiff
 *.out
-a.exe
-ricetest.exe
-lpctest.exe
-selaplay.exe
-encode.exe
-decode.exe
+*.exe
+*.dll
