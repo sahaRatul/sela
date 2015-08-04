@@ -7,7 +7,6 @@
 
 int main(int argc,char **argv)
 {
-
 	if(argc < 3)
 	{
 		fprintf(stderr,"This program generates a wav file based on the difference between two wav files\n");
