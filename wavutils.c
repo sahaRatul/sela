@@ -103,8 +103,9 @@ void write_header(FILE *fp,wav_header *header)
 void finalize_file(FILE *fp)
 {
 	size_t file_size = ftell(fp);
+	size_t riff_data_size = file_size - 8;
 	fseek(fp,4,SEEK_SET);
-	size_t written = fwrite(&file_size,sizeof(int32_t),1,fp);
+	size_t written = fwrite(&riff_data_size,sizeof(int32_t),1,fp);
 	fseek(fp,40,SEEK_SET);
 	size_t data_size = file_size - 44;
 	written = fwrite(&data_size,sizeof(int32_t),1,fp);
