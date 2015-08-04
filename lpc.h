@@ -2,7 +2,7 @@
 #define _LPC_H_
 
 #define SQRT2 1.4142135623730950488016887242096
-#define MAX_LPC_ORDER 60
+#define MAX_LPC_ORDER 100
 
 int32_t check_if_constant(const int16_t *data,int32_t num_elements);
 void acf(double *x,int32_t N,int64_t k,int16_t norm,double *rxx);
