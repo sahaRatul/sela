@@ -133,7 +133,6 @@ int main(int argc,char **argv)
 
 		//Write frame syncword
 		written = fwrite(&frame_sync,sizeof(int32_t),1,outfile);
-		fprintf(stderr,"Frames written %d\r",++frame_sync_count);
 
 		for(i = 0; i < channels; i++)
 		{

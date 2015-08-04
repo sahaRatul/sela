@@ -91,7 +91,6 @@ int main(int argc,char **argv)
 
 		if(temp == frame_sync)
 		{
-			fprintf(stderr,"Frames Read %d\r",++frame_sync_count);
 			for(i = 0; i < channels; i++)
 			{
 				//Read channel number
