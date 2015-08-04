@@ -35,8 +35,8 @@ Note : On Windows you will need cygwin to build the command line player. Otherwi
 - Golomb-Rice lossless compression algorithm
   - [Wikipedia](https://en.wikipedia.org/wiki/Golomb_coding)
   - [Here is an implementation](http://michael.dipperstein.com/rice/index.html)
-- [Paper on shorten, the original open source lossless codec](ftp://svr-ftp.eng.cam.ac.uk/pub/reports/robinson_tr156.ps.Z)
 - [FLAC overview](https://xiph.org/flac/documentation_format_overview.html)
+- [Paper on shorten, the original open source lossless codec](ftp://svr-ftp.eng.cam.ac.uk/pub/reports/robinson_tr156.ps.Z)
 - ISO/IEC 14496 Part 3, Subpart 11 (Audio Lossless Coding)
 
 ###License : MIT License
