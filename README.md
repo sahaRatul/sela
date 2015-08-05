@@ -25,7 +25,7 @@ Note : On Windows you will need cygwin to build the command line player. Otherwi
 - cd to the directory
 - type ```make all``` to build the encoder & decoder
 - type ```make selaplay_ao``` or ```make selaplay_pulse``` to build the player using either libao/pulseaudio libraries
-- type ```make lpctest``` && make ricetest``` to build the tests
+- type ```make lpctest && make ricetest``` to build the tests
 - type ```make wavdiff``` to build the diff utility for .wav files
 
 ###References
