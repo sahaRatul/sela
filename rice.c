@@ -4,7 +4,11 @@
 
 #include "rice.h"
 
-/*signed data to unsigned data*/
+/*
+*Golomb-Rice algorithm is optimized to work with unsigned numbers
+*This function maps all positive numbers to even postive numbers
+*and negative numbers to odd positive numbers
+*/
 int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_t *output)
 {
 	for(uint32_t i = 0; i < data_size; i++)
@@ -12,7 +16,11 @@ int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_
 	return(0);
 }
 
-/*unsigned data to signed data*/
+/*
+*This function does exactly the reverse of the above function
+*Maps all odd integers to neagtive numbers
+*and even integers to positive numbers
+*/
 int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output)
 {
 	for(uint32_t i = 0; i < data_size; i++)
@@ -33,7 +41,7 @@ uint16_t get_opt_rice_param(const uint32_t *data,int32_t data_size,uint32_t *req
 		temp = 0;
 		for(j = 0; j < data_size; j++)
 		{
-			/*data[j]/2^k;*/
+			//data[j]/2^k;
 			temp += data[j] >> i;
 			temp += 1;
 			temp += i;
@@ -58,7 +66,11 @@ uint16_t get_opt_rice_param(const uint32_t *data,int32_t data_size,uint32_t *req
 	return best_index;
 }
 
-/*Encode a block of data using Golomb-Rice coding*/
+/*
+*Encode a block of data using Golomb-Rice coding
+*For more details visit
+*http://michael.dipperstein.com/rice/index.html
+*/
 uint32_t rice_encode_block(int16_t param,const uint32_t *input,int32_t size,uint32_t *encoded)
 {
 	int32_t i,j,temp,written = 0;
