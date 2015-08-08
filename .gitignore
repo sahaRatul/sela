@@ -11,3 +11,5 @@ wavdiff
 *.out
 *.exe
 *.dll
+*.orig
+*.swp
