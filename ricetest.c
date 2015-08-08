@@ -13,7 +13,7 @@ int main(int argc,char **argv)
 	size_t read;
 	uint32_t bits = 1,num_elements = 1;
 
-	int32_t buffer[10] = {200,234,134,156,323,456,234,100,138,334};
+	int32_t buffer[10] = {200,234,134,156,323,456,234,100,138,334 };
 	uint32_t p_buffer[10];
 
 	for(i = 0; i < 10; i++)

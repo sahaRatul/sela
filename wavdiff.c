@@ -21,7 +21,7 @@ int main(int argc,char **argv)
 		fprintf(stderr,"Error while opening 1st input file\n");
 		return -1;
 	}
-		
+
 	FILE *infile2 = fopen(argv[2],"rb");
 	if(infile2 == NULL)
 	{

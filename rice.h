@@ -8,14 +8,14 @@ typedef struct rice_encode_context
 	uint32_t buffer;
 	uint32_t filled;
 	uint32_t bits;
-}rice_encode_context;
+} rice_encode_context;
 
 typedef struct rice_decode_context
 {
 	uint32_t buffer;
 	uint32_t filled;
 	uint32_t bytes;
-}rice_decode_context;
+} rice_decode_context;
 
 int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_t *output);
 int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output);

@@ -181,7 +181,7 @@ uint32_t rice_decode_block(int16_t param,const uint32_t *encoded,int32_t count,u
 			ctx->filled--;
 			decoded[k] = decoded[k] | (tmp << j);
 		}
-		
+
 		k++;
 	}
 

@@ -36,7 +36,7 @@ int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bit
 	read = fread(&fmt_type,sizeof(int16_t),1,fp);
 	if(fmt_type != 1)
 		return ERR_NOT_A_PCM_FILE;
-	
+
 	read = fread(channels,sizeof(int16_t),1,fp);
 	read = fread(sample_rate,sizeof(int32_t),1,fp);
 	read = fread(&bytes_per_sec,sizeof(int32_t),1,fp);
@@ -65,19 +65,19 @@ void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps
 	hdr->riffmarker[1] = 'I';
 	hdr->riffmarker[2] = 'F';
 	hdr->riffmarker[3] = 'F';
-	
+
 	hdr->filesize = 0;
-	
+
 	hdr->wavemarker[0] = 'W';
 	hdr->wavemarker[1] = 'A';
 	hdr->wavemarker[2] = 'V';
 	hdr->wavemarker[3] = 'E';
-	
+
 	hdr->format_tag[0] = 'f';
 	hdr->format_tag[1] = 'm';
 	hdr->format_tag[2] = 't';
 	hdr->format_tag[3] = ' ';
-	
+
 	hdr->format_length = 16;
 	hdr->format_type = 1;
 	hdr->num_channels = (int16_t)channels;
@@ -85,12 +85,12 @@ void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps
 	hdr->bytes_per_sec = (rate * bps * channels)/8;
 	hdr->bytes_by_capture = (bps * channels)/8;
 	hdr->bits_per_sample = bps;
-	
+
 	hdr->data_header[0] = 'd';
 	hdr->data_header[1] = 'a';
 	hdr->data_header[2] = 't';
 	hdr->data_header[3] = 'a';
-	
+
 	hdr->data_size=0;
 }
 

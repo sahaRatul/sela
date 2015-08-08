@@ -18,15 +18,15 @@ typedef struct wav_header
 	int16_t bits_per_sample;
 	char data_header[4];
 	int32_t data_size;
-}wav_header;
+} wav_header;
 
 enum wav_error
 {
-	ERR_NO_RIFF_MARKER,
-	ERR_NO_WAVE_MARKER,
-	ERR_NO_FMT_MARKER,
-	ERR_NOT_A_PCM_FILE,
-	READ_STATUS_OK
+    ERR_NO_RIFF_MARKER,
+    ERR_NO_WAVE_MARKER,
+    ERR_NO_FMT_MARKER,
+    ERR_NOT_A_PCM_FILE,
+    READ_STATUS_OK
 };
 
 int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bits_per_sample);

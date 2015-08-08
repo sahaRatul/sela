@@ -11,7 +11,7 @@ typedef struct PacketNode
 	char *packet;
 	int16_t packet_size;
 	struct PacketNode *next;
-}PacketNode;
+} PacketNode;
 
 typedef struct PacketList
 {
@@ -21,7 +21,7 @@ typedef struct PacketList
 	int32_t total_packets_count;
 	pthread_cond_t cond;
 	pthread_mutex_t mutex;
-}PacketList;
+} PacketList;
 
 void PacketQueueInit(PacketList *list);
 void PacketQueueDestroy(PacketList *list);

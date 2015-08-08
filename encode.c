@@ -16,7 +16,7 @@ int main(int argc,char **argv)
 	if(argc < 3)
 	{
 		fprintf(stderr,"Usage : %s <input.wav> <output.sela>\n",argv[0]);
-		fprintf(stderr,"Supports CD quality (16 bits/sample) WAVEform audio(*.wav) files only.\n");
+		fprintf(stderr,"Supports Redbook CD quality (16 bits/sample) WAVEform audio(*.wav) files only.\n");
 		return -1;
 	}
 
@@ -38,11 +38,11 @@ int main(int argc,char **argv)
 		fprintf(stderr,"Output : %s\n",argv[2]);
 	}
 
-	//Variables and arrays
+	//Variables
 	uint8_t opt_lpc_order = 0;
 	int16_t channels,bps;
 	uint8_t rice_param_ref,rice_param_residue;
-	const char magic_number[4] = {'S','e','L','a'};
+	const char magic_number[4] = {'S','e','L','a' };
 	uint16_t req_int_ref,req_int_residues,samples_per_channel;
 	const int16_t Q = 35;
 	int32_t i,j,k = 0;
@@ -52,6 +52,7 @@ int main(int argc,char **argv)
 	uint32_t req_bits_ref,req_bits_residues;
 	const int64_t corr = ((int64_t)1) << Q;
 
+	//Arrays
 	int16_t short_samples[BLOCK_SIZE];
 	int32_t qtz_ref_coeffs[MAX_LPC_ORDER];
 	int32_t int_samples[BLOCK_SIZE];
@@ -72,37 +73,37 @@ int main(int argc,char **argv)
 	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps);
 	switch(is_wav)
 	{
-		case READ_STATUS_OK:
-			fprintf(stderr,"WAV file detected.\n");
-			break;
-		case ERR_NO_RIFF_MARKER:
-			fprintf(stderr,"RIFF header not found. Exiting......\n");
-			fclose(infile);
-			fclose(outfile);
-			return -1;
-		case ERR_NO_WAVE_MARKER:
-			fprintf(stderr,"WAVE header not found. Exiting......\n");
-			fclose(infile);
-			fclose(outfile);
-			return -1;
-		case ERR_NO_FMT_MARKER:
-			fprintf(stderr,"No Format chunk found. Exiting......\n");
-			fclose(infile);
-			fclose(outfile);
-			return -1;
-		case ERR_NOT_A_PCM_FILE:
-			fprintf(stderr,"Not a PCM file. Exiting.....\n");
-			fclose(infile);
-			fclose(outfile);
-			return -1;
-		default:
-			fprintf(stderr,"Some error occured. Exiting.......\n");
-			return -1;
+	case READ_STATUS_OK:
+		fprintf(stderr,"WAV file detected.\n");
+		break;
+	case ERR_NO_RIFF_MARKER:
+		fprintf(stderr,"RIFF header not found. Exiting......\n");
+		fclose(infile);
+		fclose(outfile);
+		return -1;
+	case ERR_NO_WAVE_MARKER:
+		fprintf(stderr,"WAVE header not found. Exiting......\n");
+		fclose(infile);
+		fclose(outfile);
+		return -1;
+	case ERR_NO_FMT_MARKER:
+		fprintf(stderr,"No Format chunk found. Exiting......\n");
+		fclose(infile);
+		fclose(outfile);
+		return -1;
+	case ERR_NOT_A_PCM_FILE:
+		fprintf(stderr,"Not a PCM file. Exiting.....\n");
+		fclose(infile);
+		fclose(outfile);
+		return -1;
+	default:
+		fprintf(stderr,"Some error occured. Exiting.......\n");
+		return -1;
 	}
 
 	if(bps != 16)
 	{
-		fprintf(stderr,"Supports only 16 bits/sample WAVE files. Exiting.......\n");
+		fprintf(stderr,"Supports only 16 bits/sample WAVEform audio files. Exiting.......\n");
 		return -1;
 	}
 
@@ -141,13 +142,13 @@ int main(int argc,char **argv)
 			//Separate channels
 			for(j = 0; j < samples_per_channel; j++)
 				short_samples[j] = buffer[channels * j + i];
-			
+
 			//Quantize sample data
 			for(j = 0; j < samples_per_channel; j++)
 				qtz_samples[j] = ((double)short_samples[j])/SHORT_MAX;
 
 			//Calculate autocorrelation data
-			acf(qtz_samples,samples_per_channel,MAX_LPC_ORDER,1,autocorr);
+			auto_corr_fun(qtz_samples,samples_per_channel,MAX_LPC_ORDER,1,autocorr);
 
 			//Calculate reflection coefficients
 			opt_lpc_order = compute_ref_coefs(autocorr,MAX_LPC_ORDER,ref);

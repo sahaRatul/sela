@@ -26,11 +26,11 @@ void PacketQueueDestroy(PacketList *list)
 void PacketQueuePut(PacketList *list,PacketNode *packet)
 {
 	pthread_mutex_lock(&list->mutex);
-	
+
 	//Lock when number of packets reaches 200
 	while(list->num_packets == MAX_PACKET_COUNT)
 		pthread_cond_wait(&list->cond,&list->mutex);
-	
+
 	if(list->num_packets == 0)
 	{
 		list->first = packet;
@@ -44,7 +44,7 @@ void PacketQueuePut(PacketList *list,PacketNode *packet)
 		list->last = list->last->next;
 		list->num_packets += 1;
 	}
-	
+
 	list->total_packets_count += 1;
 	pthread_mutex_unlock(&list->mutex);
 }
@@ -56,11 +56,11 @@ PacketNode *PacketQueueGet(PacketList *list)
 	packet = list->first;
 	list->first = list->first->next;
 	list->num_packets -= 1;
-	
+
 	//Unlock PacketQueuePut if number of packets is <= MIN_PACKET_COUNT
 	if(list->num_packets <= MIN_PACKET_COUNT)
 		pthread_cond_signal(&list->cond);
-	
+
 	pthread_mutex_unlock(&list->mutex);
 	fprintf(stderr,"%3d Packets in queue.\r",list->num_packets);
 	return packet;

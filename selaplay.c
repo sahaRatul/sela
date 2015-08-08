@@ -8,9 +8,9 @@
 #include "lpc.h"
 #include "format.h"
 #ifdef __PULSE__
-	#include "pulse_output.h"
+#include "pulse_output.h"
 #elif __AO__
-	#include "ao_output.h"
+#include "ao_output.h"
 #endif
 #include "packetqueue.h"
 
@@ -43,11 +43,11 @@ int main(int argc,char **argv)
 	else
 	{
 		fprintf(stderr,"Input : %s\n",argv[1]);
-		#ifdef __PULSE__
-			fprintf(stderr,"Using pulseaudio output\n");
-		#elif __AO__
-			fprintf(stderr,"Using Xiph.org libao output\n");
-		#endif
+#ifdef __PULSE__
+		fprintf(stderr,"Using pulseaudio output\n");
+#elif __AO__
+		fprintf(stderr,"Using Xiph.org libao output\n");
+#endif
 	}
 
 	//Variables and arrays
@@ -86,14 +86,14 @@ int main(int argc,char **argv)
 	fmt.sample_rate = sample_rate;
 	fmt.num_channels = channels;
 	fmt.bits_per_sample = bps;
-	
-	#ifdef __PULSE__
-		initialize_pulse(&fmt);
-	#elif __AO__
-		initialize_ao();
-		set_ao_format(&fmt);
-	#endif
-	
+
+#ifdef __PULSE__
+	initialize_pulse(&fmt);
+#elif __AO__
+	initialize_ao();
+	set_ao_format(&fmt);
+#endif
+
 	PacketQueueInit(&list);
 
 	//Start playback thread
@@ -159,13 +159,13 @@ int main(int argc,char **argv)
 			break;
 	}
 	pthread_join(play_thread,NULL);
-	
-	#ifdef __PULSE__
-		destroy_pulse();
-	#elif __AO__
-		destroy_ao();
-	#endif
-	
+
+#ifdef __PULSE__
+	destroy_pulse();
+#elif __AO__
+	destroy_ao();
+#endif
+
 	fclose(infile);
 	return 0;
 }
@@ -173,12 +173,12 @@ int main(int argc,char **argv)
 void *playback_func(void *arg)
 {
 	PacketList *list=(PacketList *)arg;
-	
-	#ifdef __PULSE__
-		pulse_play(list);
-	#elif __AO__
-		play_ao(list);
-	#endif
-	
+
+#ifdef __PULSE__
+	pulse_play(list);
+#elif __AO__
+	play_ao(list);
+#endif
+
 	return NULL;
 }

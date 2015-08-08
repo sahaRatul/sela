@@ -25,7 +25,7 @@ int destroy_ao()
 }
 
 int set_ao_format(audio_format *format)
-{	
+{
 	ao_format->bits = format->bits_per_sample;
 	ao_format->rate = format->sample_rate;
 	ao_format->channels = format->num_channels;
@@ -48,7 +48,7 @@ void *play_ao(PacketList *list)
 		//fprintf(stderr,"%3d Packets in queue.\r",list->num_packets);
 		if(node==NULL)
 			break;
-		
+
 		//Clean up packets after playing
 		free(node->packet);
 		node->packet = NULL;
