@@ -20,6 +20,9 @@ selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o
 selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
 	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
 
+##selaplay_port: port_selaplay.o rice.o lpc.o packetqueue.o portaudio_output.o
+##	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o portaudio_output.o -lm -lpthread -lportaudio
+
 selaplay_debug: selaplay.c rice.c lpc.c packetqueue.c pulse_output.c
 	$(CC) -D__PULSE__ selaplay.c rice.c lpc.c packetqueue.c pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
 
@@ -53,11 +56,17 @@ pulse_output.o: pulse_output.c pulse_output.h
 ao_output.o: ao_output.c ao_output.h
 	$(CC) -c ao_output.c $(CFLAGS)
 
+##portaudio_output.o: portaudio_output.c portaudio_output.h
+##	$(CC) -c portaudio_output.c $(CFLAGS)
+
 p_selaplay.o: selaplay.c
 	$(CC) -c selaplay.c -D__PULSE__ $(CFLAGS)
 	
 a_selaplay.o: selaplay.c
 	$(CC) -c selaplay.c -D__AO__ $(CFLAGS)
+
+##port_selaplay.o: selaplay.c
+##	$(CC) -c selaplay.c -D__PORTAUDIO__ $(CFLAGS)
 
 wavutils.o: wavutils.c wavutils.h
 	$(CC) -c wavutils.c $(CFLAGS)
