@@ -18,7 +18,7 @@ int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_
 
 /*
 *This function does exactly the reverse of the above function
-*Maps all odd integers to neagtive numbers
+*Maps all odd integers to negative numbers
 *and even integers to positive numbers
 */
 int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output)
