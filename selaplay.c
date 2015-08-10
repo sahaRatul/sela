@@ -1,18 +1,21 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <pthread.h>
-#include <stdint.h>
 
 #include "rice.h"
 #include "lpc.h"
 #include "format.h"
-#ifdef __PULSE__
-#include "pulse_output.h"
-#elif __AO__
-#include "ao_output.h"
-#endif
 #include "packetqueue.h"
+
+#ifdef __PULSE__
+	#include "pulse_output.h"
+#elif __AO__
+	#include "ao_output.h"
+#elif __PORTAUDIO__
+	#include "portaudio_output.h"
+#endif
 
 #define BLOCK_SIZE 2048
 
@@ -43,11 +46,13 @@ int main(int argc,char **argv)
 	else
 	{
 		fprintf(stderr,"Input : %s\n",argv[1]);
-#ifdef __PULSE__
-		fprintf(stderr,"Using pulseaudio output\n");
-#elif __AO__
-		fprintf(stderr,"Using Xiph.org libao output\n");
-#endif
+		#ifdef __PULSE__
+			fprintf(stderr,"Using pulseaudio output\n");
+		#elif __AO__
+			fprintf(stderr,"Using Xiph.org libao output\n");
+		#elif __PORTAUDIO__
+			fprintf(stderr,"Using PortAudio output\n");
+		#endif
 	}
 
 	//Variables and arrays
@@ -87,12 +92,15 @@ int main(int argc,char **argv)
 	fmt.num_channels = channels;
 	fmt.bits_per_sample = bps;
 
-#ifdef __PULSE__
-	initialize_pulse(&fmt);
-#elif __AO__
-	initialize_ao();
-	set_ao_format(&fmt);
-#endif
+	#ifdef __PULSE__
+		initialize_pulse(&fmt);
+	#elif __AO__
+		initialize_ao();
+		set_ao_format(&fmt);
+	#elif __PORTAUDIO__
+		initialize_portaudio(&list);
+		set_portaudio_format(&fmt);
+	#endif
 
 	PacketQueueInit(&list);
 
@@ -160,11 +168,13 @@ int main(int argc,char **argv)
 	}
 	pthread_join(play_thread,NULL);
 
-#ifdef __PULSE__
-	destroy_pulse();
-#elif __AO__
-	destroy_ao();
-#endif
+	#ifdef __PULSE__
+		destroy_pulse();
+	#elif __AO__
+		destroy_ao();
+	#elif __PORTAUDIO__
+		destroy_portaudio();
+	#endif
 
 	fclose(infile);
 	return 0;
@@ -174,11 +184,13 @@ void *playback_func(void *arg)
 {
 	PacketList *list=(PacketList *)arg;
 
-#ifdef __PULSE__
-	pulse_play(list);
-#elif __AO__
-	play_ao(list);
-#endif
+	#ifdef __PULSE__
+		pulse_play(list);
+	#elif __AO__
+		play_ao(list);
+	#elif __PORTAUDIO__
+		portaudio_play();
+	#endif
 
 	return NULL;
 }
