@@ -1,7 +1,6 @@
-#include <pthread.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
@@ -11,6 +10,7 @@
 static pa_simple *handle = NULL;
 static pa_sample_spec audio_spec;
 static int32_t error;
+static int8_t silence[1024];
 
 int32_t initialize_pulse(audio_format *format)
 {
@@ -20,13 +20,19 @@ int32_t initialize_pulse(audio_format *format)
 	audio_spec.channels = format->num_channels;
 
 	handle = pa_simple_new(NULL,NULL, PA_STREAM_PLAYBACK,NULL,"playback",&audio_spec,NULL,NULL,&error);
+	for(uint32_t i = 0; i < 1024; i++)
+		silence[i] = 0;
+
 	return 0;
 }
 
 void *pulse_play(PacketList *list)
 {
 	while(list->num_packets < 50)
-		fprintf(stderr,"In loop.\r");
+	{
+		if((pa_simple_write(handle,silence,1024,&error)) < 0) //Play silence
+			break;
+	}
 
 	do
 	{
