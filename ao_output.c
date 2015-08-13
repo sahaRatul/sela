@@ -1,4 +1,6 @@
-#include <pthread.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <ao/ao.h>
 
 #include "packetqueue.h"
@@ -6,17 +8,22 @@
 
 static ao_sample_format *ao_format;
 static ao_device *dev;
-static int driver;
+static int32_t driver;
+static int8_t silence[1024];
 
-int initialize_ao()
+int32_t initialize_ao()
 {
 	ao_initialize();
 	driver = ao_default_driver_id();
 	ao_format = (ao_sample_format *)malloc(sizeof(ao_sample_format));
+
+	for(uint32_t i = 0; i < 1024; i++)
+		silence[i] = 0;
+
 	return 0;
 }
 
-int destroy_ao()
+int32_t destroy_ao()
 {
 	ao_close(dev);
 	free(ao_format);
@@ -24,7 +31,7 @@ int destroy_ao()
 	return 0;
 }
 
-int set_ao_format(audio_format *format)
+int32_t set_ao_format(audio_format *format)
 {
 	ao_format->bits = format->bits_per_sample;
 	ao_format->rate = format->sample_rate;
@@ -37,16 +44,16 @@ int set_ao_format(audio_format *format)
 
 void *play_ao(PacketList *list)
 {
-	//Wait until there are 50 packets in queue
+	//Play silence until there are 50 packets in queue
 	while(list->num_packets < 50)
-		fprintf(stderr,"In loop.\r");
+		ao_play(dev,silence,1024);
 
 	do
 	{
-		PacketNode *node=PacketQueueGet(list);
+		PacketNode *node = PacketQueueGet(list);
 		ao_play(dev,node->packet,node->packet_size);
-		//fprintf(stderr,"%3d Packets in queue.\r",list->num_packets);
-		if(node==NULL)
+
+		if(node == NULL)
 			break;
 
 		//Clean up packets after playing
