@@ -4,9 +4,9 @@
 #include "packetqueue.h"
 #include "format.h"
 
-int initialize_ao();
-int destroy_ao();
-int set_ao_format(audio_format *format);
+int32_t initialize_ao();
+int32_t destroy_ao();
+int32_t set_ao_format(audio_format *format);
 void *play_ao(PacketList *list);
 
 #endif
