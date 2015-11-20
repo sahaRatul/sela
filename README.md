@@ -7,12 +7,12 @@ A simplified lossless audio codec written for my ongoing project.
 ![Decoder](https://cloud.githubusercontent.com/assets/12273725/8868418/cbb6a1dc-31f5-11e5-91f6-8290766baa34.png)
 
 ###Main Components
-- Linear prediction filter (lpc.c)
-- Golomb-Rice compressor and decompressor (rice.c)
-- Encoder (encoder.c)
-- Decoder (decoder.c)
-- Command line player (selaplay.c)
-- Matlab implementation of Linear prediction filter can be found in 'matlab-tests' folder
+- Linear prediction filter (core/lpc.c)
+- Golomb-Rice compressor and decompressor (core/rice.c)
+- Encoder (core/encoder.c)
+- Decoder (core/decoder.c)
+- Command line player (player/selaplay.c)
+- Matlab implementation of Linear prediction filter can be found in 'tests/matlab-tests' folder
 
 ###Build requirements
 - gcc (You can use clang if you modify the ```CC``` variable in the Makefile)
