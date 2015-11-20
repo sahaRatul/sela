@@ -1,5 +1,6 @@
 CC = gcc
 LINKFLAGS = -lm
+INCDIR = -I include/
 CFLAGS = -O3 -std=c99
 DEBUGFLAGS = -g -std=c99
 
@@ -9,73 +10,64 @@ clean:
 	rm -v *.o
 
 encoder: encode.o rice.o lpc.o wavutils.o
-	$(CC) encode.o rice.o lpc.o wavutils.o -o encode $(LINKFLAGS)
+	$(CC) $(INCDIR) encode.o rice.o lpc.o wavutils.o -o encode $(LINKFLAGS)
 
 decoder: decode.o rice.o lpc.o wavutils.o
-	$(CC) decode.o rice.o lpc.o wavutils.o -o decode $(LINKFLAGS)
+	$(CC) $(INCDIR) decode.o rice.o lpc.o wavutils.o -o decode $(LINKFLAGS)
 
 selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o
-	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o pulse_output.o -lm -lpthread -lpulse-simple -lpulse
+	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o pulse_output.o -lm -lpthread -lpulse-simple -lpulse
 	
 selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
-	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
+	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
 
-##selaplay_port: port_selaplay.o rice.o lpc.o packetqueue.o portaudio_output.o
-##	$(CC) -o selaplay selaplay.o rice.o lpc.o packetqueue.o portaudio_output.o -lm -lpthread -lportaudio
+selaplay_debug: player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c
+	$(CC) $(INCDIR) -D__PULSE__ player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
 
-selaplay_debug: selaplay.c rice.c lpc.c packetqueue.c pulse_output.c
-	$(CC) -D__PULSE__ selaplay.c rice.c lpc.c packetqueue.c pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
+d_encoder: core/encode.c core/rice.c core/lpc.c core/wavutils.c
+	$(CC) $(INCDIR) core/encode.c core/rice.c core/lpc.c core/wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
 
-d_encoder: encode.c rice.c lpc.c wavutils.c
-	$(CC) encode.c rice.c lpc.c wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_decoder: core/decode.c core/rice.c core/lpc.c core/wavutils.c
+	$(CC) $(INCDIR) core/decode.c core/rice.c core/lpc.c core/wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
 
-d_decoder: decode.c rice.c lpc.c wavutils.c
-	$(CC) decode.c rice.c lpc.c wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
+ricetest: tests/ricetest.c core/rice.c
+	$(CC) $(INCDIR) -o ricetest tests/ricetest.c core/rice.c $(CFLAGS) $(LINKFLAGS)
 
-ricetest: ricetest.c rice.c
-	$(CC) -o ricetest ricetest.c rice.c $(CFLAGS) $(LINKFLAGS)
-
-lpctest: lpctest.c lpc.c
-	$(CC) -o lpctest lpctest.c lpc.c $(CFLAGS) $(LINKFLAGS)
+lpctest: tests/lpctest.c core/lpc.c
+	$(CC) $(INCDIR) -o lpctest tests/lpctest.c core/lpc.c $(CFLAGS) $(LINKFLAGS)
 
 wavdiff: wavdiff.o wavutils.o
-	$(CC) -o wavdiff wavdiff.o wavutils.o
+	$(CC) $(INCDIR) -o wavdiff wavdiff.o wavutils.o
 
-rice.o: rice.c rice.h
-	$(CC) -c rice.c $(CFLAGS)
+rice.o: core/rice.c
+	$(CC) $(INCDIR) -c core/rice.c $(CFLAGS)
 
-lpc.o: lpc.c lpc.h
-	$(CC) -c lpc.c $(CFLAGS)
+lpc.o: core/lpc.c
+	$(CC) $(INCDIR) -c core/lpc.c $(CFLAGS)
 
-packetqueue.o: packetqueue.c packetqueue.h
-	$(CC) -c packetqueue.c $(CFLAGS)
+packetqueue.o: player/packetqueue.c
+	$(CC) $(INCDIR) -c player/packetqueue.c $(CFLAGS)
 
-pulse_output.o: pulse_output.c pulse_output.h
-	$(CC) -c pulse_output.c $(CFLAGS)
+pulse_output.o: player/pulse_output.c
+	$(CC) $(INCDIR) -c player/pulse_output.c $(CFLAGS)
 	
-ao_output.o: ao_output.c ao_output.h
-	$(CC) -c ao_output.c $(CFLAGS)
+ao_output.o: player/ao_output.c
+	$(CC) $(INCDIR) -c player/ao_output.c $(CFLAGS)
 
-##portaudio_output.o: portaudio_output.c portaudio_output.h
-##	$(CC) -c portaudio_output.c $(CFLAGS)
-
-p_selaplay.o: selaplay.c
-	$(CC) -c selaplay.c -D__PULSE__ $(CFLAGS)
+p_selaplay.o: player/selaplay.c
+	$(CC) $(INCDIR) -c player/selaplay.c -D__PULSE__ $(CFLAGS)
 	
-a_selaplay.o: selaplay.c
-	$(CC) -c selaplay.c -D__AO__ $(CFLAGS)
+a_selaplay.o: player/selaplay.c
+	$(CC) $(INCDIR) -c player/selaplay.c -D__AO__ $(CFLAGS)
 
-##port_selaplay.o: selaplay.c
-##	$(CC) -c selaplay.c -D__PORTAUDIO__ $(CFLAGS)
+wavutils.o: core/wavutils.c
+	$(CC) $(INCDIR) -c core/wavutils.c $(CFLAGS)
 
-wavutils.o: wavutils.c wavutils.h
-	$(CC) -c wavutils.c $(CFLAGS)
+encode.o: core/encode.c
+	$(CC) $(INCDIR) -c core/encode.c $(CFLAGS)
 
-encode.o: encode.c
-	$(CC) -c encode.c $(CFLAGS)
+decode.o: core/decode.c
+	$(CC) $(INCDIR) -c core/decode.c $(CFLAGS)
 
-decode.o: decode.c
-	$(CC) -c decode.c $(CFLAGS)
-
-wavdiff.o: wavdiff.c
-	$(CC) -c wavdiff.c $(CFLAGS)
+wavdiff.o: utils/wavdiff.c
+	$(CC) $(INCDIR) -c utils/wavdiff.c $(CFLAGS)
