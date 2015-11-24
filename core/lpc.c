@@ -135,7 +135,7 @@ void levinson(double *autoc,uint8_t max_order,double *ref,double lpc[][MAX_LPC_O
 		else
 		{
 			r = -autoc[i+1];
-			for(j = 0; j<i; j++)
+			for(j = 0; j < i; j++)
 				r -= lpc_tmp[j] * autoc[i-j];
 			r /= err;
 			err *= 1.0 - (r * r);
@@ -157,6 +157,48 @@ void levinson(double *autoc,uint8_t max_order,double *ref,double lpc[][MAX_LPC_O
 	}
 }
 
+void levinson_fixed(int64_t *autocorr,uint8_t max_order,int64_t *ref,int64_t lpc[][MAX_LPC_ORDER])
+{
+	int32_t i, j, i2;
+	int64_t r, err, tmp;
+	int64_t lpc_tmp[MAX_LPC_ORDER];
+
+	for(i = 0; i < max_order; i++)
+		lpc_tmp[i] = 0;
+	err = 1.0;
+	if(autocorr)
+		err = autocorr[0];
+
+	for(i = 0; i < max_order; i++)
+	{
+		if(ref)
+			r = ref[i];
+		else
+		{
+			r = -autocorr[i+1];
+			for(j = 0; j < i; j++)
+				r -= lpc_tmp[j] * autocorr[i-j];
+			r /= err;
+			err *= 1.0 - (r * r);
+		}
+
+		i2 = i >> 1;
+		lpc_tmp[i] = r;
+		for(j = 0; j < i2; j++)
+		{
+			tmp = lpc_tmp[j];
+			lpc_tmp[j] += r * lpc_tmp[i-1-j];
+			lpc_tmp[i-1-j] += r * tmp;
+		}
+		if(i & 1)
+			lpc_tmp[j] += lpc_tmp[j] * r;
+
+		for(j = 0; j <= i; j++)
+			lpc[i][j] = -lpc_tmp[j];
+	}
+}
+
+
 /*Calculate reflection coefficients*/
 uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref)
 {
@@ -166,13 +208,13 @@ uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref)
 	uint8_t order_est;
 
 	//Schurr recursion
-	for(i=0; i < max_order; i++)
+	for(i = 0; i < max_order; i++)
 		gen[0][i] = gen[1][i] = autoc[i+1];
 
 	error = autoc[0];
 	ref[0] = -gen[1][0] / error;
 	error += gen[1][0] * ref[0];
-	for(i=1; i<max_order; i++)
+	for(i = 1; i < max_order; i++)
 	{
 		for(j = 0; j < max_order - i; j++)
 		{
