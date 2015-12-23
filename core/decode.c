@@ -11,29 +11,20 @@
 
 int main(int argc,char **argv)
 {
-	if(argc < 2)
+	fprintf(stderr,"SimplE Lossless Audio Decoder\n");
+	fprintf(stderr,"Copyright (c) 2015-2016. Ratul Saha\n");
+	fprintf(stderr,"Released under MIT license\n\n");
+	
+	if(argc < 3)
 	{
-		fprintf(stderr,"Usage : %s <input.sela> <output.wav>\n",argv[0]);
+		fprintf(stderr,"Usage\n%s input.sela output.wav\n",argv[0]);
 		return -1;
 	}
 
 	FILE *infile = fopen(argv[1],"rb");
 	FILE *outfile = fopen(argv[2],"wb");
-	if(infile == NULL || outfile == NULL)
-	{
-		fprintf(stderr,"Error while opening input/output.\n");
-		if(infile != NULL)
-			fclose(infile);
-		if(outfile != NULL)
-			fclose(outfile);
-
-		return -1;
-	}
-	else
-	{
-		fprintf(stderr,"Input : %s\n",argv[1]);
-		fprintf(stderr, "Output : %s\n",argv[2]);
-	}
+	fprintf(stderr,"Input : %s\n",argv[1]);
+	fprintf(stderr, "Output : %s\n",argv[2]);
 
 	char magic_number[4];
 	size_t read_bytes = fread(magic_number,sizeof(char),4,infile);
@@ -47,13 +38,15 @@ int main(int argc,char **argv)
 
 	//Variables
 	uint8_t channels,curr_channel,rice_param_ref,rice_param_residue,opt_lpc_order;
-	int16_t bps;
+	int16_t bps,meta_present = 0;
 	const int16_t Q = 35;
 	uint16_t num_ref_elements,num_residue_elements,samples_per_channel = 0;
 	int32_t sample_rate,i;
 	int32_t frame_sync_count = 0;
 	uint32_t temp;
+	uint32_t seconds;
 	const uint32_t frame_sync = 0xAA55FF00;
+	const uint32_t metadata_sync = 0xAA5500FF;
 	const int64_t corr = ((int64_t)1) << Q;
 	size_t read,written;
 
@@ -68,15 +61,53 @@ int main(int argc,char **argv)
 	uint32_t decomp_residues[BLOCK_SIZE];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
+	id3v1_tag tag;
 
 	//Read media info from input file
 	read = fread(&sample_rate,sizeof(int32_t),1,infile);
 	read = fread(&bps,sizeof(int16_t),1,infile);
 	read = fread(&channels,sizeof(int8_t),1,infile);
 
+	//Read metadata if present
+	read = fread(&temp,sizeof(int32_t),1,infile);
+	if(temp == metadata_sync)
+	{
+		fread(&temp,sizeof(int32_t),1,infile);
+		if(temp == 128)//id3v1 tags
+		{
+			meta_present = 1;
+			fread(&tag,sizeof(char),temp,infile);
+		}
+		else
+			fseek(infile,temp,SEEK_CUR);//Skip unknown tags
+	}
+	else
+		fseek(infile,-4,SEEK_CUR);//No tags. Rewind 4 bytes
+
+	fprintf(stderr,"\nStream Information\n");
+	fprintf(stderr,"------------------\n");
 	fprintf(stderr,"Sample rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
-	fprintf(stderr,"Channels : %d\n",channels);
+	fprintf(stderr,"Channels : %d",channels);
+	if(channels == 1)
+		fprintf(stderr,"(Monoaural)\n");
+	else if(channels == 2)
+		fprintf(stderr,"(Stereo)\n");
+	else
+		fprintf(stderr,"\n");
+
+	fprintf(stderr,"\nMetadata\n");
+	fprintf(stderr,"--------\n");
+	if(meta_present == 0)
+		fprintf(stderr,"No metadata found\n");
+	else
+	{
+		fprintf(stderr,"Title : %s\n",tag.title);
+		fprintf(stderr,"Artist : %s\n",tag.artist);
+		fprintf(stderr,"Album : %s\n",tag.album);
+		fprintf(stderr,"Genre : %s\n",tag.comment);
+		fprintf(stderr,"Year : %c%c%c%c\n",tag.year[0],tag.year[1],tag.year[2],tag.year[3]);
+	}
 
 	wav_header hdr;
 	initialize_header(&hdr,channels,sample_rate,bps);
@@ -139,7 +170,12 @@ int main(int argc,char **argv)
 		else
 			break;
 	}
-	fprintf(stderr,"%d frames decoded\n",frame_sync_count);
+
+	seconds = ((uint32_t)(frame_sync_count * BLOCK_SIZE)/(sample_rate));
+	fprintf(stderr,"\nStatistics\n");
+	fprintf(stderr,"----------\n");
+	fprintf(stderr,"%d frames decoded. Approx. %d minutes %d seconds of audio\n",
+		frame_sync_count,(seconds/60),(seconds%60));
 	finalize_file(outfile);
 
 	free(buffer);
