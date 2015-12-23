@@ -2,11 +2,18 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "id3v1_1.h"
 #include "wavutils.h"
 
-int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bits_per_sample)
+int32_t check_wav_file
+(	FILE *fp,
+	int32_t * sample_rate,
+	int16_t *channels,
+	int16_t *bits_per_sample,
+	id3v1_tag *tags
+)
 {
-	int16_t fmt_type,bytes_by_capture;
+	int16_t fmt_type,bytes_by_capture,meta_found = 0;
 	int32_t file_size,bytes_per_sec,list_size,data_size;
 	int32_t fmt_length;
 	size_t read;
@@ -43,19 +50,54 @@ int check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bit
 	read = fread(&bytes_by_capture,sizeof(int16_t),1,fp);
 	read = fread(bits_per_sample,sizeof(int16_t),1,fp);
 
-	//LIST/DATA chunk
+	//LIST chunk (metadata)
 	read = fread(marker,sizeof(char),4,fp);
 	if(strncmp(marker,"LIST",4) == 0)
 	{
+		char tag[200];
+		int32_t temp = 0,size = 0;
 		read = fread(&list_size,sizeof(int32_t),1,fp);
-		fseek(fp,list_size,SEEK_CUR);//Skip list chunk
-		read = fread(marker,sizeof(char),4,fp);
-		if(strncmp(marker,"data",4) == 0)
-			read = fread(&data_size,sizeof(int32_t),1,fp);
+
+		temp += fread(marker,sizeof(char),4,fp);
+		if(strncmp(marker,"INFO",4) == 0)
+		{
+			meta_found = 1;
+			strncpy(tags->id,"TAG",3);
+			//Inner tag list. id3v1 tags are filled here
+			while(temp < list_size)
+			{
+				temp += fread(marker,sizeof(char),4,fp);
+				temp += fread(&size,sizeof(char),4,fp);
+				temp += fread(tag,sizeof(char),size,fp);
+
+				if(strncmp(marker,"IART",4) == 0)//Artist
+					strncpy(tags->artist,tag,30);
+				else if(strncmp(marker,"ICRD",4) == 0)//Date
+					strncpy(tags->year,tag,4);
+				else if(strncmp(marker,"INAM",4) == 0)//Title
+					strncpy(tags->title,tag,30);
+				else if(strncmp(marker,"IPRD",4) == 0)//Album
+					strncpy(tags->album,tag,30);
+				else if(strncmp(marker,"IGNR",4) == 0)//Genre
+					strncpy(tags->comment,tag,28);//Ugly hack (storing genre in comment)
+
+				while(fgetc(fp) == '\0')//FFmpeg Bug
+					temp++;
+				fseek(fp,-1,SEEK_CUR);
+			}
+		}
+		else
+			fseek(fp,(list_size - 4),SEEK_CUR);
+		
 	}
-	else
+	
+	//Data chunk
+	read = fread(marker,sizeof(char),4,fp);
+	if(strncmp(marker,"data",4) == 0)
 		read = fread(&data_size,sizeof(int32_t),1,fp);
 
+	if(meta_found == 1)
+		return READ_STATUS_OK_WITH_META;
 	return READ_STATUS_OK;
 }
 
@@ -91,7 +133,7 @@ void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps
 	hdr->data_header[2] = 't';
 	hdr->data_header[3] = 'a';
 
-	hdr->data_size=0;
+	hdr->data_size = 0;
 }
 
 void write_header(FILE *fp,wav_header *header)
