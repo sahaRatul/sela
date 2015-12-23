@@ -40,7 +40,7 @@ void *pulse_play(PacketList *list)
 		if((pa_simple_write(handle,node->packet,node->packet_size,&error)) < 0)
 			break;
 
-		fprintf(stderr,"%03d Packets in queue.\r",list->num_packets);
+		//fprintf(stderr,"%03d Packets in queue.\r",list->num_packets);
 		if(node == NULL)
 			break;
 
@@ -54,7 +54,7 @@ void *pulse_play(PacketList *list)
 	}
 	while(1);
 
-	fprintf(stderr,"Total %d packets played.\n",list->total_packets_count);
+	//fprintf(stderr,"Total %d packets played.\n",list->total_packets_count);
 	return NULL;
 }
 
