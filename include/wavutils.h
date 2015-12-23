@@ -31,7 +31,8 @@ enum wav_error
     READ_STATUS_OK_WITH_META
 };
 
-int32_t check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,int16_t *bits_per_sample,id3v1_tag *tags);
+int32_t check_wav_file(FILE *fp,int32_t * sample_rate,int16_t *channels,
+	int16_t *bits_per_sample,uint32_t *data_size,id3v1_tag *tags);
 void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps);
 void write_header(FILE *fp,wav_header *header);
 void finalize_file(FILE *fp);
