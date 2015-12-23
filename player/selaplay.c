@@ -56,6 +56,7 @@ int main(int argc,char **argv)
 	}
 
 	//Variables and arrays
+	int8_t percent = 0;
 	uint8_t channels,curr_channel,rice_param_ref,rice_param_residue,opt_lpc_order;
 	int16_t bps,meta_present = 0;
 	const int16_t Q = 35;
@@ -63,7 +64,7 @@ int main(int argc,char **argv)
 	int32_t sample_rate,i;
 	int32_t frame_sync_count = 0;
 	uint32_t temp;
-	uint32_t seconds;
+	uint32_t seconds,estimated_frames;
 	const uint32_t frame_sync = 0xAA55FF00;
 	const uint32_t metadata_sync = 0xAA5500FF;
 	const int64_t corr = ((int64_t)1) << Q;
@@ -87,6 +88,7 @@ int main(int argc,char **argv)
 	read = fread(&sample_rate,sizeof(int),1,infile);
 	read = fread(&bps,sizeof(short),1,infile);
 	read = fread(&channels,sizeof(unsigned char),1,infile);
+	read = fread(&estimated_frames,sizeof(uint32_t),1,infile);
 
 	//Read metadata if present
 	read = fread(&temp,sizeof(int32_t),1,infile);
@@ -108,7 +110,7 @@ int main(int argc,char **argv)
 	fprintf(stderr,"------------------\n");
 	fprintf(stderr,"Sample rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
-	fprintf(stderr,"Channels : %d",channels);
+	fprintf(stderr,"Channels : %d ",channels);
 	if(channels == 1)
 		fprintf(stderr,"(Monoaural)\n");
 	else if(channels == 2)
@@ -196,6 +198,16 @@ int main(int argc,char **argv)
 					buffer[channels * k + i] = (int16_t)rcv_samples[k];
 			}
 
+			//Percentage bar print
+			fprintf(stderr,"\r");
+			percent = ((float)frame_sync_count/(float)estimated_frames) * 100;
+			fprintf(stderr,"[");
+			for(i = 0; i < (percent >> 2); i++)
+				fprintf(stderr,"=");
+			for(i = 0; i < (25 - (percent >> 2)); i++)
+				fprintf(stderr," ");
+			fprintf(stderr,"]");
+
 			PacketNode *node = (PacketNode *)malloc(sizeof(PacketNode));
 			node->packet = (char *)buffer;
 			node->packet_size = (int16_t)(samples_per_channel * channels * sizeof(int16_t));
@@ -213,10 +225,11 @@ int main(int argc,char **argv)
 		destroy_ao();
 	#endif
 
+	fprintf(stderr,"\n");
 	seconds = ((uint32_t)(frame_sync_count * BLOCK_SIZE)/(sample_rate));
 	fprintf(stderr,"\nStatistics\n");
 	fprintf(stderr,"----------\n");
-	fprintf(stderr,"Approx. %d minutes %d seconds of audio played\n"
+	fprintf(stderr,"Approx. %dmin %dsec of audio played\n"
 		,(seconds/60),(seconds%60));
 
 	fclose(infile);
