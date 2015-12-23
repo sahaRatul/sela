@@ -10,11 +10,12 @@ int32_t check_wav_file
 	int32_t * sample_rate,
 	int16_t *channels,
 	int16_t *bits_per_sample,
+	uint32_t *data_size,
 	id3v1_tag *tags
 )
 {
 	int16_t fmt_type,bytes_by_capture,meta_found = 0;
-	int32_t file_size,bytes_per_sec,list_size,data_size;
+	int32_t file_size,bytes_per_sec,list_size;
 	int32_t fmt_length;
 	size_t read;
 	char riffmarker[4];
@@ -81,6 +82,12 @@ int32_t check_wav_file
 				else if(strncmp(marker,"IGNR",4) == 0)//Genre
 					strncpy(tags->comment,tag,28);//Ugly hack (storing genre in comment)
 
+				//Just in case
+				*(tags->artist + 29) = '\0';
+				*(tags->title + 29) = '\0';
+				*(tags->album + 29) = '\0';
+				*(tags->comment + 29) = '\0';
+
 				while(fgetc(fp) == '\0')//FFmpeg Bug
 					temp++;
 				fseek(fp,-1,SEEK_CUR);
@@ -94,7 +101,7 @@ int32_t check_wav_file
 	//Data chunk
 	read = fread(marker,sizeof(char),4,fp);
 	if(strncmp(marker,"data",4) == 0)
-		read = fread(&data_size,sizeof(int32_t),1,fp);
+		read = fread(data_size,sizeof(int32_t),1,fp);
 
 	if(meta_found == 1)
 		return READ_STATUS_OK_WITH_META;
