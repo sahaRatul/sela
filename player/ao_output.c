@@ -65,7 +65,6 @@ void *play_ao(PacketList *list)
 			break;
 	}
 	while(1);
-	fprintf(stderr,"Total %d packets played.\n",list->total_packets_count);
 
 	return NULL;
 }
