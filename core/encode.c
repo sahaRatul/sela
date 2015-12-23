@@ -1,3 +1,6 @@
+//SimplE Lossless Audio Encoder
+//Released under MIT License
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -45,6 +48,7 @@ int main(int argc,char **argv)
 	}
 
 	//Variables
+	int8_t percent = 0;
 	uint8_t opt_lpc_order = 0;
 	int16_t channels,bps;
 	uint8_t rice_param_ref,rice_param_residue;
@@ -58,7 +62,7 @@ int main(int argc,char **argv)
 	const uint32_t frame_sync = 0xAA55FF00;
 	int32_t frame_sync_count = 0;
 	uint32_t req_bits_ref,req_bits_residues;
-	uint32_t seconds;
+	uint32_t seconds,samples;
 	const int64_t corr = ((int64_t)1) << Q;
 	uint64_t in_file_size,out_file_size;
 
@@ -81,7 +85,9 @@ int main(int argc,char **argv)
 	id3v1_tag tag;
 
 	//Check the wav file
-	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps,&tag);
+	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps,&samples,&tag);
+	uint32_t estimated_frames = ceil((float)samples/(channels * BLOCK_SIZE * sizeof(int16_t)));
+
 	switch(is_wav)
 	{
 		case READ_STATUS_OK:
@@ -137,6 +143,7 @@ int main(int argc,char **argv)
 	//Print metadata
 	fprintf(stderr,"\nMetadata\n");
 	fprintf(stderr,"--------\n");
+
 	if (is_wav == READ_STATUS_OK_WITH_META)
 	{
 		fprintf(stderr,"Title : %s\n",tag.title);
@@ -156,6 +163,7 @@ int main(int argc,char **argv)
 	written = fwrite(&sample_rate,sizeof(int32_t),1,outfile);
 	written = fwrite(&bps,sizeof(int16_t),1,outfile);
 	written = fwrite((int8_t *)&channels,sizeof(int8_t),1,outfile);
+	written = fwrite(&estimated_frames,sizeof(int32_t),1,outfile);
 
 	//Write metadata info to output
 	written = fwrite(&metadata_sync,sizeof(int32_t),1,outfile);//Metadata syncwd
@@ -260,12 +268,23 @@ int main(int argc,char **argv)
 			written = fwrite(encoded_residues,sizeof(uint32_t),req_int_residues,
 				outfile);
 		}
+
+		//Percentage bar print
+		fprintf(stderr,"\r");
+		percent = ((float)frame_sync_count/(float)estimated_frames) * 100;
+		fprintf(stderr,"[");
+		for(i = 0; i < (percent >> 2); i++)
+			fprintf(stderr,"=");
+		for(i = 0; i < (25 - (percent >> 2)); i++)
+			fprintf(stderr," ");
+		fprintf(stderr,"]");
 	}
 
+	fprintf(stderr,"\n");
 	fprintf(stderr,"\nStatistics\n");
 	fprintf(stderr,"----------\n");
 	seconds = ((uint32_t)(frame_sync_count * BLOCK_SIZE)/(sample_rate));
-	fprintf(stderr,"%d frames written. Encoded approx. %d minutes %d seconds of audio\n",
+	fprintf(stderr,"%d frames written (%dmin %dsec)\n",
 		frame_sync_count,(seconds/60),(seconds%60));
 	fseek(infile,0,SEEK_END);
 	fseek(outfile,0,SEEK_END);
