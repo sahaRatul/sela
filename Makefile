@@ -9,8 +9,11 @@ all: encoder decoder
 clean:
 	rm -v *.o
 
-encoder: encode.o rice.o lpc.o wavutils.o
-	$(CC) $(INCDIR) encode.o rice.o lpc.o wavutils.o -o encode $(LINKFLAGS)
+expt_enc: core/encode_expt.c core/rice.c core/lpc.c core/wavutils.c
+	$(CC) $(INCDIR) core/encode_expt.c core/rice.c core/lpc.c core/wavutils.c -o expt_encode $(CFLAGS) $(LINKFLAGS)
+
+encoder: encode.o rice.o lpc.o wavutils.o id3v1_1.o
+	$(CC) $(INCDIR) encode.o rice.o lpc.o wavutils.o id3v1_1.o -o encode $(LINKFLAGS)
 
 decoder: decode.o rice.o lpc.o wavutils.o
 	$(CC) $(INCDIR) decode.o rice.o lpc.o wavutils.o -o decode $(LINKFLAGS)
@@ -24,8 +27,8 @@ selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
 selaplay_debug: player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c
 	$(CC) $(INCDIR) -D__PULSE__ player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
 
-d_encoder: core/encode.c core/rice.c core/lpc.c core/wavutils.c
-	$(CC) $(INCDIR) core/encode.c core/rice.c core/lpc.c core/wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_encoder: core/encode.c core/rice.c core/lpc.c core/wavutils.c core/id3v1_1.c
+	$(CC) $(INCDIR) core/encode.c core/rice.c core/lpc.c core/wavutils.c core/id3v1_1.c $(DEBUGFLAGS) $(LINKFLAGS)
 
 d_decoder: core/decode.c core/rice.c core/lpc.c core/wavutils.c
 	$(CC) $(INCDIR) core/decode.c core/rice.c core/lpc.c core/wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
@@ -68,6 +71,9 @@ encode.o: core/encode.c
 
 decode.o: core/decode.c
 	$(CC) $(INCDIR) -c core/decode.c $(CFLAGS)
+
+id3v1_1.o: core/id3v1_1.c
+	$(CC) $(INCDIR) -c core/id3v1_1.c $(CFLAGS)
 
 wavdiff.o: utils/wavdiff.c
 	$(CC) $(INCDIR) -c utils/wavdiff.c $(CFLAGS)
