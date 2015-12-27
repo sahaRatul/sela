@@ -40,7 +40,8 @@ int main(int argc,char **argv)
 	}
 
 	int16_t channels1,channels2,bps1,bps2;
-	int32_t sample_rate1,sample_rate2;
+	int32_t sample_rate1,sample_rate2,samples1,samples2;
+	wav_tags tags1,tags2;
 	size_t read1,read2,written,i;
 
 	int8_t infile1_buffer[READ_SIZE];
@@ -49,8 +50,8 @@ int main(int argc,char **argv)
 	wav_header hdr;
 
 	//Check whether the input files are wav or not
-	int32_t infile1_is_wav = check_wav_file(infile1,&sample_rate1,&channels1,&bps1);
-	int32_t infile2_is_wav = check_wav_file(infile2,&sample_rate2,&channels2,&bps2);
+	int32_t infile1_is_wav = check_wav_file(infile1,&sample_rate1,&channels1,&bps1,&samples1,&tags1);
+	int32_t infile2_is_wav = check_wav_file(infile2,&sample_rate2,&channels2,&bps2,&samples2,&tags2);
 
 	if(infile1_is_wav != READ_STATUS_OK)
 	{
