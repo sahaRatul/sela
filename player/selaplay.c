@@ -4,7 +4,8 @@
 #include <string.h>
 #include <pthread.h>
 
-#include "id3v1_1.h"
+#include "wavutils.h"
+#include "apev2.h"
 #include "rice.h"
 #include "lpc.h"
 #include "format.h"
@@ -72,7 +73,6 @@ int main(int argc,char **argv)
 	PacketList list;
 	audio_format fmt;
 	pthread_t play_thread;
-	id3v1_tag tag;
 
 	uint32_t compressed_ref[MAX_LPC_ORDER];
 	uint32_t compressed_residues[BLOCK_SIZE];
@@ -85,6 +85,14 @@ int main(int argc,char **argv)
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
 
+	//Metadata structures
+	apev2_keys keys_inst;
+	apev2_item_list ape_read_list;
+	apev2_hdr_ftr read_header;
+
+	//Initialise apev2 keys
+	init_apev2_keys(&keys_inst);
+
 	read = fread(&sample_rate,sizeof(int),1,infile);
 	read = fread(&bps,sizeof(short),1,infile);
 	read = fread(&channels,sizeof(unsigned char),1,infile);
@@ -94,14 +102,11 @@ int main(int argc,char **argv)
 	read = fread(&temp,sizeof(int32_t),1,infile);
 	if(temp == metadata_sync)
 	{
+		meta_present = 1;
 		fread(&temp,sizeof(int32_t),1,infile);
-		if(temp == 128)//id3v1 tags
-		{
-			meta_present = 1;
-			fread(&tag,sizeof(char),temp,infile);
-		}
-		else
-			fseek(infile,temp,SEEK_CUR);//Skip unknown tags
+		char *metadata = (char *)malloc(sizeof(char) * temp);
+		fread(metadata,sizeof(char),(size_t)temp,infile);
+		read_apev2_tags(metadata,temp,&keys_inst,&read_header,&ape_read_list);
 	}
 	else
 		fseek(infile,-4,SEEK_CUR);//No tags. Rewind 4 bytes
@@ -111,6 +116,7 @@ int main(int argc,char **argv)
 	fprintf(stderr,"Sample rate : %d Hz\n",sample_rate);
 	fprintf(stderr,"Bits per sample : %d\n",bps);
 	fprintf(stderr,"Channels : %d ",channels);
+	
 	if(channels == 1)
 		fprintf(stderr,"(Monoaural)\n");
 	else if(channels == 2)
@@ -123,13 +129,7 @@ int main(int argc,char **argv)
 	if(meta_present == 0)
 		fprintf(stderr,"No metadata found\n");
 	else
-	{
-		fprintf(stderr,"Title : %s\n",tag.title);
-		fprintf(stderr,"Artist : %s\n",tag.artist);
-		fprintf(stderr,"Album : %s\n",tag.album);
-		fprintf(stderr,"Genre : %s\n",tag.comment);
-		fprintf(stderr,"Year : %c%c%c%c\n",tag.year[0],tag.year[1],tag.year[2],tag.year[3]);
-	}
+		print_apev2_tags(&ape_read_list);
 
 	fmt.sample_rate = sample_rate;
 	fmt.num_channels = channels;

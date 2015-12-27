@@ -6,7 +6,7 @@
 #include "rice.h"
 #include "lpc.h"
 #include "wavutils.h"
-
+#include "apev2.h"
 #define BLOCK_SIZE 2048
 
 int main(int argc,char **argv)
@@ -62,7 +62,14 @@ int main(int argc,char **argv)
 	uint32_t decomp_residues[BLOCK_SIZE];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-	id3v1_tag tag;
+	
+	//Metadata structures
+	apev2_keys keys_inst;
+	apev2_item_list ape_read_list;
+	apev2_hdr_ftr read_header;
+
+	//Initialise apev2 keys
+	init_apev2_keys(&keys_inst);
 
 	//Read media info from input file
 	read = fread(&sample_rate,sizeof(int32_t),1,infile);
@@ -74,14 +81,11 @@ int main(int argc,char **argv)
 	read = fread(&temp,sizeof(int32_t),1,infile);
 	if(temp == metadata_sync)
 	{
+		meta_present = 1;
 		fread(&temp,sizeof(int32_t),1,infile);
-		if(temp == 128)//id3v1 tags
-		{
-			meta_present = 1;
-			fread(&tag,sizeof(char),temp,infile);
-		}
-		else
-			fseek(infile,temp,SEEK_CUR);//Skip unknown tags
+		char *metadata = (char *)malloc(sizeof(char) * temp);
+		fread(metadata,sizeof(char),(size_t)temp,infile);
+		read_apev2_tags(metadata,temp,&keys_inst,&read_header,&ape_read_list);
 	}
 	else
 		fseek(infile,-4,SEEK_CUR);//No tags. Rewind 4 bytes
@@ -104,13 +108,7 @@ int main(int argc,char **argv)
 	if(meta_present == 0)
 		fprintf(stderr,"No metadata found\n");
 	else
-	{
-		fprintf(stderr,"Title : %s\n",tag.title);
-		fprintf(stderr,"Artist : %s\n",tag.artist);
-		fprintf(stderr,"Album : %s\n",tag.album);
-		fprintf(stderr,"Genre : %s\n",tag.comment);
-		fprintf(stderr,"Year : %c%c%c%c\n",tag.year[0],tag.year[1],tag.year[2],tag.year[3]);
-	}
+		print_apev2_tags(&ape_read_list);
 
 	wav_header hdr;
 	initialize_header(&hdr,channels,sample_rate,bps);
@@ -122,7 +120,6 @@ int main(int argc,char **argv)
 	while(feof(infile) == 0)
 	{
 		read = fread(&temp,sizeof(int32_t),1,infile);//Read from input
-
 		if(temp == frame_sync)
 		{
 			frame_sync_count++;
@@ -192,8 +189,11 @@ int main(int argc,char **argv)
 		frame_sync_count,(seconds/60),(seconds%60));
 	finalize_file(outfile);
 
+	//Cleanup
 	free(buffer);
 	fclose(infile);
 	fclose(outfile);
+	free_apev2_list(&ape_read_list);
+
 	return 0;
 }

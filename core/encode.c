@@ -7,7 +7,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "id3v1_1.h"
+#include "apev2.h"
 #include "lpc.h"
 #include "rice.h"
 #include "wavutils.h"
@@ -58,7 +58,7 @@ int main(int argc,char **argv)
 	int32_t i,j,k = 0;
 	int32_t sample_rate,read_size;
 	const uint32_t metadata_sync = 0xAA5500FF;
-	const uint32_t metadata_size = 128;
+	uint32_t metadata_size = 0;
 	const uint32_t frame_sync = 0xAA55FF00;
 	int32_t frame_sync_count = 0;
 	uint32_t req_bits_ref,req_bits_residues;
@@ -82,19 +82,36 @@ int main(int argc,char **argv)
 	double autocorr[MAX_LPC_ORDER + 1];
 	double ref[MAX_LPC_ORDER];
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
-	id3v1_tag tag;
+	
+	//Metadata data structures
+	wav_tags tags;
+	apev2_keys keys_inst;
+	apev2_hdr_ftr header;
+	apev2_item_list ape_list;
+
+	//Init wav tags
+	init_wav_tags(&tags);
+
+	//Init apev2 keys
+	init_apev2_keys(&keys_inst);
+
+	//Init apev2 header
+	init_apev2_header(&header);
+
+	//Init apev2 item link list
+	init_apev2_item_list(&ape_list);
 
 	//Check the wav file
-	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps,&samples,&tag);
+	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps,&samples,&tags);
 	uint32_t estimated_frames = ceil((float)samples/(channels * BLOCK_SIZE * sizeof(int16_t)));
 
 	switch(is_wav)
 	{
 		case READ_STATUS_OK:
-			fprintf(stderr,"WAV file detected.\n");
+			fprintf(stderr,"WAV file detected\n");
 			break;
 		case READ_STATUS_OK_WITH_META:
-			fprintf(stderr,"WAV file detected.\n");
+			fprintf(stderr,"WAV file detected\n");
 			break;
 		case ERR_NO_RIFF_MARKER:
 			fprintf(stderr,"RIFF header not found. Exiting......\n");
@@ -144,17 +161,21 @@ int main(int argc,char **argv)
 	fprintf(stderr,"\nMetadata\n");
 	fprintf(stderr,"--------\n");
 
-	if (is_wav == READ_STATUS_OK_WITH_META)
+	if(is_wav == READ_STATUS_OK_WITH_META)
 	{
-		fprintf(stderr,"Title : %s\n",tag.title);
-		fprintf(stderr,"Artist : %s\n",tag.artist);
-		fprintf(stderr,"Album : %s\n",tag.album);
-		fprintf(stderr,"Genre : %s\n",tag.comment);
-		fprintf(stderr,"Year : %c%c%c%c\n",tag.year[0],tag.year[1],tag.year[2],tag.year[3]);
+		fprintf(stderr,"Title : %s\n",tags.title);
+		fprintf(stderr,"Artist : %s\n",tags.artist);
+		fprintf(stderr,"Album : %s\n",tags.album);
+		fprintf(stderr,"Genre : %s\n",tags.genre);
+		fprintf(stderr,"Year : %c%c%c%c\n",tags.year[0],tags.year[1],tags.year[2],tags.year[3]);
+
+		//Wav to apev2 tags
+		wav_to_apev2(&tags,&ape_list,&keys_inst);
+		finalize_apev2_header(&header,&ape_list);
 	}
 	else
 		fprintf(stderr,"No metadata found.\n");
-	
+
 
 	//Write magic number to output
 	written = fwrite(magic_number,sizeof(char),sizeof(magic_number),outfile);
@@ -165,10 +186,14 @@ int main(int argc,char **argv)
 	written = fwrite((int8_t *)&channels,sizeof(int8_t),1,outfile);
 	written = fwrite(&estimated_frames,sizeof(int32_t),1,outfile);
 
-	//Write metadata info to output
-	written = fwrite(&metadata_sync,sizeof(int32_t),1,outfile);//Metadata syncwd
-	written = fwrite(&metadata_size,sizeof(int32_t),1,outfile);//Metadata size
-	write_metadata(outfile,ftell(outfile),&tag);
+	if(is_wav == READ_STATUS_OK_WITH_META)
+	{
+		//Write metadata info to output
+		written = fwrite(&metadata_sync,sizeof(int32_t),1,outfile);//Metadata syncwd
+		metadata_size = header.tag_size + 32;
+		fwrite(&metadata_size,sizeof(int32_t),1,outfile);
+		write_apev2_tags(outfile,ftell(outfile),&header,&ape_list);
+	}
 
 	//Define read size
 	read_size = channels * BLOCK_SIZE;
@@ -293,7 +318,11 @@ int main(int argc,char **argv)
 	out_file_size = ftell(outfile);
 	fprintf(stderr,"Compression Ratio : %0.2f%\n",100 * (float)((float)out_file_size/(float)in_file_size));
 	fprintf(stderr,"Bitrate : %d kbps\n",(out_file_size * 8)/(seconds * 1000));
+	
+	//Cleanup
 	free(buffer);
+	destroy_wav_tags(&tags);
+	free_apev2_list(&ape_list);
 	fclose(infile);
 	fclose(outfile);
 

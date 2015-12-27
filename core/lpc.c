@@ -113,6 +113,8 @@ void auto_corr_fun(double *x,int32_t N,int64_t k,int16_t norm,double *rxx)
 			rxx[i] /= rxx[0];
 		rxx[0] = 1.0;
 	}
+
+	return;
 }
 
 /*Levinson recursion algorithm*/
@@ -155,8 +157,11 @@ void levinson(double *autoc,uint8_t max_order,double *ref,double lpc[][MAX_LPC_O
 		for(j = 0; j <= i; j++)
 			lpc[i][j] = -lpc_tmp[j];
 	}
+
+	return;
 }
 
+/*Fixed point levinson function*/
 void levinson_fixed(int64_t *autocorr,uint8_t max_order,int64_t *ref,int64_t lpc[][MAX_LPC_ORDER])
 {
 	int32_t i, j, i2;
@@ -196,8 +201,9 @@ void levinson_fixed(int64_t *autocorr,uint8_t max_order,int64_t *ref,int64_t lpc
 		for(j = 0; j <= i; j++)
 			lpc[i][j] = -lpc_tmp[j];
 	}
-}
 
+	return;
+}
 
 /*Calculate reflection coefficients*/
 uint8_t compute_ref_coefs(double *autoc,uint8_t max_order,double *ref)
@@ -251,6 +257,7 @@ int32_t qtz_ref_cof(double *par,uint8_t ord,int32_t *q_ref)
 		else
 			q_ref[i] = floor(64 * par[i]);
 	}
+
 	return(0);
 }
 
@@ -308,6 +315,8 @@ void calc_residue(const int32_t *samples,int64_t N,int16_t ord,int16_t Q,int64_t
 			y += (int64_t)(coff[i] * samples[k-i]);
 		residues[k] = samples[k] - (int32_t)(y >> Q);
 	}
+
+	return;
 }
 
 /*Calculate samples from residues and lpc coefficients*/
@@ -339,4 +348,6 @@ void calc_signal(const int32_t *residues,int64_t N,int16_t ord,int16_t Q,int64_t
 			y -= (int64_t)(coff[i] * samples[k-i]);
 		samples[k] = residues[k] - (int32_t)(y >> Q);
 	}
+
+	return;
 }

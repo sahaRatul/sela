@@ -1,17 +1,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "id3v1_1.h"
 #include "wavutils.h"
 
 int32_t check_wav_file
-(	FILE *fp,
+(	
+	FILE *fp,
 	int32_t * sample_rate,
 	int16_t *channels,
 	int16_t *bits_per_sample,
 	uint32_t *data_size,
-	id3v1_tag *tags
+	wav_tags *tags
 )
 {
 	int16_t fmt_type,bytes_by_capture,meta_found = 0;
@@ -63,7 +65,8 @@ int32_t check_wav_file
 		if(strncmp(marker,"INFO",4) == 0)
 		{
 			meta_found = 1;
-			strncpy(tags->id,"TAG",3);
+			//strncpy(tags->id,"TAG",3);
+
 			//Inner tag list. id3v1 tags are filled here
 			while(temp < list_size)
 			{
@@ -72,21 +75,47 @@ int32_t check_wav_file
 				temp += fread(tag,sizeof(char),size,fp);
 
 				if(strncmp(marker,"IART",4) == 0)//Artist
-					strncpy(tags->artist,tag,30);
+				{
+					tags->artist_present = 1;
+					tags->artist_size = size;
+					tags->artist = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->artist,tag,(size_t)size);
+				}
 				else if(strncmp(marker,"ICRD",4) == 0)//Date
-					strncpy(tags->year,tag,4);
+				{
+					tags->year_present = 1;
+					tags->year_size = size;
+					tags->year = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->year,tag,(size_t)size);
+				}
 				else if(strncmp(marker,"INAM",4) == 0)//Title
-					strncpy(tags->title,tag,30);
+				{
+					tags->title_present = 1;
+					tags->title_size = size;
+					tags->title = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->title,tag,(size_t)size);
+				}	
 				else if(strncmp(marker,"IPRD",4) == 0)//Album
-					strncpy(tags->album,tag,30);
+				{
+					tags->album_present = 1;
+					tags->album_size = size;
+					tags->album = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->album,tag,size);
+				}
 				else if(strncmp(marker,"IGNR",4) == 0)//Genre
-					strncpy(tags->comment,tag,28);//Ugly hack (storing genre in comment)
-
-				//Just in case
-				*(tags->artist + 29) = '\0';
-				*(tags->title + 29) = '\0';
-				*(tags->album + 29) = '\0';
-				*(tags->comment + 29) = '\0';
+				{
+					tags->genre_present = 1;
+					tags->genre_size = size;
+					tags->genre = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->genre,tag,size);
+				}
+				else if(strncmp(marker,"ICMT",4) == 0)//Comment
+				{
+					tags->comment_present = 1;
+					tags->comment_size = size;
+					tags->comment = (char *)malloc(sizeof(char) * size);
+					strncpy(tags->comment,tag,size);
+				}
 
 				while(fgetc(fp) == '\0')//FFmpeg Bug
 					temp++;
@@ -95,7 +124,6 @@ int32_t check_wav_file
 		}
 		else
 			fseek(fp,(list_size - 4),SEEK_CUR);
-		
 	}
 	
 	//Data chunk
@@ -103,6 +131,7 @@ int32_t check_wav_file
 	if(strncmp(marker,"data",4) == 0)
 		read = fread(data_size,sizeof(int32_t),1,fp);
 
+	(void)read;
 	if(meta_found == 1)
 		return READ_STATUS_OK_WITH_META;
 	return READ_STATUS_OK;
@@ -141,12 +170,63 @@ void initialize_header(wav_header *hdr,int32_t channels,int32_t rate,int32_t bps
 	hdr->data_header[3] = 'a';
 
 	hdr->data_size = 0;
+
+	return;
+}
+
+void init_wav_tags(wav_tags *tags)
+{
+	tags->title = NULL;
+	tags->title_present = 0;
+	tags->title_size = 0;
+
+	tags->artist = NULL;
+	tags->artist_present = 0;
+	tags->artist_size = 0;
+
+	tags->album = NULL;
+	tags->album_present = 0;
+	tags->album_size = 0;
+
+	tags->genre = NULL;
+	tags->genre_present = 0;
+	tags->genre_size = 0;
+
+	tags->year = NULL;
+	tags->year_present = 0;
+	tags->year_size = 0;
+
+	tags->comment = NULL;
+	tags->comment_present = 0;
+	tags->comment_size = 0;
+
+	return;
+}
+
+void destroy_wav_tags(wav_tags *tags)
+{
+	if(tags->title_present)
+		free(tags->title);
+	if(tags->artist_present)
+		free(tags->artist);
+	if(tags->album_present)
+		free(tags->album);
+	if(tags->genre_present)
+		free(tags->genre);
+	if(tags->year_present)
+		free(tags->year);
+	if(tags->comment_present)
+		free(tags->comment);
+
+	return;
 }
 
 void write_header(FILE *fp,wav_header *header)
 {
 	fseek(fp,0,SEEK_SET);
 	size_t written = fwrite(header,sizeof(wav_header),1,fp);
+	(void)written;
+	return;
 }
 
 void finalize_file(FILE *fp)
@@ -158,4 +238,6 @@ void finalize_file(FILE *fp)
 	fseek(fp,40,SEEK_SET);
 	size_t data_size = file_size - 44;
 	written = fwrite(&data_size,sizeof(int32_t),1,fp);
+	(void)written;
+	return;
 }
