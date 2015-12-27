@@ -2,11 +2,12 @@
 *.gch
 *.sela
 *.wav
+apev2test
 ricetest
 lpctest
 selaplay
-encode
-decode
+selaenc
+seladec
 wavdiff
 *.out
 *.exe
