@@ -12,32 +12,35 @@ clean:
 expt_enc: core/encode_expt.c core/rice.c core/lpc.c core/wavutils.c
 	$(CC) $(INCDIR) core/encode_expt.c core/rice.c core/lpc.c core/wavutils.c -o expt_encode $(CFLAGS) $(LINKFLAGS)
 
-encoder: encode.o rice.o lpc.o wavutils.o id3v1_1.o
-	$(CC) $(INCDIR) encode.o rice.o lpc.o wavutils.o id3v1_1.o -o encode $(LINKFLAGS)
+encoder: encode.o rice.o lpc.o wavutils.o apev2.o
+	$(CC) $(INCDIR) encode.o rice.o lpc.o wavutils.o apev2.o -o selaenc $(LINKFLAGS)
 
-decoder: decode.o rice.o lpc.o wavutils.o
-	$(CC) $(INCDIR) decode.o rice.o lpc.o wavutils.o -o decode $(LINKFLAGS)
+decoder: decode.o rice.o lpc.o wavutils.o apev2.o
+	$(CC) $(INCDIR) decode.o rice.o lpc.o wavutils.o apev2.o -o seladec $(LINKFLAGS)
 
-selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o
-	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o pulse_output.o -lm -lpthread -lpulse-simple -lpulse
+selaplay_pulse: p_selaplay.o rice.o lpc.o packetqueue.o pulse_output.o apev2.o wavutils.o
+	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o pulse_output.o apev2.o wavutils.o -lm -lpthread -lpulse-simple -lpulse
 	
-selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o
-	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o -lm -lpthread -lao
+selaplay_ao: a_selaplay.o rice.o lpc.o packetqueue.o ao_output.o apev2.o wavutils.o
+	$(CC) $(INCDIR) -o selaplay selaplay.o rice.o lpc.o packetqueue.o ao_output.o apev2.o wavutils.o -lm -lpthread -lao
 
-selaplay_debug: player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c
-	$(CC) $(INCDIR) -D__PULSE__ player/selaplay.c core/rice.c core/lpc.c player/packetqueue.c player/pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
+selaplay_debug: player/selaplay.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c player/packetqueue.c player/pulse_output.c 
+	$(CC) $(INCDIR) -D__PULSE__ player/selaplay.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c player/packetqueue.c player/pulse_output.c $(DEBUGFLAGS) -lm -lpulse -lpulse-simple -lpthread
 
-d_encoder: core/encode.c core/rice.c core/lpc.c core/wavutils.c core/id3v1_1.c
-	$(CC) $(INCDIR) core/encode.c core/rice.c core/lpc.c core/wavutils.c core/id3v1_1.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_encoder: core/encode.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c
+	$(CC) $(INCDIR) core/encode.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c $(DEBUGFLAGS) $(LINKFLAGS)
 
-d_decoder: core/decode.c core/rice.c core/lpc.c core/wavutils.c
-	$(CC) $(INCDIR) core/decode.c core/rice.c core/lpc.c core/wavutils.c $(DEBUGFLAGS) $(LINKFLAGS)
+d_decoder: core/decode.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c
+	$(CC) $(INCDIR) core/decode.c core/rice.c core/lpc.c core/wavutils.c core/apev2.c $(DEBUGFLAGS) $(LINKFLAGS)
 
 ricetest: tests/ricetest.c core/rice.c
 	$(CC) $(INCDIR) -o ricetest tests/ricetest.c core/rice.c $(CFLAGS) $(LINKFLAGS)
 
 lpctest: tests/lpctest.c core/lpc.c
 	$(CC) $(INCDIR) -o lpctest tests/lpctest.c core/lpc.c $(CFLAGS) $(LINKFLAGS)
+
+apev2test: tests/apev2test.c core/apev2.c core/wavutils.c
+	$(CC) $(INCDIR) -Wall -o apev2test tests/apev2test.c core/apev2.c core/wavutils.c $(CFLAGS)
 
 wavdiff: wavdiff.o wavutils.o
 	$(CC) $(INCDIR) -o wavdiff wavdiff.o wavutils.o
@@ -74,6 +77,9 @@ decode.o: core/decode.c
 
 id3v1_1.o: core/id3v1_1.c
 	$(CC) $(INCDIR) -c core/id3v1_1.c $(CFLAGS)
+
+apev2.o: core/apev2.c
+	$(CC) $(INCDIR) -c core/apev2.c $(CFLAGS)
 
 wavdiff.o: utils/wavdiff.c
 	$(CC) $(INCDIR) -c utils/wavdiff.c $(CFLAGS)
