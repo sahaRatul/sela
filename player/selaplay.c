@@ -188,7 +188,11 @@ int main(int argc,char **argv)
 				levinson(NULL,opt_lpc_order,ref,lpc_mat);
 				lpc[0] = 0;
 				for(int32_t k = 0; k < opt_lpc_order; k++)
-					lpc[k+1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][k]);
+					lpc[k + 1] = (int64_t)(corr * lpc_mat[opt_lpc_order - 1][k]);
+
+				//Make the remaining zero
+				for(int32_t k = opt_lpc_order; k < MAX_LPC_ORDER; k++)
+					lpc[k + 1] = 0;
 
 				//lossless reconstruction
 				calc_signal(s_residues,samples_per_channel,opt_lpc_order,Q,lpc,rcv_samples);

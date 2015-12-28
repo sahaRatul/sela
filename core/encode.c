@@ -253,7 +253,10 @@ int main(int argc,char **argv)
 			levinson(NULL,opt_lpc_order,ref,lpc_mat);
 			lpc[0] = 0;
 			for(j = 0; j < opt_lpc_order; j++)
-				lpc[j+1] = corr * lpc_mat[opt_lpc_order - 1][j];
+				lpc[j + 1] = corr * lpc_mat[opt_lpc_order - 1][j];
+
+			for(j = opt_lpc_order; j < MAX_LPC_ORDER; j++)
+				lpc[j] = 0;
 
 			//Copy samples
 			for(j = 0; j < samples_per_channel; j++)
