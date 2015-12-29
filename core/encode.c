@@ -256,7 +256,7 @@ int main(int argc,char **argv)
 				lpc[j + 1] = corr * lpc_mat[opt_lpc_order - 1][j];
 
 			for(j = opt_lpc_order; j < MAX_LPC_ORDER; j++)
-				lpc[j] = 0;
+				lpc[j + 1] = 0;
 
 			//Copy samples
 			for(j = 0; j < samples_per_channel; j++)
