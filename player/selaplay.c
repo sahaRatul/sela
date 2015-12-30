@@ -86,12 +86,22 @@ int main(int argc,char **argv)
 	double lpc_mat[MAX_LPC_ORDER][MAX_LPC_ORDER];
 
 	//Metadata structures
+	apev2_state read_state;
 	apev2_keys keys_inst;
 	apev2_item_list ape_read_list;
 	apev2_hdr_ftr read_header;
 
+	//Initialise state
+	init_apev2(&read_state);
+
 	//Initialise apev2 keys
-	init_apev2_keys(&keys_inst);
+	init_apev2_keys(&read_state,&keys_inst);
+
+	//Init apev2 header
+	init_apev2_header(&read_state,&read_header);
+
+	//Init apev2 list
+	init_apev2_item_list(&read_state,&ape_read_list);
 
 	read = fread(&sample_rate,sizeof(int),1,infile);
 	read = fread(&bps,sizeof(short),1,infile);
@@ -106,7 +116,7 @@ int main(int argc,char **argv)
 		fread(&temp,sizeof(int32_t),1,infile);
 		char *metadata = (char *)malloc(sizeof(char) * temp);
 		fread(metadata,sizeof(char),(size_t)temp,infile);
-		read_apev2_tags(metadata,temp,&keys_inst,&read_header,&ape_read_list);
+		read_apev2_tags(&read_state,metadata,temp,&keys_inst,&read_header,&ape_read_list);
 	}
 	else
 		fseek(infile,-4,SEEK_CUR);//No tags. Rewind 4 bytes
@@ -129,7 +139,7 @@ int main(int argc,char **argv)
 	if(meta_present == 0)
 		fprintf(stderr,"No metadata found\n");
 	else
-		print_apev2_tags(&ape_read_list);
+		print_apev2_tags(&read_state,&ape_read_list);
 
 	fmt.sample_rate = sample_rate;
 	fmt.num_channels = channels;
@@ -237,6 +247,7 @@ int main(int argc,char **argv)
 		,(seconds/60),(seconds%60));
 
 	fclose(infile);
+	free_apev2_list(&read_state,&ape_read_list);
 	return 0;
 }
 

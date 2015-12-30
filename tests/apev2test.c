@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "wavutils.h"
 #include "apev2.h"
@@ -21,6 +22,9 @@ int main(int argc,char **argv)
 	int16_t bits_per_sample;
 	uint32_t data_size;
 	wav_tags tags;
+
+	//Matadata structures
+	apev2_state state,read_state;
 	apev2_item_list ape_list,ape_read_list;
 	apev2_keys keys_inst;
 	apev2_hdr_ftr header,read_header;
@@ -92,22 +96,29 @@ int main(int argc,char **argv)
 		return -1;
 	}
 
-	//Init ape keys
-	init_apev2_keys(&keys_inst);
+	//Init ape state
+	assert(APE_STATE_INIT_SUCCESS == init_apev2(&state));
+	assert(APE_STATE_INIT_SUCCESS == init_apev2(&read_state));
 
+	//Init ape keys
+	assert(APE_KEYS_INIT_SUCCESS == init_apev2_keys(&state,&keys_inst));
+	assert(APE_KEYS_INIT_SUCCESS == init_apev2_keys(&read_state,&keys_inst));
 	//Init ape header
-	init_apev2_header(&header);
-	init_apev2_header(&read_header);
+	assert(APE_HEADER_INIT_SUCCESS == init_apev2_header(&state,&header));
+	assert(APE_HEADER_INIT_SUCCESS == init_apev2_header(&read_state,&read_header));
 
 	//Init item link list
-	init_apev2_item_list(&ape_list);
-	init_apev2_item_list(&ape_read_list);
+	assert(APE_LIST_INIT_SUCCESS == init_apev2_item_list(&state,&ape_list));
+	assert(APE_LIST_INIT_SUCCESS == init_apev2_item_list(&read_state,&ape_read_list));
 
 	//Convert wav tags to apev2 tags
-	wav_to_apev2(&tags,&ape_list,&keys_inst);
+	assert(APE_CONV_SUCCESS == wav_to_apev2(&state,&tags,&ape_list,&keys_inst));
+
+	//Finalize header
+	assert(APE_FINALIZE_HEADER_SUCCESS == finalize_apev2_header(&state,&header,&ape_list));
 
 	//Write ape tags to output file
-	write_apev2_tags(outfile,ftell(outfile),&header,&ape_list);
+	assert(APE_FILE_WRITE_SUCCESS == write_apev2_tags(&state,outfile,ftell(outfile),&header,&ape_list));
 
 	//Seek to end
 	fseek(outfile,0,SEEK_END);
@@ -119,16 +130,16 @@ int main(int argc,char **argv)
 	fread(data,sizeof(char),(size_t)(read_size - 1),outfile);
 
 	//Read apev2 tags from output file
-	read_apev2_tags(data,read_size,&keys_inst,&read_header,&ape_read_list);
+	assert(APE_READ_SUCCESS == read_apev2_tags(&read_state,data,read_size,&keys_inst,&read_header,&ape_read_list));
 
 	fprintf(stderr,"\n----------Apev2 tags-----------\n");
 	//Print back the apev2 tags
-	print_apev2_tags(&ape_read_list);
+	print_apev2_tags(&read_state,&ape_read_list);
 
 	//Destroy wav tags
 	destroy_wav_tags(&tags);
-	free_apev2_list(&ape_read_list);
-	free_apev2_list(&ape_list);
+	free_apev2_list(&read_state,&ape_read_list);
+	free_apev2_list(&state,&ape_list);
 
 	free(data);
 	fclose(infile);

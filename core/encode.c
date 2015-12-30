@@ -7,10 +7,10 @@
 #include <string.h>
 #include <math.h>
 
-#include "apev2.h"
 #include "lpc.h"
 #include "rice.h"
 #include "wavutils.h"
+#include "apev2.h"
 
 #define SHORT_MAX 32767
 #define BLOCK_SIZE 2048
@@ -85,6 +85,7 @@ int main(int argc,char **argv)
 	
 	//Metadata data structures
 	wav_tags tags;
+	apev2_state state;
 	apev2_keys keys_inst;
 	apev2_hdr_ftr header;
 	apev2_item_list ape_list;
@@ -92,14 +93,17 @@ int main(int argc,char **argv)
 	//Init wav tags
 	init_wav_tags(&tags);
 
+	//Init apev2 state
+	init_apev2(&state);
+
 	//Init apev2 keys
-	init_apev2_keys(&keys_inst);
+	init_apev2_keys(&state,&keys_inst);
 
 	//Init apev2 header
-	init_apev2_header(&header);
+	init_apev2_header(&state,&header);
 
 	//Init apev2 item link list
-	init_apev2_item_list(&ape_list);
+	init_apev2_item_list(&state,&ape_list);
 
 	//Check the wav file
 	int32_t is_wav = check_wav_file(infile,&sample_rate,&channels,&bps,&samples,&tags);
@@ -163,15 +167,21 @@ int main(int argc,char **argv)
 
 	if(is_wav == READ_STATUS_OK_WITH_META)
 	{
-		fprintf(stderr,"Title : %s\n",tags.title);
-		fprintf(stderr,"Artist : %s\n",tags.artist);
-		fprintf(stderr,"Album : %s\n",tags.album);
-		fprintf(stderr,"Genre : %s\n",tags.genre);
-		fprintf(stderr,"Year : %c%c%c%c\n",tags.year[0],tags.year[1],tags.year[2],tags.year[3]);
+		if(tags.title_present)
+			fprintf(stderr,"Title : %s\n",tags.title);
+		if(tags.artist_present)
+			fprintf(stderr,"Artist : %s\n",tags.artist);
+		if(tags.album_present)
+			fprintf(stderr,"Album : %s\n",tags.album);
+		if(tags.genre_present)
+			fprintf(stderr,"Genre : %s\n",tags.genre);
+		if(tags.year_present)
+			fprintf(stderr,"Year : %d\n",atoi(tags.year));
 
 		//Wav to apev2 tags
-		wav_to_apev2(&tags,&ape_list,&keys_inst);
-		finalize_apev2_header(&header,&ape_list);
+		wav_to_apev2(&state,&tags,&ape_list,&keys_inst);
+		//wav_to_apev2(&state,&tags,&ape_list,&keys_inst);
+		finalize_apev2_header(&state,&header,&ape_list);
 	}
 	else
 		fprintf(stderr,"No metadata found.\n");
@@ -192,7 +202,7 @@ int main(int argc,char **argv)
 		written = fwrite(&metadata_sync,sizeof(int32_t),1,outfile);//Metadata syncwd
 		metadata_size = header.tag_size + 32;
 		fwrite(&metadata_size,sizeof(int32_t),1,outfile);
-		write_apev2_tags(outfile,ftell(outfile),&header,&ape_list);
+		write_apev2_tags(&state,outfile,ftell(outfile),&header,&ape_list);
 	}
 
 	//Define read size
@@ -325,7 +335,7 @@ int main(int argc,char **argv)
 	//Cleanup
 	free(buffer);
 	destroy_wav_tags(&tags);
-	free_apev2_list(&ape_list);
+	free_apev2_list(&state,&ape_list);
 	fclose(infile);
 	fclose(outfile);
 

@@ -7,8 +7,52 @@
 #include "wavutils.h"
 #include "apev2.h"
 
-void init_apev2_keys(apev2_keys *inst)
+//--------init_state-------//<-- apev2_state
+//             |
+//             v
+//---------init_keys-------//<-- apev2_state,apev2_keys
+//             |
+//             v
+//--------init_header------//<-- apev2_state,apev2_header
+//             |
+//             v
+//---------init_list-------//<-- apev2_state,apev2_item_list
+//             |
+//             v
+//--------wav_to_apev2-----//<-- apev2_state,wav_tags,apev2_item_list,apev2_keys
+//             |
+//             v
+//------finalize_header----//<-- apev2_state,apev2_header,apev2_item_list
+//             |
+//             v
+//---------write_list------//<-- apev2_state,FILE,file_position,apev2_header,apev2_list
+//             |
+//             v
+//---------free_list-------//<-- apev2_state,apev2_list
+
+enum ape_error_codes 
+init_apev2(apev2_state *state)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+
+	state->ape_init_state = 1;
+	state->key_init_state = 0;
+	state->header_init_state = 0;
+	state->list_init_state = 0;
+	state->ape_last_state = APE_STATE_INIT_SUCCESS;
+
+	return APE_STATE_INIT_SUCCESS;
+}
+
+enum ape_error_codes 
+init_apev2_keys(apev2_state *state,apev2_keys *inst)
+{
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_init_state != APE_STATE_INIT_SUCCESS)
+		return APE_KEYS_INIT_FAIL;
+
 	//Title key
 	inst->title[0] = 'T';
 	inst->title[1] = 'i';
@@ -52,10 +96,19 @@ void init_apev2_keys(apev2_keys *inst)
 	inst->comment[4] = 'e';
 	inst->comment[5] = 'n';
 	inst->comment[6] = 't';
+
+	state->ape_last_state = APE_KEYS_INIT_SUCCESS;
+	return APE_KEYS_INIT_SUCCESS;
 }
 
-void init_apev2_header(apev2_hdr_ftr *header)
+enum ape_error_codes 
+init_apev2_header(apev2_state *state,apev2_hdr_ftr *header)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_KEYS_INIT_SUCCESS)
+		return APE_HEADER_INIT_FAIL;
+
 	header->preamble[0] = 'A';
 	header->preamble[1] = 'P';
 	header->preamble[2] = 'E';
@@ -71,13 +124,40 @@ void init_apev2_header(apev2_hdr_ftr *header)
 
 	for(int32_t i = 0; i < 8; i++)
 		header->reserved[i] = 0;
+
+	state->ape_last_state = APE_HEADER_INIT_SUCCESS;
+	return APE_HEADER_INIT_SUCCESS;
 }
 
-void finalize_apev2_header(apev2_hdr_ftr *header,apev2_item_list *list)
+enum ape_error_codes 
+init_apev2_item_list(apev2_state *state,apev2_item_list *list)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_HEADER_INIT_SUCCESS)
+		return APE_LIST_INIT_FAIL;
+
+	list->first = NULL;
+	list->last = NULL;
+	list->item_count = 0;
+
+	state->ape_last_state = APE_LIST_INIT_SUCCESS;
+	return APE_LIST_INIT_SUCCESS;
+}
+
+enum ape_error_codes 
+finalize_apev2_header(apev2_state *state,apev2_hdr_ftr *header,apev2_item_list *list)
+{
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_CONV_SUCCESS)
+		return APE_FINALIZE_HEADER_FAIL;
+
 	apev2_tag_item *temp = NULL;
 	temp = list->first;
 	header->item_count = 0;
+
+	//Count actual number of items present in list
 	while(temp != list->last)
 	{
 		if(temp->val_len == 0)
@@ -107,7 +187,8 @@ void finalize_apev2_header(apev2_hdr_ftr *header,apev2_item_list *list)
 		}
 	}
 
-	return;
+	state->ape_last_state = APE_FINALIZE_HEADER_SUCCESS;
+	return APE_FINALIZE_HEADER_SUCCESS;
 }
 
 int32_t write_apev2_item(apev2_keys *key_inst,apev2_tag_item *tag_item,char *data,int32_t data_size,int32_t item_code)
@@ -150,15 +231,14 @@ int32_t write_apev2_item(apev2_keys *key_inst,apev2_tag_item *tag_item,char *dat
 	return 0;
 }
 
-void init_apev2_item_list(apev2_item_list *list)
+enum ape_error_codes 
+wav_to_apev2(apev2_state *state,wav_tags *tags,apev2_item_list *list,apev2_keys *key_inst)
 {
-	list->first = NULL;
-	list->last = NULL;
-	list->item_count = 0;
-}
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_LIST_INIT_SUCCESS)
+		return APE_CONV_FAIL;
 
-int32_t wav_to_apev2(wav_tags *tags,apev2_item_list *list,apev2_keys *key_inst)
-{
 	int32_t num_tags = 0;
 	int32_t max_tags = 6; //(Max tags supported = 6)
 
@@ -176,7 +256,7 @@ int32_t wav_to_apev2(wav_tags *tags,apev2_item_list *list,apev2_keys *key_inst)
 		num_tags++;
 
 	if(num_tags == 0)
-		return -1;
+		return APE_CONV_FAIL_NO_TAGS;
 
 	//Generate apev2 link list with 'max_tags' number of items
 	for(int32_t i = 0; i < max_tags; i++)
@@ -225,21 +305,18 @@ int32_t wav_to_apev2(wav_tags *tags,apev2_item_list *list,apev2_keys *key_inst)
 
 	assert(temp == list->last);
 
-	return 0;
+	state->ape_last_state = APE_CONV_SUCCESS;
+	return APE_CONV_SUCCESS;
 }
 
-int32_t apev2_to_wav(apev2_item_list *list,wav_tags *tags,apev2_keys *keys_inst)
+enum ape_error_codes 
+write_apev2_tags(apev2_state *state,FILE *file,size_t pos,apev2_hdr_ftr *header,apev2_item_list *list)
 {
-	apev2_tag_item *temp = list->first;
-	int32_t count = list->item_count;
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_FINALIZE_HEADER_SUCCESS)
+		return APE_FILE_WRITE_FAIL;
 
-	
-
-	return 0;
-}
-
-int32_t write_apev2_tags(FILE *file,size_t pos,apev2_hdr_ftr *header,apev2_item_list *list)
-{
 	size_t written;
 	apev2_tag_item *temp = NULL;
 
@@ -278,40 +355,52 @@ int32_t write_apev2_tags(FILE *file,size_t pos,apev2_hdr_ftr *header,apev2_item_
 	}
 
 	//Write header
-	written = fwrite(header->preamble,sizeof(char),8,file);
-	written = fwrite(&header->version_number,sizeof(int32_t),1,file);
-	written = fwrite(&header->tag_size,sizeof(uint32_t),1,file);
-	written = fwrite(&header->item_count,sizeof(uint32_t),1,file);
-	written = fwrite(&header->flags,sizeof(uint32_t),1,file);
-	written = fwrite(header->reserved,sizeof(char),8,file);
+	{
+		written = fwrite(header->preamble,sizeof(char),8,file);
+		written = fwrite(&header->version_number,sizeof(int32_t),1,file);
+		written = fwrite(&header->tag_size,sizeof(uint32_t),1,file);
+		written = fwrite(&header->item_count,sizeof(uint32_t),1,file);
+		written = fwrite(&header->flags,sizeof(uint32_t),1,file);
+		written = fwrite(header->reserved,sizeof(char),8,file);
+	}
 
 	//Write tags
-	temp = list->first;
-	while(temp != list->last)
 	{
-		if(temp->val_len == 0)
+		temp = list->first;
+		while(temp != list->last)
 		{
+			if(temp->val_len == 0)
+			{
+				temp = temp->next;
+				continue;//Skip writing empty tag
+			}
+
+			written = fwrite(&temp->val_len,sizeof(int32_t),1,file);
+			written = fwrite(&temp->flags,sizeof(int32_t),1,file);
+			written = fwrite(temp->item_key,sizeof(char),(size_t)temp->key_size,file);
+			written = fwrite(&temp->terminator,sizeof(int8_t),1,file);
+			written = fwrite(temp->item_val,sizeof(char),(size_t)temp->val_len,file);
+
+			//Move to next tag
 			temp = temp->next;
-			continue;//Skip writing empty tag
 		}
-
-		written = fwrite(&temp->val_len,sizeof(int32_t),1,file);
-		written = fwrite(&temp->flags,sizeof(int32_t),1,file);
-		written = fwrite(temp->item_key,sizeof(char),(size_t)temp->key_size,file);
-		written = fwrite(&temp->terminator,sizeof(int8_t),1,file);
-		written = fwrite(temp->item_val,sizeof(char),(size_t)temp->val_len,file);
-
-		//Move to next tag
-		temp = temp->next;
 	}
 
 	(void)written;
 	temp = NULL;
-	return 0;
+	
+	state->ape_last_state = APE_FILE_WRITE_SUCCESS;
+	return APE_FILE_WRITE_SUCCESS;
 }
 
-int32_t read_apev2_tags(char *data,int32_t data_size,apev2_keys *keys,apev2_hdr_ftr *header,apev2_item_list *list)
+enum ape_error_codes 
+read_apev2_tags(apev2_state *state,char *data,int32_t data_size,apev2_keys *keys,apev2_hdr_ftr *header,apev2_item_list *list)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_last_state != APE_LIST_INIT_SUCCESS)
+		return APE_READ_FAIL;
+
 	//Read tags
 	{
 		//Match header id
@@ -382,13 +471,18 @@ int32_t read_apev2_tags(char *data,int32_t data_size,apev2_keys *keys,apev2_hdr_
 		}
 	}
 
-	return 0;
+	return APE_READ_SUCCESS;
 }
 
-void print_apev2_tags(apev2_item_list *list)
+enum ape_error_codes 
+print_apev2_tags(apev2_state *state,apev2_item_list *list)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->ape_init_state != 1)
+		return APE_PRINT_FAIL;
 	if(list->item_count <= 0)
-		return;
+		return APE_NO_DATA;
 
 	//int32_t val_len = 0;
 	int32_t tag_count = list->item_count;
@@ -413,13 +507,18 @@ void print_apev2_tags(apev2_item_list *list)
 		tag_count--;
 	}
 
-	return;
+	return APE_PRINT_SUCCESS;
 }
 
-void free_apev2_list(apev2_item_list *list)
+enum ape_error_codes 
+free_apev2_list(apev2_state *state,apev2_item_list *list)
 {
+	if(state == NULL)
+		return APE_STATE_NULL;
+	if(state->list_init_state == 0)
+		return APE_FREE_FAIL;
 	if(list->item_count <= 0)
-		return;
+		return APE_NO_DATA;
 
 	apev2_tag_item *temp = list->first;
 	apev2_tag_item *x = NULL;
@@ -432,5 +531,5 @@ void free_apev2_list(apev2_item_list *list)
 		list->item_count--;
 	}
 
-	return;
+	return APE_FREE_SUCCESS;
 }
