@@ -40,7 +40,7 @@ lpctest: tests/lpctest.c core/lpc.c
 	$(CC) $(INCDIR) -o lpctest tests/lpctest.c core/lpc.c $(CFLAGS) $(LINKFLAGS)
 
 apev2test: tests/apev2test.c core/apev2.c core/wavutils.c
-	$(CC) $(INCDIR) -Wall -o apev2test tests/apev2test.c core/apev2.c core/wavutils.c $(CFLAGS)
+	$(CC) $(INCDIR) -g -Wall -o apev2test tests/apev2test.c core/apev2.c core/wavutils.c -std=c99
 
 wavdiff: wavdiff.o wavutils.o
 	$(CC) $(INCDIR) -o wavdiff wavdiff.o wavutils.o
