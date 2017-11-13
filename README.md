@@ -1,6 +1,6 @@
 # SELA
 ### SimplE Lossless Audio
-A simplified lossless audio codec written for my ongoing project.
+A simplified lossless audio codec written for final year project.
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
@@ -41,4 +41,4 @@ Note : On Windows you will need cygwin to build the command line player. Otherwi
 - [Paper on shorten, the original open source lossless codec](ftp://svr-ftp.eng.cam.ac.uk/pub/reports/robinson_tr156.ps.Z)
 - ISO/IEC 14496 Part 3, Subpart 11 (Audio Lossless Coding)
 
-### License : MIT License
+### License : MIT
