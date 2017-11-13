@@ -1,6 +1,6 @@
 # SELA
 ### SimplE Lossless Audio
-A simplified lossless audio codec written for final year project.
+A simplified lossless audio codec written for my final year project.
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
