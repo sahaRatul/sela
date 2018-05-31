@@ -54,7 +54,7 @@ typedef struct apev2_keys
 	char album[6];
 	char year[4];
 	char genre[5];
-	char comment[6];
+	char comment[7];
 }apev2_keys;
 
 typedef struct apev2_hdr_ftr
