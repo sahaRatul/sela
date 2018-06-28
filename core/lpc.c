@@ -312,6 +312,7 @@ void calc_residue(const int32_t *samples,int64_t N,int16_t ord,int16_t Q,int64_t
 	{
 		y = corr;
 
+		/* Commented out because of buffer overflow issues.
 		y += (int64_t)(coff[0] * samples[k - 0]);
 		y += (int64_t)(coff[1] * samples[k - 1]);
 		y += (int64_t)(coff[2] * samples[k - 2]);
@@ -413,9 +414,10 @@ void calc_residue(const int32_t *samples,int64_t N,int16_t ord,int16_t Q,int64_t
 		y += (int64_t)(coff[98] * samples[k - 98]);
 		y += (int64_t)(coff[99] * samples[k - 99]);
 		y += (int64_t)(coff[100] * samples[k - 100]);
+		*/
 		
-		//for(i = 0; i <= ord; i++)
-			//y += (int64_t)(coff[i] * samples[k-i]);
+		for(i = 0; i <= ord; i++)
+			y += (int64_t)(coff[i] * samples[k-i]);
 		residues[k] = samples[k] - (int32_t)(y >> Q);
 	}
 
@@ -448,6 +450,7 @@ void calc_signal(const int32_t *residues,int64_t N,int16_t ord,int16_t Q,int64_t
 	{
 		y = corr;
 
+		/* Commented out because of buffer overflow issues.
 		y -= (int64_t)(coff[0] * samples[k - 0]);
 		y -= (int64_t)(coff[1] * samples[k - 1]);
 		y -= (int64_t)(coff[2] * samples[k - 2]);
@@ -549,9 +552,10 @@ void calc_signal(const int32_t *residues,int64_t N,int16_t ord,int16_t Q,int64_t
 		y -= (int64_t)(coff[98] * samples[k - 98]);
 		y -= (int64_t)(coff[99] * samples[k - 99]);
 		y -= (int64_t)(coff[100] * samples[k - 100]);
+		*/
 		
-		//for(i = 0; i <= ord; i++)
-			//y -= (int64_t)(coff[i] * samples[k-i]);
+		for(i = 0; i <= ord; i++)
+			y -= (int64_t)(coff[i] * samples[k-i]);
 		samples[k] = residues[k] - (int32_t)(y >> Q);
 	}
 
