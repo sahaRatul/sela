@@ -4,13 +4,13 @@ project(sela VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
+include_directories(include)
+
 add_executable(
     sela
     src/main.cpp
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
-    src/data/rice_encoded_data.cpp
-    src/data/rice_decoded_data.cpp
 )
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
