@@ -4,10 +4,10 @@
 namespace rice
 {
     RiceEncoder::RiceEncoder(data::RiceDecodedData decodedData) {
-
+        this->input = decodedData.decodedData;
     }
 
     void RiceEncoder::process() {
-        std::cout << "Encoded" << std::endl;
+        
     }
 }
