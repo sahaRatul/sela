@@ -31,7 +31,7 @@ namespace rice {
             std::vector<bool> bitInput;
             std::vector<uint64_t> unsignedOutput;
             std::vector<int32_t> output;
-            int32_t dataCount;
+            uint32_t dataCount;
             uint32_t optimumRiceParam;
             inline void generateEncodedBits();
             inline void generateDecodedUnsignedInts();
