@@ -1,2 +1,4 @@
 build/
 CMakeFiles/
+Testing/
+_CPack_Packages/
