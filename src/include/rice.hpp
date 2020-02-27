@@ -10,11 +10,11 @@ namespace rice {
         private:
             std::vector<int32_t> input;
             std::vector<uint64_t> unsignedInput;
-            std::vector<int32_t> output;
-            std::vector<int32_t> bitOutput;
-            std::vector<int64_t> bitSizes;
-            int32_t optimumRiceParam;
-            int64_t requiredBits;
+            std::vector<uint32_t> output;
+            std::vector<bool> bitOutput;
+            std::vector<size_t> bitSizes;
+            uint32_t optimumRiceParam;
+            size_t requiredBits;
             const int32_t maxRiceParam = 20;
             inline void convertSignedToUnsigned();
             inline void calculateOptimumRiceParam();
@@ -27,12 +27,12 @@ namespace rice {
 
     class RiceDecoder {
         private:
-            std::vector<int32_t> input;
-            std::vector<int32_t> bitInput;
+            std::vector<uint32_t> input;
+            std::vector<bool> bitInput;
             std::vector<uint64_t> unsignedOutput;
             std::vector<int32_t> output;
             int32_t dataCount;
-            int32_t optimumRiceParam;
+            uint32_t optimumRiceParam;
             inline void generateEncodedBits();
             inline void generateDecodedUnsignedInts();
             inline void convertUnsignedToSigned();

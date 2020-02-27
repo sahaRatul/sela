@@ -6,10 +6,10 @@
 namespace data {
     class RiceEncodedData {
         public:
-            int32_t optimumRiceParam;
-            int32_t dataCount;
-            std::vector<int32_t> encodedData;
-            RiceEncodedData(int32_t optimumRiceParam, int32_t dataCount, std::vector<int32_t> encodedData) {
+            uint32_t optimumRiceParam;
+            uint32_t dataCount;
+            std::vector<uint32_t> encodedData;
+            RiceEncodedData(int32_t optimumRiceParam, int32_t dataCount, std::vector<uint32_t> encodedData) {
                 this->optimumRiceParam = optimumRiceParam;
                 this->dataCount = dataCount;
                 this->encodedData = encodedData;
