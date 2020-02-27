@@ -7,7 +7,7 @@ namespace rice
         input = decodedData.decodedData;
     }
 
-    void RiceEncoder::convertSignedToUnsigned() {
+    inline void RiceEncoder::convertSignedToUnsigned() {
         unsignedInput.reserve(input.size());
         size_t position = 0;
         for(int32_t x: input) {
@@ -15,7 +15,23 @@ namespace rice
         }
     }
 
-    void RiceEncoder::process() {
+    inline void RiceEncoder::calculateOptimumRiceParam() {
+
+    }
+
+    inline void RiceEncoder::generateEncodedBits() {
+
+    }
+
+    inline void RiceEncoder::writeInts() {
+
+    }
+
+    data::RiceEncodedData RiceEncoder::process() {
         convertSignedToUnsigned();
+        calculateOptimumRiceParam();
+        generateEncodedBits();
+        writeInts();
+        return *(new data::RiceEncodedData(optimumRiceParam, input.size(), output));
     }
 }
