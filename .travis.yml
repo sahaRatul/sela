@@ -1,13 +1,7 @@
 language: cpp
-dist: bionic
+dist: xenial
 os: linux
 compiler: gcc
-
-addons:
-  sonarcloud:
-    organization: "saharatul"
-    token:
-      secure: "MiA0DPxidjlhRBvM4LX7hQbD9oqCMfgHF1NQ6vL8W2/ssbRuzb1ndKl4BktiF38G2i37WTzHwG+AjdRh/fEW3ZO41jkqJ9Cl081h2iReZWucD6AMSOUxBCgqLfHkT2ibEbw678HIjU+idZayN56FTi/7+OPplHybLPWzHhYW2jBhhyKu+6qXpBzclWdrR6pwuFNaNw+4qOFMrXp2ZW45yG0pmQtI/b/wz3gIVvBvEHUd/HgRn18xg5VuQ4rKrg8k4cK23H2o8OmP4I1xuktBFSh4BC2tyvWWV8SZEqONqMFTFD1EubtjMSBs2B823Uhc6Zw/ppQ/j4rcEioGKJc4KTs7Y3uWa6SGIxLQGuWwAM44TPIJ5u7s3r4QqiHWD1DpwB/eI/mruIiZSNjiaO19mIojahwm2g0dZnhkhHxHrkDxSRvvru39DxzK5UMjW0d3puxCGtvGNpyhCa5iipGSw5H1MWkmn1+roQm+S6Q6cOP2dkIMxjXezEwWrVd7TKjogxzGS2DSnwx9SzqzvKmfGLeP3wM09J4MZJ2dbQE6xXznyDP0eIMGeu9nLbel/CUOeN8x00gq+txQ4wXoHpEFsCkP+18Q/hAicxb2IxlforCHxRT0BlVRvV2TgJqy9akOJ3iIWQOYidEiCb4pzFhR7Pov4octV+eTkRCt3RzuJSc="
 
 cache:
 - directories:
