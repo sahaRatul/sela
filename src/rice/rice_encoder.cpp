@@ -21,7 +21,7 @@ inline void RiceEncoder::convertSignedToUnsigned()
 inline void RiceEncoder::calculateOptimumRiceParam()
 {
     for (uint64_t i = 0; i < MAX_RICE_PARAM; i++) {
-        size_t temp = 0;
+        uint64_t temp = 0;
         for (uint64_t j = 0; j < unsignedInput.size(); j++) {
             temp += unsignedInput[j] >> i;
             temp += 1;
@@ -62,7 +62,7 @@ inline void RiceEncoder::generateEncodedBits()
 inline void RiceEncoder::writeInts()
 {
     uint64_t requiredInts = (uint64_t)ceil((float)requiredBits / 32);
-    output.reserve((size_t)requiredInts);
+    output.reserve((uint64_t)requiredInts);
     for (uint64_t i = 0; i < requiredInts; i++) {
         output.push_back(0);
         for (uint64_t j = 0; j < 32; j++) {

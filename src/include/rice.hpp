@@ -16,9 +16,9 @@ private:
     std::vector<uint64_t> unsignedInput;
     std::vector<uint32_t> output;
     std::vector<bool> bitOutput;
-    std::vector<size_t> bitSizes;
+    std::vector<uint64_t> bitSizes;
     uint32_t optimumRiceParam;
-    size_t requiredBits;
+    uint64_t requiredBits;
     inline void convertSignedToUnsigned();
     inline void calculateOptimumRiceParam();
     inline void generateEncodedBits();
