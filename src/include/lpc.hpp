@@ -4,6 +4,7 @@
 #define MAX_LPC_ORDER 100
 #define CORRECTION_FACTOR 35
 
+#include <cstdint>
 #include <vector>
 
 namespace lpc {

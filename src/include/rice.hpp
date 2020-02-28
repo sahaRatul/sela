@@ -1,6 +1,7 @@
 #ifndef _RICE_H_
 #define _RICE_H_
 
+#include <cstdint>
 #include <vector>
 
 #define MAX_RICE_PARAM 20

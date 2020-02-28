@@ -1,6 +1,7 @@
 #ifndef _RICE_ENCODED_DATA_H_
 #define _RICE_ENCODED_DATA_H_
 
+#include <cstdint>
 #include <vector>
 
 namespace data {
