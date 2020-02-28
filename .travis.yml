@@ -7,14 +7,12 @@ cache:
 - directories:
   - $HOME/.cache
 
-addons:
-  apt:
-    packages: lcov
-
 install:
 - mkdir -p $HOME/.cache
 
 addons:
+  apt:
+    packages: lcov
   sonarcloud:
     organization: "saharatul"
     token:
