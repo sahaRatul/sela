@@ -4,8 +4,8 @@
 #include "packetqueue.h"
 #include "format.h"
 
-int initialize_pulse(audio_format *format);
+int32_t initialize_pulse(audio_format *format);
 void *pulse_play(PacketList *list);
-int destroy_pulse();
+int32_t destroy_pulse();
 
 #endif

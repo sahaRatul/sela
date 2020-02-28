@@ -1,50 +1,47 @@
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #include "rice.h"
 
-/*signed data to unsigned data*/
-int signed_to_unsigned(const unsigned int data_size,const short *input,unsigned short *output)
+/*
+*Golomb-Rice algorithm is optimized to work with unsigned numbers
+*This function maps all positive numbers to even postive numbers
+*and negative numbers to odd positive numbers
+*/
+int32_t signed_to_unsigned(const uint32_t data_size,const int32_t *input,uint32_t *output)
 {
-	unsigned int i;
-	for(i = 0; i < data_size; i++)
-	{
-		if(input[i] < 0)
-			output[i] = (-2 * input[i]) - 1;
-		if(input[i] >= 0)
-			output[i] = 2 * input[i];
-	}
+	for(uint32_t i = 0; i < data_size; i++)
+		(input[i] < 0) ? (output[i] = (-(input[i] << 1)) - 1) : (output[i] = input[i] << 1);
 	return(0);
 }
 
-/*unsigned data to signed data*/
-int unsigned_to_signed(const unsigned int data_size,const unsigned short *input,short *output)
+/*
+*This function does exactly the reverse of the above function
+*Maps all odd integers to negative numbers
+*and even integers to positive numbers
+*/
+int32_t unsigned_to_signed(const uint32_t data_size,const uint32_t *input,int32_t *output)
 {
-	unsigned int i;
-	for(i = 0; i < data_size; i++)
-	{
-		if((input[i] & 0x01) == 0x01)//Odd number
-			output[i] = -((input[i] + 1) >> 1);
-		if((input[i] & 0x01) == 0x00)//Even number
-			output[i] = input[i] >> 1;
-	}
+	for(uint32_t i = 0; i < data_size; i++)
+		((input[i] & 0x01) == 0x01) ? (output[i] = -((input[i] + 1) >> 1)) : (output[i] = input[i] >> 1);
 	return(0);
 }
 
 /*calculate optimum rice parameter for encoding a block of data*/
-unsigned short get_opt_rice_param(const unsigned short *data,int data_size,unsigned int *req_bits)
+uint16_t get_opt_rice_param(const uint32_t *data,int32_t data_size,uint32_t *req_bits)
 {
-	int i = 0,j;
-	unsigned int bits[MAX_RICE_PARAM];
-	unsigned int temp;
-	unsigned short best_index;
+	int32_t i = 0,j;
+	uint32_t bits[MAX_RICE_PARAM];
+	uint32_t temp;
+	uint16_t best_index;
 
 	for(i = 0; i < MAX_RICE_PARAM; i++)
 	{
 		temp = 0;
 		for(j = 0; j < data_size; j++)
 		{
-			/*data[j]/2^k;*/
+			//data[j]/2^k;
 			temp += data[j] >> i;
 			temp += 1;
 			temp += i;
@@ -63,17 +60,21 @@ unsigned short get_opt_rice_param(const unsigned short *data,int data_size,unsig
 		{
 			temp = bits[i];
 			*req_bits = bits[i];
-			best_index = (short)i;
+			best_index = (int16_t)i;
 		}
 	}
 	return best_index;
 }
 
-/*Encode a block of data using Golomb-Rice coding*/
-unsigned int rice_encode_block(short param,const unsigned short *input,int size,unsigned short *encoded)
+/*
+*Encode a block of data using Golomb-Rice coding
+*For more details visit
+*http://michael.dipperstein.com/rice/index.html
+*/
+uint32_t rice_encode_block(int16_t param,const uint32_t *input,int32_t size,uint32_t *encoded)
 {
-	int i,j,temp,written = 0;
-	unsigned int bits;
+	int32_t i,j,temp,written = 0;
+	uint32_t bits;
 
 	rice_encode_context context;
 	rice_encode_context *ctx = &context;
@@ -92,7 +93,7 @@ unsigned int rice_encode_block(short param,const unsigned short *input,int size,
 		{
 			ctx->buffer = ctx->buffer | (0x0001 << ctx->filled);
 			ctx->bits++;
-			if(ctx->filled == 15)
+			if(ctx->filled == 31)
 			{
 				encoded[written++] = ctx->buffer;
 				ctx->buffer = 0;
@@ -105,7 +106,7 @@ unsigned int rice_encode_block(short param,const unsigned short *input,int size,
 		//Write out a zero bit
 		ctx->buffer = ctx->buffer | (0x0000 << ctx->filled);
 		ctx->bits++;
-		if(ctx->filled == 15)
+		if(ctx->filled == 31)
 		{
 			encoded[written++] = ctx->buffer;
 			ctx->buffer = 0;
@@ -119,7 +120,7 @@ unsigned int rice_encode_block(short param,const unsigned short *input,int size,
 		{
 			ctx->buffer = ctx->buffer | (((input[i] >> j) & 0x0001) << ctx->filled);
 			ctx->bits++;
-			if(ctx->filled == 15)
+			if(ctx->filled == 31)
 			{
 				encoded[written++] = ctx->buffer;
 				ctx->buffer = 0;
@@ -139,10 +140,10 @@ unsigned int rice_encode_block(short param,const unsigned short *input,int size,
 }
 
 /*Decode a block of data encoded using Golomb-Rice coding*/
-unsigned int rice_decode_block(short param,const unsigned short *encoded,int count,unsigned short *decoded)
+uint32_t rice_decode_block(int16_t param,const uint32_t *encoded,int32_t count,uint32_t *decoded)
 {
-	int i = 0,j = 0,q,k = 0;
-	short tmp;
+	int32_t i = 0,j = 0,q,k = 0;
+	int16_t tmp;
 	rice_decode_context context;
 	rice_decode_context *ctx = &context;
 	ctx->filled = 0;
@@ -155,7 +156,7 @@ unsigned int rice_decode_block(short param,const unsigned short *encoded,int cou
 		{
 			if(ctx->filled == 0)
 			{
-				ctx->filled = 16;
+				ctx->filled = 32;
 				ctx->buffer = encoded[i++];
 			}
 			tmp = ctx->buffer & 0x0001;
@@ -172,7 +173,7 @@ unsigned int rice_decode_block(short param,const unsigned short *encoded,int cou
 		{
 			if(ctx->filled == 0)
 			{
-				ctx->filled = 16;
+				ctx->filled = 32;
 				ctx->buffer = encoded[i++];
 			}
 			tmp = ctx->buffer & 0x0001;
@@ -180,7 +181,7 @@ unsigned int rice_decode_block(short param,const unsigned short *encoded,int cou
 			ctx->filled--;
 			decoded[k] = decoded[k] | (tmp << j);
 		}
-		
+
 		k++;
 	}
 

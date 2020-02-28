@@ -1,0 +1,4 @@
+1) Fix an obscure bug which causes some samples to deviate from original values. 
+	This in turn affects some music files. 
+2) Implementation of a fixed point version of Linear Prediction filter.
+3) Native decoder implementation on Arduino Due(ARM ATMELSAM3X8E).
