@@ -1,5 +1,5 @@
 language: cpp
-dist: trusty
+dist: bionic
 os: linux
 compiler: clang
 
@@ -18,7 +18,8 @@ addons:
   sonarcloud:
     organization: "saharatul"
     token:
-      secure: "Lnw8TFzRmvvwL/5/YUrNyZD3p4Qc6z7N1yIyeQkGSJu4Oi/Qvf8eLaZnjynSSqbJZy7QePfSXH9j1TUuHZv416eiP1K8cF+2sWBeg7C8ytYH6ePEjMWfIomRrBuRJcACpYJGb9l0m9aSKyAoYPj16RGbZPwRLNub7C0bPfXyHaBifn1wPn3nxB4fLCe0oic+Zuw5XmJd63NZ7psEn4ylto9bdBXK8UgtUX8kNTT5UJmhDChmSOY5RfyBAnX9yXcE0Zmnwqp+44iMl7YGUPxeL1OxQVbPvIknlFhxjpcUpfpKL/hWhQomVU7v0JbWrbyPhORHw7aAzEiu9ccIBPYi5xXZ+BAq/ndz8NrnttJxlFtyh431J5IbIZXamxx54rs5QGBenYZ9G0EMpjyUwid59ttDSEXeuLCybkYjpJ/Bd9h8Eyq3foRRFYAtIpnPl7ree4ra0qh5wk0IdFhQauQTwN8kGLzvkE4QeZZUjHZ6CLX+okf0PiBlcd2YsS+egMDuixwZRy/gjP0Lq5q9r1RmK9NqmITXTmojQmyeDveMEIb4NnMUsqUEg1hxbq47zXKB+t46L9bdwjqNlBC5eaGFyrOYL2n8r96vbu2MkC72ptCdY69elDAHNHkANGt2f7FhWAxJlklh9DffUUv9jjMr+jT1+tuF8gCYFs8BEWRHPFI="
+      secure: "n1zmu5ID6hvcs9USecwIr/mfoYSMPVYQysqhBavb9fmjkI/rgHgeXLUPV7608jwlggD7PsVLQPghvzcJwOl1zsmfiWPlZmhS2dC73dzgTz12YKMVD/LhXz5FcpeGUgEzUd+q7DwMpX2xyUaGGGd0K5lFen+du2/KRTB9lOyBTc6fdSnZNXE/HeJuHtwmrrdsbm599CazpE7ZqxBVzqwq4QgRPCFhwuqWML2AEZxm2tF8XjeBZ3ybA6aHh2QtRGc59rdCZ3ReSpMaLZOAyPArOhWF1UTDK0fWYNPtGZrHfai6hurbb6y1cDV+uWT7C/KZQ6Uho/7aETIQM+cOW2l1U8UkUV4NKk61s+NHZDGw4QqDu7NfMR+z4Ob4by0GTjQf/P7/g9tdOyDglfrrREwOX26+Ypqs8dlk7yvl8lWeUsBdjfk52NZJpLbmUZPzpzFPk5mgNLY6MdksJxE/ymbuZyAHAMJUWgu9JCFv7uxw1FBzoloADVfeD2F+FLIDAEjuociKo886fi3+9q1b4B04waQP7AhnSF4NlXUfyprAw31cwvBfnCABTxNbX2/VTlBVNeLF5FUbCrJd7DHEuOIGjR4aJAbnfhOK0TDnR/um5QvfJT6f/EP7Jfiq3fArCjT3z63vgoQwz6fl/pOpLajp/0kGlVNz0tS6aYUIo+ucSxc="
+
 
 script:
   # Prepare the build system
@@ -32,16 +33,3 @@ script:
   # And finally run the SonarQube analysis - read the "sonar-project.properties"
   # file to see the specific configuration
   - sonar-scanner
-
-after_success:
-# Create lcov report
-# capture coverage info
-- lcov --directory . --capture --output-file coverage.info
-# filter out system and extra files.
-# To also not include test code in coverage add them with full path to the patterns: '*/tests/*'
-- lcov --remove coverage.info "/usr/*" "*.hpp" --output-file coverage.info
-# output coverage data for debugging (optional)
-- lcov --list coverage.info
-# Uploading to CodeCov
-# '-f' specifies file(s) to use and disables manual coverage gathering and file search which has already been done above
-- bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
