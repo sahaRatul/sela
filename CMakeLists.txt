@@ -59,9 +59,9 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         --coverage # sets all required flags
     )
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-        target_link_options(selatests PUBLIC Catch --coverage)
+        target_link_options(selatests PUBLIC --coverage)
     else()
-        target_link_libraries(selatests PUBLIC Catch --coverage)
+        target_link_libraries(selatests PUBLIC --coverage)
     endif()
 endif()
 #---------------------------------------------------------------
