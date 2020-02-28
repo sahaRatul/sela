@@ -29,7 +29,6 @@ add_executable(sela ${SOURCES})
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
-message(CMAKE_BUILD_TYPE)
     if(MSVC)
         target_compile_options(sela PUBLIC /W4 /WX)
     else()
