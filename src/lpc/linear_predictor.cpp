@@ -29,7 +29,7 @@ inline void LinearPredictor::dequantizeReflectionCoefficients()
 
 inline void LinearPredictor::generatelinearPredictionCoefficients()
 {
-    linearPredictionCoefficients.reserve((size_t)(optimalLpcOrder + 1));
+    linearPredictionCoefficients.reserve((uint64_t)(optimalLpcOrder + 1));
     double linearPredictionCoefficientMatrix[MAX_LPC_ORDER][MAX_LPC_ORDER];
     double lpcTmp[MAX_LPC_ORDER];
     const uint64_t correction = (uint64_t)1 << CORRECTION_FACTOR;

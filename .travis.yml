@@ -1,7 +1,7 @@
 language: cpp
-dist: bionic
+dist: trusty
 os: linux
-compiler: gcc
+compiler: clang
 
 cache:
 - directories:
@@ -14,7 +14,24 @@ addons:
 install:
 - mkdir -p $HOME/.cache
 
-script: ./build.sh
+addons:
+  sonarcloud:
+    organization: "saharatul"
+    token:
+      secure: "Lnw8TFzRmvvwL/5/YUrNyZD3p4Qc6z7N1yIyeQkGSJu4Oi/Qvf8eLaZnjynSSqbJZy7QePfSXH9j1TUuHZv416eiP1K8cF+2sWBeg7C8ytYH6ePEjMWfIomRrBuRJcACpYJGb9l0m9aSKyAoYPj16RGbZPwRLNub7C0bPfXyHaBifn1wPn3nxB4fLCe0oic+Zuw5XmJd63NZ7psEn4ylto9bdBXK8UgtUX8kNTT5UJmhDChmSOY5RfyBAnX9yXcE0Zmnwqp+44iMl7YGUPxeL1OxQVbPvIknlFhxjpcUpfpKL/hWhQomVU7v0JbWrbyPhORHw7aAzEiu9ccIBPYi5xXZ+BAq/ndz8NrnttJxlFtyh431J5IbIZXamxx54rs5QGBenYZ9G0EMpjyUwid59ttDSEXeuLCybkYjpJ/Bd9h8Eyq3foRRFYAtIpnPl7ree4ra0qh5wk0IdFhQauQTwN8kGLzvkE4QeZZUjHZ6CLX+okf0PiBlcd2YsS+egMDuixwZRy/gjP0Lq5q9r1RmK9NqmITXTmojQmyeDveMEIb4NnMUsqUEg1hxbq47zXKB+t46L9bdwjqNlBC5eaGFyrOYL2n8r96vbu2MkC72ptCdY69elDAHNHkANGt2f7FhWAxJlklh9DffUUv9jjMr+jT1+tuF8gCYFs8BEWRHPFI="
+
+script:
+  # Prepare the build system
+  - mkdir build
+  - cd build
+  - cmake ..
+  - cd ..
+  # Wraps the compilation with the Build Wrapper to generate configuration (used
+  # later by the SonarQube Scanner) into the "bw-output" folder
+  - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/
+  # And finally run the SonarQube analysis - read the "sonar-project.properties"
+  # file to see the specific configuration
+  - sonar-scanner
 
 after_success:
 # Create lcov report
