@@ -49,7 +49,7 @@ inline void RiceEncoder::generateEncodedBits()
         bitOutput.push_back(false);
         // Write out last param bits of input
         for (int64_t j = optimumRiceParam - 1; j >= 0; j--) {
-            bitOutput.push_back((bool)(unsignedInput[i] >> j & 0b1));
+            bitOutput.push_back((bool)(unsignedInput[i] >> j & 0x1));
         }
     }
 
