@@ -46,7 +46,6 @@ set(TEST_SOURCES
     test/ricetests.cpp
 )
 add_executable(selatests ${TEST_SOURCES})
-target_link_libraries(selatests Catch)
 
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -57,8 +56,8 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         --coverage # sets all required flags
     )
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-        target_link_options(selatests INTERFACE --coverage)
+        target_link_options(selatests Catch INTERFACE --coverage)
     else()
-        target_link_libraries(selatests INTERFACE --coverage)
+        target_link_libraries(selatests Catch INTERFACE --coverage)
     endif()
 endif(CODE_COVERAGE)
