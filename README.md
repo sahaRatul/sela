@@ -2,6 +2,11 @@
 ### SimplE Lossless Audio
 A simplified lossless audio codec written for my final year project.
 
+[![LOC](https://tokei.rs/b1/github/sahaRatul/sela)](https://github.com/sahaRatul/sela).
+[![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=cpp-rewrite)](https://travis-ci.org/sahaRatul/sela)
+[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/latest/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
 ![Decoder](https://cloud.githubusercontent.com/assets/12273725/8868418/cbb6a1dc-31f5-11e5-91f6-8290766baa34.png)
