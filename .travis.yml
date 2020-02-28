@@ -3,6 +3,9 @@ dist: bionic
 os: linux
 compiler: gcc
 
+git:
+  depth: false
+
 cache:
 - directories:
   - $HOME/.cache
