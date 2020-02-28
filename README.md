@@ -2,32 +2,17 @@
 ### SimplE Lossless Audio
 A simplified lossless audio codec written for my final year project.
 
+## NOTE: THIS code is currently being rewritten. You can get the legacy code by switching to `legacy` branch.
+You can also check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
+
+[![LOC](https://tokei.rs/b1/github/sahaRatul/sela)](https://github.com/sahaRatul/sela).
+[![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=cpp-rewrite)](https://travis-ci.org/sahaRatul/sela)
+[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/latest/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
 ![Decoder](https://cloud.githubusercontent.com/assets/12273725/8868418/cbb6a1dc-31f5-11e5-91f6-8290766baa34.png)
-
-### Main Components
-- Linear prediction filter (core/lpc.c)
-- Golomb-Rice compressor and decompressor (core/rice.c)
-- apev2 metadata reader/writer (apev2.c)
-- Encoder (core/encoder.c)
-- Decoder (core/decoder.c)
-- Command line player (player/selaplay.c)
-- Matlab implementation of Linear prediction filter can be found in 'tests/matlab-tests' folder
-
-### Build requirements
-- gcc (You can use clang if you modify the ```CC``` variable in the Makefile)
-- GNU make
-- Standard math library for building the encoder and decoder.
-- POSIX threading and pulseaudio/libao developement libraries for building the command line player.
-Note : On Windows you will need cygwin to build the command line player. Otherwise MinGW is sufficient.
-
-### Build instructions
-- cd to the directory
-- type ```make all``` to build the encoder & decoder
-- type ```make selaplay_ao``` or ```make selaplay_pulse``` to build the player using either libao/pulseaudio libraries
-- type ```make lpctest && make ricetest && make apev2test``` to build the tests
-- type ```make wavdiff``` to build the diff utility for .wav files
 
 ### References
 - Linear Prediction
