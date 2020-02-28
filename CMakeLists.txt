@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sela VERSION 0.1.0)
 
-# Verbose Makefiles
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
 # Require (at least) it
@@ -28,7 +26,8 @@ set(SOURCES
     src/rice/rice_decoder.cpp
 )
 add_executable(sela ${SOURCES})
-# Enable Warnings for MSVC/GCC/Clang
+
+# Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
 message(CMAKE_BUILD_TYPE)
     if(MSVC)
@@ -57,7 +56,6 @@ if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Add required flags (GCC & LLVM/Clang)
     target_compile_options(selatests PUBLIC
         -O0        # no optimization
-        -g         # generate debug info
         --coverage # sets all required flags
     )
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
