@@ -33,6 +33,7 @@ script:
   - sonar-scanner
 
 after_success:
+- rm -rf build
 - ./build.sh
 # Create lcov report
 # capture coverage info
