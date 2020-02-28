@@ -1,7 +1,7 @@
 language: cpp
 dist: bionic
 os: linux
-compiler: clang
+compiler: gcc
 
 cache:
 - directories:
