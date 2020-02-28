@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sela VERSION 0.1.0)
 
+# Verbose Makefiles
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -8,16 +9,6 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Don't use e.g. GNU extension (like -std=gnu++11) for portability
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-# Enable Warnings for MSVC/GCC/Clang
-if(CMAKE_BUILD_TYPE MATCHES "Debug")
-    if(MSVC)
-        add_compile_options(/W4 /WX)
-    else()
-        add_compile_options(-Wall -Wextra -pedantic -Werror)
-    endif()
-endif()
-
 
 # Enable CTest
 include(CTest)
@@ -29,7 +20,7 @@ set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
-# Make sela executable
+# Make sela executable -----------------
 set(SOURCES 
     src/main.cpp
     src/lpc/linear_predictor.cpp
@@ -37,7 +28,18 @@ set(SOURCES
     src/rice/rice_decoder.cpp
 )
 add_executable(sela ${SOURCES})
+# Enable Warnings for MSVC/GCC/Clang
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+message(CMAKE_BUILD_TYPE)
+    if(MSVC)
+        target_compile_options(sela PUBLIC /W4 /WX)
+    else()
+        target_compile_options(sela PUBLIC -Wall -Wextra -pedantic -Werror)
+    endif()
+endif()
+# --------------------------------------------
 
+#---------------------------------------------
 # Prepare "Catch" library for other executables
 set(CATCH_INCLUDE_DIR test/include)
 add_library(Catch INTERFACE)
@@ -50,18 +52,18 @@ set(TEST_SOURCES
     test/ricetests.cpp
 )
 add_executable(selatests ${TEST_SOURCES})
-
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     # Add required flags (GCC & LLVM/Clang)
-    target_compile_options(selatests INTERFACE
+    target_compile_options(selatests PUBLIC
         -O0        # no optimization
         -g         # generate debug info
         --coverage # sets all required flags
     )
     if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-        target_link_options(selatests INTERFACE Catch --coverage)
+        target_link_options(selatests PUBLIC Catch --coverage)
     else()
-        target_link_libraries(selatests INTERFACE Catch --coverage)
+        target_link_libraries(selatests PUBLIC Catch --coverage)
     endif()
 endif()
+#---------------------------------------------------------------
