@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sela VERSION 0.1.0)
 
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
 # Require (at least) it
@@ -9,11 +10,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Enable Warnings for MSVC/GCC/Clang
-if(MSVC)
-    add_compile_options(/W4 /WX)
-else()
-    add_compile_options(-Wall -Wextra -pedantic -Werror)
+if(CMAKE_BUILD_TYPE MATCHES "Debug")
+    if(MSVC)
+        add_compile_options(/W4 /WX)
+    else()
+        add_compile_options(-Wall -Wextra -pedantic -Werror)
+    endif()
 endif()
+
 
 # Enable CTest
 include(CTest)
