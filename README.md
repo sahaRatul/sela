@@ -11,7 +11,7 @@ You can also check out the Java version of this codec at [https://github.com/sah
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/sahaRatul/sela/blob/master/LICENSE)
 
 https://github.com/sahaRatul/sela
 
