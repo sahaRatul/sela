@@ -5,8 +5,7 @@ A simplified lossless audio codec written for my final year project.
 ## NOTE: THIS code is currently being rewritten. You can get the legacy code by switching to `legacy` branch.
 You can also check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
 
-[![LOC](https://tokei.rs/b1/github/sahaRatul/sela)](https://github.com/sahaRatul/sela).
-[![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=cpp-rewrite)](https://travis-ci.org/sahaRatul/sela)
+[![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=master)](https://travis-ci.org/sahaRatul/sela)
 [![codecov](https://codecov.io/gh/sahaRatul/sela/branch/latest/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
