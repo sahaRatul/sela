@@ -9,6 +9,7 @@ include_directories(include)
 add_executable(
     sela
     src/main.cpp
+    src/lpc/linear_predictor.cpp
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
 )

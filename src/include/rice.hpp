@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#define MAX_RICE_PARAM 20
+
 #include "./data/rice_decoded_data.hpp"
 #include "./data/rice_encoded_data.hpp"
 
@@ -16,7 +18,6 @@ private:
     std::vector<size_t> bitSizes;
     uint32_t optimumRiceParam;
     size_t requiredBits;
-    const int32_t maxRiceParam = 20;
     inline void convertSignedToUnsigned();
     inline void calculateOptimumRiceParam();
     inline void generateEncodedBits();
