@@ -75,7 +75,7 @@ public:
 class LinearPredictor {
 public:
     LinearPredictor();
-    LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint32_t optimalLpcOrder);
+    LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint8_t optimalLpcOrder);
 
 protected:
     std::vector<double> reflectionCoefficients;

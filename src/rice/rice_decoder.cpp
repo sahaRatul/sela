@@ -57,4 +57,4 @@ data::RiceDecodedData RiceDecoder::process()
     convertUnsignedToSigned();
     return *(new data::RiceDecodedData(output));
 }
-} // namespace rice
+}

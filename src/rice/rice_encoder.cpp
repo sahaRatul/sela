@@ -13,7 +13,6 @@ RiceEncoder::RiceEncoder(data::RiceDecodedData decodedData)
 inline void RiceEncoder::convertSignedToUnsigned()
 {
     unsignedInput.reserve(input.size());
-    size_t position = 0;
     for (int32_t x : input) {
         unsignedInput.push_back(x < 0 ? (-(x << 1)) - 1 : (x << 1));
     }
@@ -39,7 +38,6 @@ inline void RiceEncoder::generateEncodedBits()
     uint64_t bitReservoirSize = (uint64_t)(ceil((float)requiredBits / 32) * 32);
     bitOutput.reserve(bitReservoirSize);
     uint64_t temp = 0;
-    size_t bits = 0;
 
     for (uint64_t i = 0; i < unsignedInput.size(); i++) {
         temp = unsignedInput[i] >> optimumRiceParam;
@@ -82,4 +80,4 @@ data::RiceEncodedData RiceEncoder::process()
     return *(new data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(),
         output));
 }
-} // namespace rice
+}

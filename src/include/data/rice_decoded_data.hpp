@@ -13,6 +13,6 @@ public:
         this->decodedData = decodedData;
     }
 };
-} // namespace data
+}
 
 #endif

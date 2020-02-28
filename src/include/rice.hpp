@@ -45,6 +45,6 @@ public:
     RiceDecoder(data::RiceEncodedData encodedData);
     data::RiceDecodedData process();
 };
-} // namespace rice
+}
 
 #endif

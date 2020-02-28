@@ -7,7 +7,7 @@ LinearPredictor::LinearPredictor()
     optimalLpcOrder = 1;
 }
 
-LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint32_t optimalLpcOrder)
+LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint8_t optimalLpcOrder)
 {
     reflectionCoefficients.reserve(MAX_LPC_ORDER);
     this->quantizedReflectionCoefficients = quantizedReflectionCoefficients;

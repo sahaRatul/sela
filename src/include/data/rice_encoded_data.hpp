@@ -19,6 +19,6 @@ public:
         this->encodedData = encodedData;
     }
 };
-} // namespace data
+}
 
 #endif
