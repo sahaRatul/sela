@@ -10,7 +10,7 @@ SampleGenerator::SampleGenerator(data::LpcEncodedData& encodedData)
 
 inline void SampleGenerator::generateSamples()
 {
-    samples = std::vector<int32_t>(residues.size(), 0);;
+    samples = std::vector<int32_t>(residues.size(), 0);
 
     int64_t correction = (int64_t)1 << (CORRECTION_FACTOR - 1);
 
