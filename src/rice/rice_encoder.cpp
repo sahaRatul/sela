@@ -5,9 +5,9 @@
 #include "../include/rice.hpp"
 
 namespace rice {
-RiceEncoder::RiceEncoder(data::RiceDecodedData decodedData)
+RiceEncoder::RiceEncoder(data::RiceDecodedData& decodedData)
+    : input(decodedData.decodedData)
 {
-    input = decodedData.decodedData;
 }
 
 inline void RiceEncoder::convertSignedToUnsigned()

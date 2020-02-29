@@ -3,9 +3,9 @@
 #include "../include/rice.hpp"
 
 namespace rice {
-RiceDecoder::RiceDecoder(data::RiceEncodedData encodedData)
+RiceDecoder::RiceDecoder(data::RiceEncodedData& encodedData)
+    : input(encodedData.encodedData)
 {
-    input = encodedData.encodedData;
     dataCount = encodedData.dataCount;
     optimumRiceParam = encodedData.optimumRiceParam;
     unsignedOutput = std::vector<uint64_t>();

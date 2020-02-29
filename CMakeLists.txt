@@ -22,6 +22,8 @@ include(CPack)
 set(SOURCES 
     src/main.cpp
     src/lpc/linear_predictor.cpp
+    src/lpc/residue_generator.cpp
+    src/lpc/sample_generator.cpp
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
 )

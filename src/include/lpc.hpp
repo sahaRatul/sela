@@ -3,9 +3,13 @@
 
 #define MAX_LPC_ORDER 100
 #define CORRECTION_FACTOR 35
+#define SQRT2 1.4142135623730950488016887242096
 
 #include <cstdint>
 #include <vector>
+
+#include "data/lpc_decoded_data.hpp"
+#include "data/lpc_encoded_data.hpp"
 
 namespace lpc {
 class LookupTables {
@@ -84,6 +88,21 @@ protected:
     uint8_t optimalLpcOrder;
     inline void dequantizeReflectionCoefficients();
     inline void generatelinearPredictionCoefficients();
+};
+
+class ResidueGenerator {
+private:
+    std::vector<int32_t> samples;
+    std::vector<int32_t> residues;
+    std::vector<double> quantizedSamples;
+    std::vector<double> autocorrelationFactors;
+    LinearPredictor linearPredictor;
+    uint8_t bitsPerSample;
+    int32_t quantizationFactor;
+public:
+    ResidueGenerator(data::LpcDecodedData data) {
+        
+    }
 };
 }
 
