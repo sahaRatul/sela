@@ -4,7 +4,6 @@ namespace lpc {
 LinearPredictor::LinearPredictor()
 {
     reflectionCoefficients.reserve(MAX_LPC_ORDER);
-    optimalLpcOrder = 1;
 }
 
 LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint8_t optimalLpcOrder)

@@ -76,7 +76,7 @@ constexpr static double higherOrderCoefficients[128] = { -1, -0.984375, -0.96875
 namespace lpc {
 class LinearPredictor {
 public:
-    uint8_t optimalLpcOrder;
+    uint8_t optimalLpcOrder = 1;
     std::vector<double> reflectionCoefficients;
     std::vector<int64_t> linearPredictionCoefficients;
     std::vector<int32_t> quantizedReflectionCoefficients;

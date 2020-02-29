@@ -5,8 +5,6 @@
 namespace rice {
 RiceDecoder::RiceDecoder(data::RiceEncodedData& encodedData)
     : input(encodedData.encodedData)
-    , unsignedOutput(std::vector<uint64_t>())
-    , output(std::vector<int32_t>())
     , dataCount(encodedData.dataCount)
     , optimumRiceParam(encodedData.optimumRiceParam)
 {
@@ -24,7 +22,10 @@ inline void RiceDecoder::generateEncodedBits()
 
 inline void RiceDecoder::generateDecodedUnsignedInts()
 {
-    uint32_t count = 0, temp = 0, i = 0, bitReadCounter = 0;
+    uint32_t count = 0; 
+    uint32_t temp = 0;
+    uint32_t i = 0;
+    uint32_t bitReadCounter = 0;
     unsignedOutput.reserve(dataCount);
     while (count < dataCount) {
         // Count 1s until a zero is encountered

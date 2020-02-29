@@ -19,7 +19,8 @@ inline void ResidueGenerator::quantizeSamples()
 
 inline void ResidueGenerator::generateAutoCorrelation()
 {
-    double sum = 0, mean = 0;
+    double sum = 0;
+    double mean = 0;
     autocorrelationFactors.reserve(MAX_LPC_ORDER + 1);
 
     // Generate Mean of samples
