@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-#define MAX_RICE_PARAM 20
+constexpr uint8_t MAX_RICE_PARAM = 20;
 
 #include "./data/rice_decoded_data.hpp"
 #include "./data/rice_encoded_data.hpp"
@@ -25,7 +25,7 @@ private:
     inline void writeInts();
 
 public:
-    RiceEncoder(data::RiceDecodedData &decodedData);
+    explicit RiceEncoder(data::RiceDecodedData &decodedData);
     data::RiceEncodedData process();
 };
 
@@ -42,7 +42,7 @@ private:
     inline void convertUnsignedToSigned();
 
 public:
-    RiceDecoder(data::RiceEncodedData &encodedData);
+    explicit RiceDecoder(data::RiceEncodedData &encodedData);
     data::RiceDecodedData process();
 };
 }

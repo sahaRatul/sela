@@ -1,15 +1,15 @@
 #ifndef _LPC_H_
 #define _LPC_H_
 
-#define MAX_LPC_ORDER 100
-#define CORRECTION_FACTOR 35
-#define SQRT2 1.4142135623730950488016887242096
-
 #include <cstdint>
 #include <vector>
 
 #include "data/lpc_decoded_data.hpp"
 #include "data/lpc_encoded_data.hpp"
+
+constexpr uint8_t MAX_LPC_ORDER = 100;
+constexpr uint8_t CORRECTION_FACTOR = 35;
+constexpr double SQRT2 = 1.4142135623730950488016887242096;
 
 namespace lpc {
 class LookupTables {
@@ -99,9 +99,10 @@ private:
     LinearPredictor linearPredictor;
     uint8_t bitsPerSample;
     int32_t quantizationFactor;
+
 public:
-    ResidueGenerator(data::LpcDecodedData data) {
-        
+    explicit ResidueGenerator(data::LpcDecodedData data)
+    {
     }
 };
 }
