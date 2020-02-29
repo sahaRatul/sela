@@ -27,3 +27,6 @@ wget https://raw.github.com/eriwen/lcov-to-cobertura-xml/master/lcov_cobertura/l
 python3 lcov_cobertura.py coverage.info --base-dir src/dir --excludes test.lib --output build/coverage.xml
 
 bash <(curl -s https://codecov.io/bash) -f coverage.info || echo "Codecov did not collect coverage reports"
+
+rm coverage.info
+rm lcov_cobertura.py
