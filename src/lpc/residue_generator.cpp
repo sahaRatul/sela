@@ -5,9 +5,7 @@
 namespace lpc {
 ResidueGenerator::ResidueGenerator(data::LpcDecodedData& data)
     : samples(data.samples)
-    , linearPredictor(*(new LinearPredictor()))
     , bitsPerSample(data.bitsPerSample)
-    , quantizationFactor(32767)
 {
 }
 

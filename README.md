@@ -6,11 +6,11 @@ A simplified lossless audio codec written for my final year project.
 You can also check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
 
 [![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=master)](https://travis-ci.org/sahaRatul/sela)
+[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=alert_status)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
-[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ### Block Diagrams

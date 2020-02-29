@@ -92,9 +92,9 @@ private:
     std::vector<int32_t> residues;
     std::vector<double> quantizedSamples;
     std::vector<double> autocorrelationFactors;
-    LinearPredictor& linearPredictor;
+    LinearPredictor& linearPredictor = *(new LinearPredictor());
     uint8_t bitsPerSample;
-    int32_t quantizationFactor;
+    int32_t quantizationFactor = 32767;
     inline void quantizeSamples();
     inline void generateAutoCorrelation();
     inline void generateReflectionCoefficients();
@@ -116,7 +116,7 @@ private:
     inline void generateSamples();
 
 public:
-    SampleGenerator(data::LpcEncodedData& encodedData);
+    explicit SampleGenerator(data::LpcEncodedData& encodedData);
     data::LpcDecodedData process();
 };
 }
