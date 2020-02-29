@@ -77,17 +77,17 @@ public:
 };
 
 class LinearPredictor {
+private:
+    std::vector<double> reflectionCoefficients;
+    std::vector<int64_t> linearPredictionCoefficients;
+
 public:
+    uint8_t optimalLpcOrder;
+    std::vector<int32_t> quantizedReflectionCoefficients;
     LinearPredictor();
     LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint8_t optimalLpcOrder);
-
-protected:
-    std::vector<double> reflectionCoefficients;
-    std::vector<int32_t> quantizedReflectionCoefficients;
-    std::vector<int64_t> linearPredictionCoefficients;
-    uint8_t optimalLpcOrder;
-    inline void dequantizeReflectionCoefficients();
-    inline void generatelinearPredictionCoefficients();
+    void dequantizeReflectionCoefficients();
+    void generatelinearPredictionCoefficients();
 };
 
 class ResidueGenerator {
@@ -96,14 +96,32 @@ private:
     std::vector<int32_t> residues;
     std::vector<double> quantizedSamples;
     std::vector<double> autocorrelationFactors;
-    LinearPredictor linearPredictor;
+    LinearPredictor& linearPredictor;
     uint8_t bitsPerSample;
     int32_t quantizationFactor;
+    inline void quantizeSamples();
+    inline void generateAutoCorrelation();
+    inline void generateReflectionCoefficients();
+    inline void generateoptimalLpcOrder();
+    inline void quantizeReflectionCoefficients();
+    inline void generateResidues();
 
 public:
-    explicit ResidueGenerator(data::LpcDecodedData data)
-    {
-    }
+    explicit ResidueGenerator(data::LpcDecodedData& data);
+    data::LpcEncodedData process();
+};
+
+class SampleGenerator {
+private:
+    std::vector<int32_t> residues;
+    std::vector<int32_t> samples;
+    uint8_t bitsPerSample;
+    LinearPredictor& linearPredictor;
+    inline void generateSamples();
+
+public:
+    SampleGenerator(data::LpcEncodedData& encodedData);
+    data::LpcDecodedData process();
 };
 }
 

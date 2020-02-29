@@ -14,7 +14,7 @@ LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoeffic
     this->optimalLpcOrder = optimalLpcOrder;
 }
 
-inline void LinearPredictor::dequantizeReflectionCoefficients()
+void LinearPredictor::dequantizeReflectionCoefficients()
 {
     if (optimalLpcOrder <= 1) {
         reflectionCoefficients.push_back(0);
@@ -27,7 +27,7 @@ inline void LinearPredictor::dequantizeReflectionCoefficients()
     }
 }
 
-inline void LinearPredictor::generatelinearPredictionCoefficients()
+void LinearPredictor::generatelinearPredictionCoefficients()
 {
     linearPredictionCoefficients.reserve((size_t)(optimalLpcOrder + 1));
     double linearPredictionCoefficientMatrix[MAX_LPC_ORDER][MAX_LPC_ORDER];
