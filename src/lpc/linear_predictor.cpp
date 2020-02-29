@@ -15,6 +15,7 @@ LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoeffic
 
 void LinearPredictor::dequantizeReflectionCoefficients()
 {
+    reflectionCoefficients.clear();
     if (optimalLpcOrder <= 1) {
         reflectionCoefficients.push_back(0);
         return;

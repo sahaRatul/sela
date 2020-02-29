@@ -49,6 +49,10 @@ target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
 # Make test executable
 set(TEST_SOURCES 
+    src/lpc/linear_predictor.cpp
+    src/lpc/residue_generator.cpp
+    src/lpc/sample_generator.cpp
+    test/lpctests.cpp
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
     test/ricetests.cpp

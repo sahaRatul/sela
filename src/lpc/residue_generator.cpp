@@ -81,10 +81,10 @@ inline void ResidueGenerator::quantizeReflectionCoefficients()
 {
     linearPredictor.quantizedReflectionCoefficients.reserve((size_t)linearPredictor.optimalLpcOrder);
 
-    if (linearPredictor.quantizedReflectionCoefficients.size() > 0) {
+    if (linearPredictor.quantizedReflectionCoefficients.capacity() > 0) {
         linearPredictor.quantizedReflectionCoefficients.push_back((int32_t)floor(64 * (-1 + (SQRT2 * sqrt(linearPredictor.reflectionCoefficients[0] + 1)))));
     }
-    if (linearPredictor.quantizedReflectionCoefficients.size() > 1) {
+    if (linearPredictor.quantizedReflectionCoefficients.capacity() > 1) {
         linearPredictor.quantizedReflectionCoefficients.push_back((int32_t)floor(64 * (-1 + (SQRT2 * sqrt(-linearPredictor.reflectionCoefficients[1] + 1)))));
     }
     for (size_t i = 2; i < linearPredictor.optimalLpcOrder; i++) {
@@ -95,7 +95,7 @@ inline void ResidueGenerator::quantizeReflectionCoefficients()
 inline void ResidueGenerator::generateResidues()
 {
     residues.reserve(samples.size());
-    int64_t correction = (uint64_t)1 << (CORRECTION_FACTOR - 1);
+    int64_t correction = (int64_t)1 << (CORRECTION_FACTOR - 1);
     residues.push_back(samples[0]);
 
     for (size_t i = 1; i <= (size_t)linearPredictor.optimalLpcOrder; i++) {
