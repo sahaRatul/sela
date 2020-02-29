@@ -4,30 +4,30 @@ namespace lpc {
 LinearPredictor::LinearPredictor()
 {
     reflectionCoefficients.reserve(MAX_LPC_ORDER);
-    optimalLpcOrder = 1;
 }
 
 LinearPredictor::LinearPredictor(std::vector<int32_t> quantizedReflectionCoefficients, uint8_t optimalLpcOrder)
+    : optimalLpcOrder(optimalLpcOrder)
+    , quantizedReflectionCoefficients(quantizedReflectionCoefficients)
 {
     reflectionCoefficients.reserve(MAX_LPC_ORDER);
-    this->quantizedReflectionCoefficients = quantizedReflectionCoefficients;
-    this->optimalLpcOrder = optimalLpcOrder;
 }
 
-inline void LinearPredictor::dequantizeReflectionCoefficients()
+void LinearPredictor::dequantizeReflectionCoefficients()
 {
+    reflectionCoefficients.clear();
     if (optimalLpcOrder <= 1) {
         reflectionCoefficients.push_back(0);
         return;
     }
-    reflectionCoefficients.push_back(LookupTables::firstOrderCoefficients[quantizedReflectionCoefficients[0] + 64]);
-    reflectionCoefficients.push_back(LookupTables::firstOrderCoefficients[0] + 64);
+    reflectionCoefficients.push_back(firstOrderCoefficients[quantizedReflectionCoefficients[0] + 64]);
+    reflectionCoefficients.push_back(secondOrderCoefficients[quantizedReflectionCoefficients[1] + 64]);
     for (uint8_t i = 2; i < optimalLpcOrder; i++) {
-        reflectionCoefficients.push_back(LookupTables::higherOrderCoefficients[quantizedReflectionCoefficients[i] + 64]);
+        reflectionCoefficients.push_back(higherOrderCoefficients[quantizedReflectionCoefficients[i] + 64]);
     }
 }
 
-inline void LinearPredictor::generatelinearPredictionCoefficients()
+void LinearPredictor::generatelinearPredictionCoefficients()
 {
     linearPredictionCoefficients.reserve((size_t)(optimalLpcOrder + 1));
     double linearPredictionCoefficientMatrix[MAX_LPC_ORDER][MAX_LPC_ORDER];

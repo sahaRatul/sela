@@ -3,13 +3,11 @@
 #include "../include/rice.hpp"
 
 namespace rice {
-RiceDecoder::RiceDecoder(data::RiceEncodedData encodedData)
+RiceDecoder::RiceDecoder(data::RiceEncodedData& encodedData)
+    : input(encodedData.encodedData)
+    , dataCount(encodedData.dataCount)
+    , optimumRiceParam(encodedData.optimumRiceParam)
 {
-    input = encodedData.encodedData;
-    dataCount = encodedData.dataCount;
-    optimumRiceParam = encodedData.optimumRiceParam;
-    unsignedOutput = std::vector<uint64_t>();
-    output = std::vector<int32_t>();
 }
 
 inline void RiceDecoder::generateEncodedBits()
@@ -24,18 +22,24 @@ inline void RiceDecoder::generateEncodedBits()
 
 inline void RiceDecoder::generateDecodedUnsignedInts()
 {
-    uint32_t count = 0, temp = 0, i = 0, bitReadCounter = 0;
+    uint32_t count = 0; 
+    uint32_t temp = 0;
+    uint32_t i = 0;
+    uint32_t bitReadCounter = 0;
     unsignedOutput.reserve(dataCount);
     while (count < dataCount) {
         // Count 1s until a zero is encountered
         temp = 0;
-        while (bitInput[bitReadCounter++] == 1) {
+        while (bitInput[bitReadCounter] == 1) {
             temp++;
+            bitReadCounter++;
         }
+        bitReadCounter++;
         unsignedOutput.push_back(temp << optimumRiceParam);
         // Read the last 'optimumRiceParam' number of bits and add them to output
         for (i = 1; i < (optimumRiceParam + 1); i++) {
-            unsignedOutput[count] = unsignedOutput[count] | ((long)bitInput[bitReadCounter++] << (optimumRiceParam - i));
+            unsignedOutput[count] = unsignedOutput[count] | ((long)bitInput[bitReadCounter] << (optimumRiceParam - i));
+            bitReadCounter++;
         }
         count++;
     }

@@ -13,10 +13,10 @@ public:
     RiceEncodedData(int32_t optimumRiceParam,
         int32_t dataCount,
         std::vector<uint32_t> encodedData)
+        : optimumRiceParam(optimumRiceParam)
+        , dataCount(dataCount)
+        , encodedData(encodedData)
     {
-        this->optimumRiceParam = optimumRiceParam;
-        this->dataCount = dataCount;
-        this->encodedData = encodedData;
     }
 };
 }

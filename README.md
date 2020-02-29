@@ -2,18 +2,16 @@
 ### SimplE Lossless Audio
 A simplified lossless audio codec written for my final year project.
 
-## NOTE: THIS code is currently being rewritten. You can get the legacy code by switching to `legacy` branch.
+## NOTE: THIS project is currently being rewritten. You can get the legacy code by switching to `legacy` branch.
 You can also check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
 
 [![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=master)](https://travis-ci.org/sahaRatul/sela)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=alert_status)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
+[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
-[![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/sahaRatul/sela/blob/master/LICENSE)
-
-https://github.com/sahaRatul/sela
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
