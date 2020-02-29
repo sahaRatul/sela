@@ -19,6 +19,7 @@ set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 # Make sela executable -----------------
+set(SELA_INCLUDE_DIR src/include)
 set(SOURCES 
     src/main.cpp
     src/lpc/linear_predictor.cpp
@@ -28,6 +29,7 @@ set(SOURCES
     src/rice/rice_decoder.cpp
 )
 add_executable(sela ${SOURCES})
+target_include_directories(sela INTERFACE ${SELA_INCLUDE_DIR})
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")

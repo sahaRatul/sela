@@ -20,10 +20,10 @@ void LinearPredictor::dequantizeReflectionCoefficients()
         reflectionCoefficients.push_back(0);
         return;
     }
-    reflectionCoefficients.push_back(LookupTables::firstOrderCoefficients[quantizedReflectionCoefficients[0] + 64]);
-    reflectionCoefficients.push_back(LookupTables::firstOrderCoefficients[0] + 64);
+    reflectionCoefficients.push_back(firstOrderCoefficients[quantizedReflectionCoefficients[0] + 64]);
+    reflectionCoefficients.push_back(secondOrderCoefficients[quantizedReflectionCoefficients[1] + 64]);
     for (uint8_t i = 2; i < optimalLpcOrder; i++) {
-        reflectionCoefficients.push_back(LookupTables::higherOrderCoefficients[quantizedReflectionCoefficients[i] + 64]);
+        reflectionCoefficients.push_back(higherOrderCoefficients[quantizedReflectionCoefficients[i] + 64]);
     }
 }
 
