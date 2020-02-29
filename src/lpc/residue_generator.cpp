@@ -70,7 +70,7 @@ inline void ResidueGenerator::generateReflectionCoefficients()
 inline void ResidueGenerator::generateoptimalLpcOrder()
 {
     for (int64_t i = MAX_LPC_ORDER - 1; i >= 0; i--) {
-        if (abs(linearPredictor.reflectionCoefficients[i]) > 0.05) {
+        if (std::abs(linearPredictor.reflectionCoefficients[i]) > 0.05) {
             linearPredictor.optimalLpcOrder = (uint8_t)(i + 1);
             break;
         }

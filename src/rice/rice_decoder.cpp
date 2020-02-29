@@ -13,9 +13,9 @@ RiceDecoder::RiceDecoder(data::RiceEncodedData& encodedData)
 inline void RiceDecoder::generateEncodedBits()
 {
     bitInput.reserve(input.size() * 32);
-    for (uint64_t i = 0; i < input.size(); i++) {
+    for(uint64_t x: input) {
         for (uint64_t j = 0; j < 32; j++) {
-            bitInput.push_back((bool)(input[i] >> j & 0x1));
+            bitInput.push_back((bool)(x >> j & 0x1));
         }
     }
 }
