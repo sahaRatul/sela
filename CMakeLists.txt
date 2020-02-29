@@ -11,7 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Enable CTest
 include(CTest)
 enable_testing()
-add_test(NAME SelaTests COMMAND selatests)
+add_test(NAME tests COMMAND selatests)
 
 # CPack config
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
@@ -56,6 +56,7 @@ set(TEST_SOURCES
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
     test/ricetests.cpp
+    test/main.cpp
 )
 add_executable(selatests ${TEST_SOURCES})
 option(CODE_COVERAGE "Enable coverage reporting" OFF)

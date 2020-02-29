@@ -1,5 +1,3 @@
-#define CATCH_CONFIG_MAIN
-
 #include <random>
 
 #include "../src/include/rice.hpp"
