@@ -1,11 +1,17 @@
 #define CATCH_CONFIG_MAIN
 
+#include <random>
+
 #include "../src/include/rice.hpp"
 #include "include/catch.hpp"
 
 TEST_CASE("Rice Encoder/Decoder combined test")
 {
-    data::RiceDecodedData* data = new data::RiceDecodedData(std::vector<int32_t> { 10, -20, 30 });
+    std::vector<int32_t> input = std::vector<int32_t>(2048, 0);
+    for (size_t i = 0; i < input.size(); i++) {
+        input[i] = 200 + (std::rand() % (201));
+    }
+    data::RiceDecodedData* data = new data::RiceDecodedData(input);
     //Encode
     rice::RiceEncoder* enc = new rice::RiceEncoder(*data);
     data::RiceEncodedData encodedData = enc->process();
