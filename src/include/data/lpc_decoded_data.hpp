@@ -10,9 +10,9 @@ public:
     std::vector<int32_t> samples;
     uint8_t bitsPerSample;
     LpcDecodedData(std::vector<int32_t> samples, uint8_t bitsPerSample)
+        : samples(samples)
+        , bitsPerSample(bitsPerSample)
     {
-        this->samples = samples;
-        this->bitsPerSample = bitsPerSample;
     }
 };
 }
