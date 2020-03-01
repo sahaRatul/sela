@@ -62,7 +62,7 @@ data::WavFrame FrameDecoder::process()
             decoded.reserve(difference.samples.size());
 
             // Stage 4 Generate samples
-            for (int i = 0; i < decoded.capacity(); i++) {
+            for (size_t i = 0; i < decoded.capacity(); i++) {
                 decoded[i] = (*(samples[parentChannelNumber]))[i] - difference.samples[i];
             }
             samples[channel] = &decoded;
