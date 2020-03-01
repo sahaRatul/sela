@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "rice_encoded_data.hpp"
+
 namespace data {
 class SelaSubFrame {
 public:
@@ -29,6 +31,21 @@ public:
 
     uint32_t getByteCount();
     void write();
+    SelaSubFrame(uint8_t channel, uint8_t subFrameType, uint8_t parentChannelNumber,
+        data::RiceEncodedData& reflectionData, data::RiceEncodedData& residueData)
+        : channel(channel)
+        , subFrameType(subFrameType)
+        , parentChannelNumber(parentChannelNumber)
+        , reflectionCoefficientRiceParam((uint8_t)reflectionData.optimumRiceParam)
+        , reflectionCoefficientRequiredInts((uint16_t)reflectionData.encodedData.size())
+        , optimumLpcOrder((uint8_t)reflectionData.dataCount)
+        , encodedReflectionCoefficients(reflectionData.encodedData)
+        , residueRiceParam((uint8_t)residueData.optimumRiceParam)
+        , residueRequiredInts((uint16_t)residueData.encodedData.size())
+        , samplesPerChannel((uint16_t)residueData.dataCount)
+        , encodedResidues(residueData.encodedData)
+    {
+    }
 };
 }
 
