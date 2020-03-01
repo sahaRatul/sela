@@ -12,7 +12,7 @@ FrameDecoder::FrameDecoder(const data::SelaFrame& selaFrame)
 
 data::WavFrame FrameDecoder::process()
 {
-    std::vector<const std::vector<int32_t>*> samples = std::vector<const std::vector<int32_t>*>(selaFrame.subFrames.size(), nullptr);
+    samples = std::vector<const std::vector<int32_t>*>(selaFrame.subFrames.size(), nullptr);
 
     // Foreach independent subFrame
     for (data::SelaSubFrame selaSubFrame : selaFrame.subFrames) {

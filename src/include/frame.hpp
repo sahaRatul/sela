@@ -8,6 +8,7 @@ namespace frame {
 class FrameEncoder {
 private:
     const data::WavFrame& wavFrame;
+    std::vector<data::SelaSubFrame> subFrames;
 
 public:
     explicit FrameEncoder(const data::WavFrame& wavFrame);
@@ -17,6 +18,7 @@ public:
 class FrameDecoder {
 private:
     const data::SelaFrame& selaFrame;
+    std::vector<const std::vector<int32_t>*> samples;
 
 public:
     explicit FrameDecoder(const data::SelaFrame& selaFrame);

@@ -12,7 +12,6 @@ FrameEncoder::FrameEncoder(const data::WavFrame& wavFrame)
 
 data::SelaFrame FrameEncoder::process()
 {
-    std::vector<data::SelaSubFrame> subFrames;
     subFrames.reserve(wavFrame.samples.size());
 
     // Foreach channel
@@ -22,7 +21,7 @@ data::SelaFrame FrameEncoder::process()
             std::vector<int32_t> differenceSignal;
             differenceSignal.reserve(wavFrame.samples[i]->size());
             for (size_t j = 0; j < wavFrame.samples[i]->size(); j++) {
-                differenceSignal.push_back(wavFrame.samples[i - 1]->at(j) - wavFrame.samples[i]->at(j - 1));
+                differenceSignal.push_back(wavFrame.samples[i - 1]->at(j) - wavFrame.samples[i]->at(j));
             }
 
             // Stage 2 - Generate residues and reflection coefficients for difference as
