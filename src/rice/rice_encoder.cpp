@@ -22,7 +22,7 @@ inline void RiceEncoder::calculateOptimumRiceParam()
 {
     for (uint64_t i = 0; i < MAX_RICE_PARAM; i++) {
         size_t temp = 0;
-        for (uint64_t x: unsignedInput) {
+        for (uint64_t x : unsignedInput) {
             temp += x >> i;
             temp += 1;
             temp += i;
@@ -39,7 +39,7 @@ inline void RiceEncoder::generateEncodedBits()
     bitOutput.reserve(bitReservoirSize);
     uint64_t temp = 0;
 
-    for(uint64_t x: unsignedInput) {
+    for (uint64_t x : unsignedInput) {
         temp = x >> optimumRiceParam;
         // Write out 'temp' number of ones
         for (uint64_t j = 0; j < temp; j++) {
@@ -77,7 +77,7 @@ data::RiceEncodedData RiceEncoder::process()
     calculateOptimumRiceParam();
     generateEncodedBits();
     writeInts();
-    return *(new data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(),
-        output));
+    return data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(),
+        output);
 }
 }

@@ -59,6 +59,6 @@ data::RiceDecodedData RiceDecoder::process()
     generateEncodedBits();
     generateDecodedUnsignedInts();
     convertUnsignedToSigned();
-    return *(new data::RiceDecodedData(output));
+    return data::RiceDecodedData(output);
 }
 }
