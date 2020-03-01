@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace frame {
-FrameDecoder::FrameDecoder(data::SelaFrame& selaFrame)
+FrameDecoder::FrameDecoder(const data::SelaFrame& selaFrame)
     : selaFrame(selaFrame)
 {
 }
@@ -20,9 +20,9 @@ data::WavFrame FrameDecoder::process()
             // Stage 1 - Extract data from subFrame
             uint8_t channel = selaSubFrame.channel;
             uint8_t optimumLpcOrder = selaSubFrame.optimumLpcOrder;
-            data::RiceEncodedData* reflectionData = new data::RiceEncodedData(selaSubFrame.reflectionCoefficientRiceParam,
+            const data::RiceEncodedData* reflectionData = new data::RiceEncodedData(selaSubFrame.reflectionCoefficientRiceParam,
                 selaSubFrame.optimumLpcOrder, selaSubFrame.encodedReflectionCoefficients);
-            data::RiceEncodedData* residueData = new data::RiceEncodedData(selaSubFrame.residueRiceParam,
+            const data::RiceEncodedData* residueData = new data::RiceEncodedData(selaSubFrame.residueRiceParam,
                 selaSubFrame.samplesPerChannel, selaSubFrame.encodedResidues);
 
             // Stage 2 - Decompress data
@@ -30,9 +30,9 @@ data::WavFrame FrameDecoder::process()
             data::RiceDecodedData decodedResidueData = (new rice::RiceDecoder(*residueData))->process();
 
             // Stage 3 - Generate Samples
-            data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
+            const data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
                 decodedReflectionData.decodedData, decodedResidueData.decodedData);
-            data::LpcDecodedData decoded = (new lpc::SampleGenerator(*encodedData))->process();
+            const data::LpcDecodedData decoded = (new lpc::SampleGenerator(*encodedData))->process();
             samples[channel] = (&decoded.samples);
         }
     }
@@ -44,9 +44,9 @@ data::WavFrame FrameDecoder::process()
             uint8_t channel = subFrame.channel;
             uint8_t parentChannelNumber = subFrame.parentChannelNumber;
             uint8_t optimumLpcOrder = subFrame.optimumLpcOrder;
-            data::RiceEncodedData* reflectionData = new data::RiceEncodedData(subFrame.reflectionCoefficientRiceParam,
+            const data::RiceEncodedData* reflectionData = new data::RiceEncodedData(subFrame.reflectionCoefficientRiceParam,
                 subFrame.optimumLpcOrder, subFrame.encodedReflectionCoefficients);
-            data::RiceEncodedData* residueData = new data::RiceEncodedData(subFrame.residueRiceParam,
+            const data::RiceEncodedData* residueData = new data::RiceEncodedData(subFrame.residueRiceParam,
                 subFrame.samplesPerChannel, subFrame.encodedResidues);
 
             // Stage 2 - Decompress data
@@ -54,7 +54,7 @@ data::WavFrame FrameDecoder::process()
             data::RiceDecodedData decodedResidueData = (new rice::RiceDecoder(*residueData))->process();
 
             // Stage 3 - Generate Difference signal
-            data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
+            const data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
                 decodedReflectionData.decodedData, decodedResidueData.decodedData);
             data::LpcDecodedData difference = (new lpc::SampleGenerator(*encodedData))->process();
 

@@ -7,19 +7,19 @@
 namespace frame {
 class FrameEncoder {
 private:
-    data::WavFrame& wavFrame;
+    const data::WavFrame& wavFrame;
 
 public:
-    explicit FrameEncoder(data::WavFrame& wavFrame);
+    explicit FrameEncoder(const data::WavFrame& wavFrame);
     data::SelaFrame process();
 };
 
 class FrameDecoder {
 private:
-    data::SelaFrame& selaFrame;
+    const data::SelaFrame& selaFrame;
 
 public:
-    explicit FrameDecoder(data::SelaFrame& selaFrame);
+    explicit FrameDecoder(const data::SelaFrame& selaFrame);
     data::WavFrame process();
 };
 }

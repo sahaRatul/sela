@@ -19,7 +19,7 @@ public:
     uint8_t reflectionCoefficientRiceParam;
     uint16_t reflectionCoefficientRequiredInts;
     uint8_t optimumLpcOrder;
-    std::vector<uint32_t> encodedReflectionCoefficients;
+    const std::vector<uint32_t> encodedReflectionCoefficients;
 
     // Residue data
     uint8_t residueRiceParam;
