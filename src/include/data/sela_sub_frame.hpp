@@ -21,18 +21,18 @@ public:
     uint8_t reflectionCoefficientRiceParam;
     uint16_t reflectionCoefficientRequiredInts;
     uint8_t optimumLpcOrder;
-    const std::vector<uint32_t> encodedReflectionCoefficients;
+    const std::vector<uint32_t>& encodedReflectionCoefficients;
 
     // Residue data
     uint8_t residueRiceParam;
     uint16_t residueRequiredInts;
     uint16_t samplesPerChannel;
-    const std::vector<uint32_t> encodedResidues;
+    const std::vector<uint32_t>& encodedResidues;
 
     uint32_t getByteCount();
     void write();
     SelaSubFrame(uint8_t channel, uint8_t subFrameType, uint8_t parentChannelNumber,
-        data::RiceEncodedData& reflectionData, data::RiceEncodedData& residueData)
+        const data::RiceEncodedData& reflectionData, const data::RiceEncodedData& residueData)
         : channel(channel)
         , subFrameType(subFrameType)
         , parentChannelNumber(parentChannelNumber)
