@@ -10,9 +10,9 @@ namespace data {
 class SelaFrame {
 public:
     const int32_t syncWord = 0xAA55FF00;
-    const std::vector<SelaSubFrame>& subFrames;
+    std::vector<SelaSubFrame> subFrames;
     uint8_t bitsPerSample; //Not to be written to output
-    SelaFrame(const std::vector<SelaSubFrame>& subFrames, uint8_t bitsPerSample)
+    SelaFrame(std::vector<SelaSubFrame> subFrames, uint8_t bitsPerSample)
         : subFrames(subFrames)
         , bitsPerSample(bitsPerSample)
     {

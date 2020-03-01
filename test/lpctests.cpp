@@ -26,6 +26,11 @@ TEST_CASE("LPC Encoder/Decoder combined test")
     // Generate samples
     lpc::SampleGenerator* sampleGen = new lpc::SampleGenerator(encoded);
     data::LpcDecodedData decoded = sampleGen->process();
+    
     REQUIRE(input->samples.size() == decoded.samples.size());
     REQUIRE(input->samples == decoded.samples);
+    
+    delete resGen;
+    delete sampleGen;
+    delete input;
 }

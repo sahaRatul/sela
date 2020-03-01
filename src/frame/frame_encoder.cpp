@@ -12,7 +12,8 @@ FrameEncoder::FrameEncoder(const data::WavFrame& wavFrame)
 
 data::SelaFrame FrameEncoder::process()
 {
-    subFrames.reserve(wavFrame.samples.size());
+    data::SelaFrame selaFrame = data::SelaFrame(std::vector<data::SelaSubFrame>(), wavFrame.bitsPerSample);
+    selaFrame.subFrames.reserve(wavFrame.samples.size());
 
     // Foreach channel
     for (size_t i = 0; i < wavFrame.samples.size(); i++) {
@@ -49,10 +50,10 @@ data::SelaFrame FrameEncoder::process()
             size_t actualDataSize = reflectionDataActual.encodedData.size() + residueDataActual.encodedData.size();
             if (differenceDataSize < actualDataSize) {
                 data::SelaSubFrame selaSubFrame = data::SelaSubFrame((uint8_t)i, (uint8_t)1, (uint8_t)(i - 1), reflectionDataDifference, residueDataDifference);
-                subFrames.push_back(selaSubFrame);
+                selaFrame.subFrames.push_back(selaSubFrame);
             } else {
                 data::SelaSubFrame selaSubFrame = data::SelaSubFrame((uint8_t)i, (uint8_t)0, (uint8_t)i, reflectionDataActual, residueDataActual);
-                subFrames.push_back(selaSubFrame);
+                selaFrame.subFrames.push_back(selaSubFrame);
             }
         } else {
             // Stage 1 - Generate residues and reflection coefficients
@@ -67,11 +68,11 @@ data::SelaFrame FrameEncoder::process()
 
             // Stage 3 - Generate Subframes
             data::SelaSubFrame selaSubFrame = data::SelaSubFrame((uint8_t)i, (uint8_t)0, (uint8_t)i, reflectionData, residueData);
-            subFrames.push_back(selaSubFrame);
+            selaFrame.subFrames.push_back(selaSubFrame);
         }
     }
 
-    return data::SelaFrame(subFrames, wavFrame.bitsPerSample);
+    return selaFrame;
 }
 
 }

@@ -94,7 +94,7 @@ private:
     std::vector<double> autocorrelationFactors;
     LinearPredictor& linearPredictor = *(new LinearPredictor());
     uint8_t bitsPerSample;
-    int32_t quantizationFactor = 32767;
+    int32_t quantizationFactor = INT16_MAX; //Warning: This is hardcoded and subject to change later
     inline void quantizeSamples();
     inline void generateAutoCorrelation();
     inline void generateReflectionCoefficients();

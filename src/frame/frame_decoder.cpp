@@ -12,7 +12,7 @@ FrameDecoder::FrameDecoder(const data::SelaFrame& selaFrame)
 
 data::WavFrame FrameDecoder::process()
 {
-    samples = std::vector<const std::vector<int32_t>*>(selaFrame.subFrames.size(), nullptr);
+    data::WavFrame wavFrame = data::WavFrame(selaFrame.bitsPerSample, std::vector<const std::vector<int32_t>*>(selaFrame.subFrames.size(), nullptr));
 
     // Foreach independent subFrame
     for (data::SelaSubFrame selaSubFrame : selaFrame.subFrames) {
@@ -33,7 +33,7 @@ data::WavFrame FrameDecoder::process()
             const data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
                 decodedReflectionData.decodedData, decodedResidueData.decodedData);
             const data::LpcDecodedData decoded = (new lpc::SampleGenerator(*encodedData))->process();
-            samples[channel] = (&decoded.samples);
+            wavFrame.samples[channel] = (&decoded.samples);
         }
     }
 
@@ -63,12 +63,12 @@ data::WavFrame FrameDecoder::process()
 
             // Stage 4 Generate samples
             for (size_t i = 0; i < decoded.capacity(); i++) {
-                decoded[i] = (*(samples[parentChannelNumber]))[i] - difference.samples[i];
+                decoded[i] = (*(wavFrame.samples[parentChannelNumber]))[i] - difference.samples[i];
             }
-            samples[channel] = &decoded;
+            wavFrame.samples[channel] = &decoded;
         }
     }
 
-    return data::WavFrame(selaFrame.bitsPerSample, samples);
+    return wavFrame;
 }
 }

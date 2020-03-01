@@ -19,4 +19,7 @@ TEST_CASE("Rice Encoder/Decoder combined test")
     data::RiceDecodedData decodedData = dec->process();
     REQUIRE(data->decodedData.size() == decodedData.decodedData.size());
     REQUIRE(data->decodedData == decodedData.decodedData);
+    delete data;
+    delete enc;
+    delete dec;
 }
