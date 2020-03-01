@@ -25,7 +25,7 @@ private:
     inline void writeInts();
 
 public:
-    explicit RiceEncoder(data::RiceDecodedData& decodedData);
+    explicit RiceEncoder(const data::RiceDecodedData& decodedData);
     data::RiceEncodedData process();
 };
 
@@ -42,7 +42,7 @@ private:
     inline void convertUnsignedToSigned();
 
 public:
-    explicit RiceDecoder(data::RiceEncodedData& encodedData);
+    explicit RiceDecoder(const data::RiceEncodedData& encodedData);
     data::RiceDecodedData process();
 };
 }

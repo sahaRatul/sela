@@ -3,7 +3,7 @@
 #include "../include/lpc.hpp"
 
 namespace lpc {
-ResidueGenerator::ResidueGenerator(data::LpcDecodedData& data)
+ResidueGenerator::ResidueGenerator(const data::LpcDecodedData& data)
     : samples(data.samples)
     , bitsPerSample(data.bitsPerSample)
 {

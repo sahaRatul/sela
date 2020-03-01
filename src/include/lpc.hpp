@@ -103,7 +103,7 @@ private:
     inline void generateResidues();
 
 public:
-    explicit ResidueGenerator(data::LpcDecodedData& data);
+    explicit ResidueGenerator(const data::LpcDecodedData& data);
     data::LpcEncodedData process();
 };
 
@@ -116,7 +116,7 @@ private:
     inline void generateSamples();
 
 public:
-    explicit SampleGenerator(data::LpcEncodedData& encodedData);
+    explicit SampleGenerator(const data::LpcEncodedData& encodedData);
     data::LpcDecodedData process();
 };
 }

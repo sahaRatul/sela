@@ -1,7 +1,7 @@
 #include "../include/lpc.hpp"
 
 namespace lpc {
-SampleGenerator::SampleGenerator(data::LpcEncodedData& encodedData)
+SampleGenerator::SampleGenerator(const data::LpcEncodedData& encodedData)
     : residues(encodedData.residues)
     , bitsPerSample(encodedData.bitsPerSample)
     , linearPredictor(*(new LinearPredictor(encodedData.quantizedReflectionCoefficients, encodedData.optimalLpcOrder)))

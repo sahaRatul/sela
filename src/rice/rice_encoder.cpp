@@ -5,7 +5,7 @@
 #include "../include/rice.hpp"
 
 namespace rice {
-RiceEncoder::RiceEncoder(data::RiceDecodedData& decodedData)
+RiceEncoder::RiceEncoder(const data::RiceDecodedData& decodedData)
     : input(decodedData.decodedData)
 {
 }

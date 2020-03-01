@@ -15,11 +15,12 @@ public:
 };
 
 class FrameDecoder {
-    private:
-        data::SelaFrame& selaFrame;
-    public:
-        explicit FrameDecoder(data::SelaFrame& selaFrame);
-        data::WavFrame process();
+private:
+    data::SelaFrame& selaFrame;
+
+public:
+    explicit FrameDecoder(data::SelaFrame& selaFrame);
+    data::WavFrame process();
 };
 }
 

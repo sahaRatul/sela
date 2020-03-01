@@ -13,7 +13,7 @@ public:
     const std::vector<SelaSubFrame> subFrames;
     uint8_t bitsPerSample; //Not to be written to output
     SelaFrame(std::vector<SelaSubFrame> subFrames, uint8_t bitsPerSample);
-    SelaFrame(uint8_t bitsPerSample);
+    explicit SelaFrame(uint8_t bitsPerSample);
     uint32_t getByteCount();
     void write();
 };
