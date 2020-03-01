@@ -77,7 +77,6 @@ data::RiceEncodedData RiceEncoder::process()
     calculateOptimumRiceParam();
     generateEncodedBits();
     writeInts();
-    return data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(),
-        output);
+    return data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(), output);
 }
 }
