@@ -12,7 +12,7 @@ constexpr uint8_t MAX_RICE_PARAM = 20;
 namespace rice {
 class RiceEncoder {
 private:
-    std::vector<int32_t>& input;
+    const std::vector<int32_t>& input;
     std::vector<uint64_t> unsignedInput;
     std::vector<uint32_t> output;
     std::vector<bool> bitOutput;
@@ -31,7 +31,7 @@ public:
 
 class RiceDecoder {
 private:
-    std::vector<uint32_t>& input;
+    const std::vector<uint32_t>& input;
     std::vector<bool> bitInput;
     std::vector<uint64_t> unsignedOutput;
     std::vector<int32_t> output;

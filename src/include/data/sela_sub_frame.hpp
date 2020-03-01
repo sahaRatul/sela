@@ -25,7 +25,7 @@ public:
     uint8_t residueRiceParam;
     uint16_t residueRequiredInts;
     uint16_t samplesPerChannel;
-    std::vector<uint32_t> encodedResidues;
+    const std::vector<uint32_t> encodedResidues;
 
     uint32_t getByteCount();
     void write();
