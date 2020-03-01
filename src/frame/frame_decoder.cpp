@@ -12,8 +12,7 @@ FrameDecoder::FrameDecoder(data::SelaFrame& selaFrame)
 
 data::WavFrame FrameDecoder::process()
 {
-    std::vector<std::vector<int32_t>*> samples;
-    samples.reserve(selaFrame.subFrames.size());
+    std::vector<const std::vector<int32_t>*> samples = std::vector<const std::vector<int32_t>*>(selaFrame.subFrames.size(), nullptr);
 
     // Foreach independent subFrame
     for (data::SelaSubFrame selaSubFrame : selaFrame.subFrames) {
@@ -34,7 +33,7 @@ data::WavFrame FrameDecoder::process()
             data::LpcEncodedData* encodedData = new data::LpcEncodedData(optimumLpcOrder, selaFrame.bitsPerSample,
                 decodedReflectionData.decodedData, decodedResidueData.decodedData);
             data::LpcDecodedData decoded = (new lpc::SampleGenerator(*encodedData))->process();
-            samples[channel] = &decoded.samples;
+            samples[channel] = (&decoded.samples);
         }
     }
 
