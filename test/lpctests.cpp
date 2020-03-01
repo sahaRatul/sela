@@ -17,7 +17,7 @@ TEST_CASE("LPC Encoder/Decoder combined test")
         samples.push_back((int32_t)(32767 * sin((double)i * (M_PI / 180))));
     }
 
-    data::LpcDecodedData* input = new data::LpcDecodedData(samples, (uint8_t)16);
+    data::LpcDecodedData* input = new data::LpcDecodedData((uint8_t)16, samples);
 
     // Generate residues
     lpc::ResidueGenerator* resGen = new lpc::ResidueGenerator(*input);

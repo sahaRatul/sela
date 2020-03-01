@@ -36,6 +36,6 @@ data::LpcDecodedData SampleGenerator::process()
     linearPredictor.dequantizeReflectionCoefficients();
     linearPredictor.generatelinearPredictionCoefficients();
     generateSamples();
-    return data::LpcDecodedData(samples, bitsPerSample);
+    return data::LpcDecodedData(bitsPerSample, samples);
 }
 }

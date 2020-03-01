@@ -7,8 +7,8 @@
 namespace data {
 class RiceDecodedData {
 public:
-    std::vector<int32_t> decodedData;
-    explicit RiceDecodedData(std::vector<int32_t> decodedData)
+    std::vector<int32_t>& decodedData;
+    explicit RiceDecodedData(std::vector<int32_t>& decodedData)
         : decodedData(decodedData)
     {
     }

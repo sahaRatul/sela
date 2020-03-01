@@ -88,7 +88,7 @@ public:
 
 class ResidueGenerator {
 private:
-    std::vector<int32_t>& samples;
+    const std::vector<int32_t>& samples;
     std::vector<int32_t> residues;
     std::vector<double> quantizedSamples;
     std::vector<double> autocorrelationFactors;
@@ -109,7 +109,7 @@ public:
 
 class SampleGenerator {
 private:
-    std::vector<int32_t>& residues;
+    const std::vector<int32_t>& residues;
     std::vector<int32_t> samples;
     uint8_t bitsPerSample;
     LinearPredictor& linearPredictor;

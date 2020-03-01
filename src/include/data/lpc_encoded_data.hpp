@@ -9,9 +9,9 @@ class LpcEncodedData {
 public:
     uint8_t optimalLpcOrder;
     uint8_t bitsPerSample;
-    std::vector<int32_t> quantizedReflectionCoefficients;
-    std::vector<int32_t> residues;
-    LpcEncodedData(uint8_t optimalLpcOrder, uint8_t bitsPerSample, std::vector<int32_t> quantizedReflectionCoefficients, std::vector<int32_t> residues)
+    const std::vector<int32_t>& quantizedReflectionCoefficients;
+    const std::vector<int32_t>& residues;
+    LpcEncodedData(uint8_t optimalLpcOrder, uint8_t bitsPerSample, const std::vector<int32_t>& quantizedReflectionCoefficients, const std::vector<int32_t>& residues)
         : optimalLpcOrder(optimalLpcOrder)
         , bitsPerSample(bitsPerSample)
         , quantizedReflectionCoefficients(quantizedReflectionCoefficients)

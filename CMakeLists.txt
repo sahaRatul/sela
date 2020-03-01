@@ -27,6 +27,8 @@ set(SOURCES
     src/lpc/sample_generator.cpp
     src/rice/rice_encoder.cpp
     src/rice/rice_decoder.cpp
+    src/frame/frame_encoder.cpp
+    src/frame/frame_decoder.cpp
 )
 add_executable(sela ${SOURCES})
 target_include_directories(sela INTERFACE ${SELA_INCLUDE_DIR})

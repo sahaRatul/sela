@@ -7,11 +7,11 @@
 namespace data {
 class LpcDecodedData {
 public:
-    std::vector<int32_t> samples;
+    std::vector<int32_t>& samples;
     uint8_t bitsPerSample;
-    LpcDecodedData(std::vector<int32_t> samples, uint8_t bitsPerSample)
-        : samples(samples)
-        , bitsPerSample(bitsPerSample)
+    LpcDecodedData(uint8_t bitsPerSample, std::vector<int32_t>& samples)
+        : bitsPerSample(bitsPerSample)
+        , samples(samples)
     {
     }
 };
