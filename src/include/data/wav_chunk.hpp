@@ -1,7 +1,7 @@
 #ifndef _WAV_CHUNK_H_
 #define _WAV_CHUNK_H_
 
-#include "wav_subchunk.hpp"
+#include "wav_sub_chunk.hpp"
 #include <cstdint>
 
 namespace data {

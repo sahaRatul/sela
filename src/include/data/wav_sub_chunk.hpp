@@ -1,5 +1,5 @@
-#ifndef _WAV_SUBCHUNK_H_
-#define _WAV_SUBCHUNK_H_
+#ifndef _WAV_SUB_CHUNK_H_
+#define _WAV_SUB_CHUNK_H_
 
 #include <cstdint>
 #include <string>
