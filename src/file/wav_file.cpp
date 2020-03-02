@@ -61,19 +61,43 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     //Validate subChunks
     bool isFmtSubChunkPresent = false;
     bool isDataSubChunkPresent = false;
+    uint8_t bitsPerSample = 0;
+    size_t index = 0;
     for (data::WavSubChunk wavSubChunk : wavChunk.wavSubChunks) {
-        if(wavSubChunk.subChunkId == "fmt ") {
+        if (wavSubChunk.subChunkId == "fmt ") {
             isFmtSubChunkPresent = true;
+            data::WavFormatSubChunk wavFormatSubChunk;
+            wavFormatSubChunk.audioFormat = ((int8_t)wavSubChunk.subChunkData[1] << 8) | ((int8_t)wavSubChunk.subChunkData[0]);
+            wavFormatSubChunk.numChannels = ((uint8_t)wavSubChunk.subChunkData[3] << 8) | ((uint8_t)wavSubChunk.subChunkData[2]);
+            wavFormatSubChunk.sampleRate = ((uint8_t)wavSubChunk.subChunkData[7] << 24) | ((uint8_t)wavSubChunk.subChunkData[6] << 16) | ((uint8_t)wavSubChunk.subChunkData[5] << 8) | ((uint8_t)wavSubChunk.subChunkData[4]);
+            wavFormatSubChunk.byteRate = ((uint8_t)wavSubChunk.subChunkData[11] << 24) | ((uint8_t)wavSubChunk.subChunkData[10] << 16) | ((uint8_t)wavSubChunk.subChunkData[9] << 8) | ((uint8_t)wavSubChunk.subChunkData[8]);
+            wavFormatSubChunk.blockAlign = ((uint8_t)wavSubChunk.subChunkData[13] << 8) | ((uint8_t)wavSubChunk.subChunkData[12]);
+            wavFormatSubChunk.bitsPerSample = ((uint8_t)wavSubChunk.subChunkData[15] << 8) | ((uint8_t)wavSubChunk.subChunkData[14]);
+            wavChunk.wavSubChunks[index] = wavFormatSubChunk; //Replace existing subChunk with specialized subChunk
+            bitsPerSample = (uint8_t)wavFormatSubChunk.bitsPerSample;
         }
-        if(wavSubChunk.subChunkId == "data") {
-            isDataSubChunkPresent = true;
-        }
+        index++;
     }
 
-    if(!isFmtSubChunkPresent) {
+    if (!isFmtSubChunkPresent) {
         throw data::Exception("fmt subChunk is missing from file");
     }
-    else if(!isDataSubChunkPresent) {
+    index = 0;
+    for (data::WavSubChunk wavSubChunk : wavChunk.wavSubChunks) {
+        if (wavSubChunk.subChunkId == "data") {
+            isDataSubChunkPresent = true;
+            data::WavDataSubChunk dataFormatSubChunk(bitsPerSample);
+            dataFormatSubChunk.samples = std::vector<int32_t>((wavSubChunk.subChunkData.size() * 8) / bitsPerSample, 0);
+            size_t innerOffset = 0;
+            if (bitsPerSample == 16) {
+                for (size_t i = 0; i < dataFormatSubChunk.samples.capacity(); i++) {
+                    dataFormatSubChunk.samples[i] = ((int8_t)wavSubChunk.subChunkData[innerOffset + 1] << 8) | ((int8_t)wavSubChunk.subChunkData[innerOffset]);
+                    innerOffset += 2;
+                }
+            }
+        }
+    }
+    if (!isDataSubChunkPresent) {
         throw data::Exception("data subChunk is missing from file");
     }
 }
