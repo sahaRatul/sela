@@ -7,7 +7,7 @@ namespace data {
 class Exception {
 public:
     std::string exceptionMessage;
-    Exception(std::string exceptionMessage)
+    explicit Exception(std::string exceptionMessage)
         : exceptionMessage(exceptionMessage)
     {
     }
