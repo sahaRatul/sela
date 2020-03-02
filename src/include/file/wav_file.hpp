@@ -8,8 +8,8 @@ namespace file {
 class WavFile {
 public:
     data::WavChunk wavChunk;
-    void readFromFile(std::ifstream inputFile);
-    void writeToFile(std::ofstream outputFile);
+    void readFromFile(std::ifstream& inputFile);
+    void writeToFile(std::ofstream& outputFile);
 };
 }
 
