@@ -25,10 +25,11 @@ public:
 
 class WavDataSubChunk : public WavSubChunk {
 public:
-    std::vector<int32_t> samples;
     uint8_t bitsPerSample;
-    WavDataSubChunk(uint8_t bitsPerSample)
+    uint8_t channels;
+    WavDataSubChunk(uint8_t bitsPerSample, uint8_t channels)
         : bitsPerSample(bitsPerSample)
+        , channels(channels)
     {
     }
 };
