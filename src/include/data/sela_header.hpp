@@ -5,9 +5,8 @@
 
 namespace data {
 class SelaHeader {
-private:
-    const uint8_t magicNumber[4] = { 0x53, 0x65, 0x4c, 0x61 }; // SeLa in ASCII
 public:
+    const uint8_t magicNumber[4] = { 0x53, 0x65, 0x4c, 0x61 }; // SeLa in ASCII
     uint32_t sampleRate;
     uint16_t bitsPerSample;
     uint8_t channels;
