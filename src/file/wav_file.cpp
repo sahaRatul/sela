@@ -28,7 +28,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     //Read chunkSize
     offset += 4;
     wavChunk.chunkSize = ((uint8_t)contents[7] << 24) | ((uint8_t)contents[6] << 16) | ((uint8_t)contents[5] << 8) | ((uint8_t)contents[4]);
-    if (wavChunk.chunkSize > contents.size()) {
+    if ((size_t)wavChunk.chunkSize > contents.size()) {
         throw data::Exception("chunkSize exceeds file size, probably a corrupted file");
     }
 

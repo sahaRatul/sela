@@ -8,7 +8,7 @@ namespace data {
 class WavChunk {
 public:
     std::string chunkId;
-    int32_t chunkSize;
+    uint32_t chunkSize;
     std::string format;
     std::vector<WavSubChunk> wavSubChunks;
 };
