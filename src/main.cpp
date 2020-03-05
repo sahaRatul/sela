@@ -9,12 +9,12 @@ int main(int argc, char** argv)
     if (argc < 2) {
         std::cout << "Provide input file" << std::endl;
     } else {
-        std::cout << argv[1] << std::endl;
         std::ifstream inputFile(argv[1], std::ios::binary);
 
         file::WavFile wavFile;
         try {
             wavFile.readFromFile(inputFile);
+            wavFile.demuxSamples();
         } catch (data::Exception exception) {
             std::cerr << exception.exceptionMessage << std::endl;
             inputFile.close();

@@ -86,8 +86,6 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             //Assign additional values which will be needed while processing data subChunk
             bitsPerSample = (uint8_t)wavFormatSubChunk.bitsPerSample;
             channels = (uint8_t)wavFormatSubChunk.numChannels;
-
-            std::cout << wavFormatSubChunk.subChunkId << std::endl;
         } else if (subChunkId == "data") {
             if (!isFmtSubChunkPresent) {
                 throw data::Exception("Probably corrupt wav, data subChunk present without fmt subChunk.");
@@ -108,7 +106,6 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             offset += wavDataSubChunk.subChunkSize;
 
             wavChunk.wavSubChunks.push_back(wavDataSubChunk);
-            std::cout << wavDataSubChunk.subChunkId << std::endl;
 
         } else {
             data::WavSubChunk wavSubChunk;
@@ -126,7 +123,6 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             offset += wavSubChunk.subChunkSize;
 
             wavChunk.wavSubChunks.push_back(wavSubChunk);
-            std::cout << wavSubChunk.subChunkId << std::endl;
         }
     }
 
