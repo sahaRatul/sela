@@ -64,7 +64,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
             encodedReflectionCoefficients.reserve((size_t)reflectionCoefficientRequiredInts);
             offset += 4;
             for (size_t k = 0; k < encodedReflectionCoefficients.capacity(); k++) {
-                encodedReflectionCoefficients[k] = ((uint8_t)contents[offset + 3] << 24) | ((uint8_t)contents[offset + 2] << 16) | ((uint8_t)contents[offset + 1] << 8) | ((uint8_t)contents[offset]);
+                encodedReflectionCoefficients.push_back(((uint8_t)contents[offset + 3] << 24) | ((uint8_t)contents[offset + 2] << 16) | ((uint8_t)contents[offset + 1] << 8) | ((uint8_t)contents[offset]));
                 offset += 4;
             }
 
@@ -76,7 +76,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
             encodedResidues.reserve(residueRequiredInts);
             offset += 5;
             for (size_t k = 0; k < encodedResidues.capacity(); k++) {
-                encodedResidues[k] = ((uint8_t)contents[offset + 3] << 24) | ((uint8_t)contents[offset + 2] << 16) | ((uint8_t)contents[offset + 1] << 8) | ((uint8_t)contents[offset]);
+                encodedResidues.push_back(((uint8_t)contents[offset + 3] << 24) | ((uint8_t)contents[offset + 2] << 16) | ((uint8_t)contents[offset + 1] << 8) | ((uint8_t)contents[offset]));
                 offset += 4;
             }
 
