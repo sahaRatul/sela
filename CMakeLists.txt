@@ -31,6 +31,8 @@ set(SOURCES
     src/frame/frame_decoder.cpp
     src/file/sela_file.cpp
     src/file/wav_file.cpp
+    src/sela/encoder.cpp
+    src/sela/decoder.cpp
 )
 add_executable(sela ${SOURCES})
 target_include_directories(sela INTERFACE ${SELA_INCLUDE_DIR})

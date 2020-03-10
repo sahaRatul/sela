@@ -1,5 +1,5 @@
 #include "include/data/exception.hpp"
-#include "include/file/sela_file.hpp"
+#include "include/sela/decoder.hpp"
 #include "include/rice.hpp"
 #include <fstream>
 #include <iostream>
@@ -10,10 +10,9 @@ int main(int argc, char** argv)
         std::cout << "Provide input file" << std::endl;
     } else {
         std::ifstream inputFile(argv[1], std::ios::binary);
-
-        file::SelaFile selaFile;
         try {
-            selaFile.readFromFile(inputFile);
+            sela::Decoder decoder = sela::Decoder(inputFile);
+            decoder.process();
         } catch (data::Exception exception) {
             std::cerr << exception.exceptionMessage << std::endl;
             inputFile.close();
