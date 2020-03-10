@@ -24,7 +24,7 @@ public:
     {
         framesRead.store(0);
     }
-    WavFile(size_t samplesPerChannelPerFrame)
+    explicit WavFile(size_t samplesPerChannelPerFrame)
         : samplesPerChannelPerFrame(samplesPerChannelPerFrame)
     {
         framesRead.store(0);

@@ -12,7 +12,7 @@ public:
     const std::vector<uint32_t> encodedData;
     RiceEncodedData(int32_t optimumRiceParam,
         int32_t dataCount,
-        const std::vector<uint32_t>&& encodedData)
+        const std::vector<uint32_t>&& encodedData) noexcept
         : optimumRiceParam(optimumRiceParam)
         , dataCount(dataCount)
         , encodedData(encodedData)

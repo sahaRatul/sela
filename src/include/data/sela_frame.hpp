@@ -12,7 +12,7 @@ public:
     const int32_t syncWord = 0xAA55FF00;
     std::vector<SelaSubFrame> subFrames;
     uint8_t bitsPerSample; //Not to be written to output
-    SelaFrame(uint8_t bitsPerSample)
+    explicit SelaFrame(uint8_t bitsPerSample)
         : bitsPerSample(bitsPerSample)
     {
     }
