@@ -7,35 +7,32 @@
 
 TEST_CASE("Frame Encoder/Decoder combined test")
 {
-    std::vector<const std::vector<int32_t>*> samples = std::vector<const std::vector<int32_t>*>(2, nullptr);
+    std::vector<std::vector<int32_t>> samples = std::vector<std::vector<int32_t>>(2, std::vector<int32_t>());
 
     // Generate a sine wave for channel 1
     std::vector<int32_t> sinWave = std::vector<int32_t>(2048, 0);
     for (int i = 0; i < sinWave.size(); i++) {
         sinWave[i] = (int32_t)(INT16_MAX * sin((double)i * (M_PI / 180)));
     }
-    samples[0] = &sinWave;
+    samples[0] = sinWave;
 
     // Generate a cosine wave for channel 2
     std::vector<int32_t> cosWave = std::vector<int32_t>(2048, 0);
     for (int i = 0; i < sinWave.size(); i++) {
         cosWave[i] = (int32_t)(INT16_MAX * cos((double)i * (M_PI / 180)));
     }
-    samples[1] = &cosWave;
+    samples[1] = cosWave;
 
-    data::WavFrame* input = new data::WavFrame((uint8_t)16, samples);
+    data::WavFrame input = data::WavFrame((uint8_t)16, std::move(samples));
     
-    frame::FrameEncoder* encoder = new frame::FrameEncoder(*input);
-    data::SelaFrame frame = encoder->process();
-    delete encoder;
+    frame::FrameEncoder encoder = frame::FrameEncoder(std::move(input));
+    data::SelaFrame frame = encoder.process();
 
-    frame::FrameDecoder* decoder = new frame::FrameDecoder(frame);
-    data::WavFrame output = decoder->process();
-    delete decoder;
+    frame::FrameDecoder decoder = frame::FrameDecoder(frame);
+    data::WavFrame output = decoder.process();
 
-    REQUIRE(input->samples.size() == output.samples.size());
+    REQUIRE(input.samples.size() == output.samples.size());
     for(size_t i = 0; i < samples.size(); i++) {
-        REQUIRE(*input->samples.at(i) == *output.samples.at(i));
+        REQUIRE(input.samples[i] == output.samples[i]);
     }
-    delete input;
 }

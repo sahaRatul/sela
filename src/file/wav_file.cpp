@@ -153,7 +153,9 @@ void WavFile::demuxSamples()
     }
 
     for (size_t i = 0; i < wavFrames.capacity(); i++) {
-        data::WavFrame wavFrame = data::WavFrame((uint8_t)formatSubChunk->bitsPerSample, std::vector<const std::vector<int32_t>*>(samplesPerChannelPerFrame, nullptr));
+        std::vector<std::vector<int32_t>> allSamples;
+        allSamples.reserve((size_t)formatSubChunk->numChannels);
+        
         for (size_t j = 0; j < (size_t)formatSubChunk->numChannels; j++) {
             //Assign buffer
             std::vector<int32_t> samples;
@@ -162,8 +164,9 @@ void WavFile::demuxSamples()
             for (size_t k = 0; k < samplesPerChannelPerFrame; k++) {
                 samples.push_back(intSamples[sampleCount * k + j]);
             }
-            wavFrame.samples[j] = (&samples);
+            allSamples.push_back(samples);
         }
+        data::WavFrame wavFrame = data::WavFrame((uint8_t)formatSubChunk->bitsPerSample, std::move(allSamples));
         wavFrames.push_back(wavFrame);
     }
 }

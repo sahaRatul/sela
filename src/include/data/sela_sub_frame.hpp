@@ -21,13 +21,13 @@ public:
     uint8_t reflectionCoefficientRiceParam;
     uint16_t reflectionCoefficientRequiredInts;
     uint8_t optimumLpcOrder;
-    const std::vector<uint32_t>& encodedReflectionCoefficients;
+    const std::vector<uint32_t> encodedReflectionCoefficients;
 
     // Residue data
     uint8_t residueRiceParam;
     uint16_t residueRequiredInts;
     uint16_t samplesPerChannel;
-    const std::vector<uint32_t>& encodedResidues;
+    const std::vector<uint32_t> encodedResidues;
 
     uint32_t getByteCount();
     void write();
@@ -39,11 +39,11 @@ public:
         , reflectionCoefficientRiceParam((uint8_t)reflectionData.optimumRiceParam)
         , reflectionCoefficientRequiredInts((uint16_t)reflectionData.encodedData.size())
         , optimumLpcOrder((uint8_t)reflectionData.dataCount)
-        , encodedReflectionCoefficients(reflectionData.encodedData)
+        , encodedReflectionCoefficients(std::move(reflectionData.encodedData))
         , residueRiceParam((uint8_t)residueData.optimumRiceParam)
         , residueRequiredInts((uint16_t)residueData.encodedData.size())
         , samplesPerChannel((uint16_t)residueData.dataCount)
-        , encodedResidues(residueData.encodedData)
+        , encodedResidues(std::move(residueData.encodedData))
     {
     }
 };
