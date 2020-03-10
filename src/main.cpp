@@ -1,5 +1,5 @@
 #include "include/data/exception.hpp"
-#include "include/file/wav_file.hpp"
+#include "include/file/sela_file.hpp"
 #include "include/rice.hpp"
 #include <fstream>
 #include <iostream>
@@ -11,10 +11,9 @@ int main(int argc, char** argv)
     } else {
         std::ifstream inputFile(argv[1], std::ios::binary);
 
-        file::WavFile wavFile;
+        file::SelaFile selaFile;
         try {
-            wavFile.readFromFile(inputFile);
-            wavFile.demuxSamples();
+            selaFile.readFromFile(inputFile);
         } catch (data::Exception exception) {
             std::cerr << exception.exceptionMessage << std::endl;
             inputFile.close();

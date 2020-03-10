@@ -80,6 +80,8 @@
         "xloctime": "cpp",
         "xtree": "cpp",
         "queue": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "bit": "cpp",
+        "shared_mutex": "cpp"
     }
 }

@@ -12,7 +12,7 @@ FrameEncoder::FrameEncoder(const data::WavFrame& wavFrame)
 
 data::SelaFrame FrameEncoder::process()
 {
-    data::SelaFrame selaFrame = data::SelaFrame(std::vector<data::SelaSubFrame>(), wavFrame.bitsPerSample);
+    data::SelaFrame selaFrame = data::SelaFrame(wavFrame.bitsPerSample);
     selaFrame.subFrames.reserve(wavFrame.samples.size());
 
     // Foreach channel
