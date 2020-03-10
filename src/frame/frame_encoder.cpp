@@ -27,23 +27,23 @@ data::SelaFrame FrameEncoder::process()
 
             // Stage 2 - Generate residues and reflection coefficients for difference as
             // well as actual signal
-            lpc::ResidueGenerator* residueGeneratorDifference = new lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, differenceSignal));
-            data::LpcEncodedData residuesDifference = residueGeneratorDifference->process();
+            lpc::ResidueGenerator residueGeneratorDifference = lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, std::move(differenceSignal)));
+            data::LpcEncodedData residuesDifference = residueGeneratorDifference.process();
 
-            lpc::ResidueGenerator* residueGeneratorActual = new lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, *wavFrame.samples[i]));
-            data::LpcEncodedData residuesActual = residueGeneratorActual->process();
+            lpc::ResidueGenerator residueGeneratorActual = lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, std::move(*wavFrame.samples[i])));
+            data::LpcEncodedData residuesActual = residueGeneratorActual.process();
 
             // Stage 3 - Compress residues and reflection coefficients for difference and
             // actual signal
-            rice::RiceEncoder* reflectionRiceEncoderDifference = new rice::RiceEncoder(data::RiceDecodedData(residuesDifference.quantizedReflectionCoefficients));
-            rice::RiceEncoder* residueRiceEncoderDifference = new rice::RiceEncoder(data::RiceDecodedData(residuesDifference.residues));
-            data::RiceEncodedData reflectionDataDifference = reflectionRiceEncoderDifference->process();
-            data::RiceEncodedData residueDataDifference = residueRiceEncoderDifference->process();
+            rice::RiceEncoder reflectionRiceEncoderDifference = rice::RiceEncoder(data::RiceDecodedData(std::move(residuesDifference.quantizedReflectionCoefficients)));
+            rice::RiceEncoder residueRiceEncoderDifference = rice::RiceEncoder(data::RiceDecodedData(std::move(residuesDifference.residues)));
+            data::RiceEncodedData reflectionDataDifference = reflectionRiceEncoderDifference.process();
+            data::RiceEncodedData residueDataDifference = residueRiceEncoderDifference.process();
 
-            rice::RiceEncoder* reflectionRiceEncoderActual = new rice::RiceEncoder(data::RiceDecodedData(residuesActual.quantizedReflectionCoefficients));
-            rice::RiceEncoder* residueRiceEncoderActual = new rice::RiceEncoder(data::RiceDecodedData(residuesActual.residues));
-            data::RiceEncodedData reflectionDataActual = reflectionRiceEncoderActual->process();
-            data::RiceEncodedData residueDataActual = residueRiceEncoderActual->process();
+            rice::RiceEncoder reflectionRiceEncoderActual = rice::RiceEncoder(data::RiceDecodedData(std::move(residuesActual.quantizedReflectionCoefficients)));
+            rice::RiceEncoder residueRiceEncoderActual = rice::RiceEncoder(data::RiceDecodedData(std::move(residuesActual.residues)));
+            data::RiceEncodedData reflectionDataActual = reflectionRiceEncoderActual.process();
+            data::RiceEncodedData residueDataActual = residueRiceEncoderActual.process();
 
             // Stage 4 - Compare sizes of both types and generate subFrame
             size_t differenceDataSize = reflectionDataDifference.encodedData.size() + residueDataDifference.encodedData.size();
@@ -57,14 +57,14 @@ data::SelaFrame FrameEncoder::process()
             }
         } else {
             // Stage 1 - Generate residues and reflection coefficients
-            lpc::ResidueGenerator* residueGenerator = new lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, *wavFrame.samples[i]));
-            data::LpcEncodedData residues = residueGenerator->process();
+            lpc::ResidueGenerator residueGenerator = lpc::ResidueGenerator(data::LpcDecodedData(wavFrame.bitsPerSample, std::move(*wavFrame.samples[i])));
+            data::LpcEncodedData residues = residueGenerator.process();
 
             // Stage 2 - Compress residues and reflection coefficients
-            rice::RiceEncoder* reflectionRiceEncoder = new rice::RiceEncoder(data::RiceDecodedData(residues.quantizedReflectionCoefficients));
-            rice::RiceEncoder* residueRiceEncoder = new rice::RiceEncoder(data::RiceDecodedData(residues.residues));
-            data::RiceEncodedData reflectionData = reflectionRiceEncoder->process();
-            data::RiceEncodedData residueData = residueRiceEncoder->process();
+            rice::RiceEncoder reflectionRiceEncoder = rice::RiceEncoder(data::RiceDecodedData(std::move(residues.quantizedReflectionCoefficients)));
+            rice::RiceEncoder residueRiceEncoder = rice::RiceEncoder(data::RiceDecodedData(std::move(residues.residues)));
+            data::RiceEncodedData reflectionData = reflectionRiceEncoder.process();
+            data::RiceEncodedData residueData = residueRiceEncoder.process();
 
             // Stage 3 - Generate Subframes
             data::SelaSubFrame selaSubFrame = data::SelaSubFrame((uint8_t)i, (uint8_t)0, (uint8_t)i, reflectionData, residueData);

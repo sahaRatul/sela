@@ -45,7 +45,7 @@ inline void RiceDecoder::generateDecodedUnsignedInts()
     }
 }
 
-inline void RiceDecoder::convertUnsignedToSigned()
+inline void RiceDecoder::convertUnsignedToSigned(std::vector<int32_t>& output)
 {
     output.reserve(dataCount);
     for (uint64_t x : unsignedOutput) {
@@ -56,9 +56,10 @@ inline void RiceDecoder::convertUnsignedToSigned()
 
 data::RiceDecodedData RiceDecoder::process()
 {
+    std::vector<int32_t> output;
     generateEncodedBits();
     generateDecodedUnsignedInts();
-    convertUnsignedToSigned();
-    return data::RiceDecodedData(output);
+    convertUnsignedToSigned(output);
+    return data::RiceDecodedData(std::move(output));
 }
 }

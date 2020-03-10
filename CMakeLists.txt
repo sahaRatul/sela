@@ -54,10 +54,10 @@ add_library(Catch INTERFACE)
 target_include_directories(Catch INTERFACE ${CATCH_INCLUDE_DIR})
 
 # Make test executable
+#src/frame/frame_decoder.cpp
+#src/frame/frame_encoder.cpp
+#test/frametests.cpp
 set(TEST_SOURCES
-    src/frame/frame_decoder.cpp
-    src/frame/frame_encoder.cpp
-    test/frametests.cpp
     src/lpc/linear_predictor.cpp
     src/lpc/residue_generator.cpp
     src/lpc/sample_generator.cpp

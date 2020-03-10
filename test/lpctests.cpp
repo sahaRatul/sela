@@ -17,20 +17,16 @@ TEST_CASE("LPC Encoder/Decoder combined test")
         samples.push_back((int32_t)(32767 * sin((double)i * (M_PI / 180))));
     }
 
-    data::LpcDecodedData* input = new data::LpcDecodedData((uint8_t)16, samples);
+    data::LpcDecodedData input = data::LpcDecodedData((uint8_t)16, std::move(samples));
 
     // Generate residues
-    lpc::ResidueGenerator* resGen = new lpc::ResidueGenerator(*input);
-    data::LpcEncodedData encoded = resGen->process();
+    lpc::ResidueGenerator resGen = lpc::ResidueGenerator(input);
+    data::LpcEncodedData encoded = resGen.process();
 
     // Generate samples
-    lpc::SampleGenerator* sampleGen = new lpc::SampleGenerator(encoded);
-    data::LpcDecodedData decoded = sampleGen->process();
+    lpc::SampleGenerator sampleGen = lpc::SampleGenerator(encoded);
+    data::LpcDecodedData decoded = sampleGen.process();
     
-    REQUIRE(input->samples.size() == decoded.samples.size());
-    REQUIRE(input->samples == decoded.samples);
-    
-    delete resGen;
-    delete sampleGen;
-    delete input;
+    REQUIRE(input.samples.size() == decoded.samples.size());
+    REQUIRE(input.samples == decoded.samples);
 }

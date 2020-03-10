@@ -81,8 +81,8 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
             }
 
             //Generate subFrames
-            data::RiceEncodedData reflectionData = data::RiceEncodedData(reflectionCoefficientRiceParam, optimumLpcOrder, encodedReflectionCoefficients);
-            data::RiceEncodedData residueData = data::RiceEncodedData(residueRiceParam, samplesPerChannel, encodedResidues);
+            data::RiceEncodedData reflectionData = data::RiceEncodedData(reflectionCoefficientRiceParam, optimumLpcOrder, std::move(encodedReflectionCoefficients));
+            data::RiceEncodedData residueData = data::RiceEncodedData(residueRiceParam, samplesPerChannel, std::move(encodedResidues));
             data::SelaSubFrame subFrame = data::SelaSubFrame(subFrameChannel, subFrameType, parentChannelNumber, reflectionData, residueData);
             frame.subFrames.push_back(subFrame);
         }

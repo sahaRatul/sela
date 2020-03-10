@@ -92,7 +92,7 @@ inline void ResidueGenerator::quantizeReflectionCoefficients()
     }
 }
 
-inline void ResidueGenerator::generateResidues()
+inline void ResidueGenerator::generateResidues(std::vector<int32_t>& residues)
 {
     residues.reserve(samples.size());
     int64_t correction = (int64_t)1 << (CORRECTION_FACTOR - 1);
@@ -117,6 +117,7 @@ inline void ResidueGenerator::generateResidues()
 
 data::LpcEncodedData ResidueGenerator::process()
 {
+    std::vector<int32_t> residues;
     quantizeSamples();
     generateAutoCorrelation();
     generateReflectionCoefficients();
@@ -124,9 +125,9 @@ data::LpcEncodedData ResidueGenerator::process()
     quantizeReflectionCoefficients();
     linearPredictor.dequantizeReflectionCoefficients();
     linearPredictor.generatelinearPredictionCoefficients();
-    generateResidues();
+    generateResidues(residues);
     return data::LpcEncodedData(linearPredictor.optimalLpcOrder, bitsPerSample,
-        linearPredictor.quantizedReflectionCoefficients, residues);
+        std::move(linearPredictor.quantizedReflectionCoefficients), std::move(residues));
 }
 
 }

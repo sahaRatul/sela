@@ -89,7 +89,6 @@ public:
 class ResidueGenerator {
 private:
     const std::vector<int32_t>& samples;
-    std::vector<int32_t> residues;
     std::vector<double> quantizedSamples;
     std::vector<double> autocorrelationFactors;
     LinearPredictor& linearPredictor = *(new LinearPredictor());
@@ -100,7 +99,7 @@ private:
     inline void generateReflectionCoefficients();
     inline void generateoptimalLpcOrder();
     inline void quantizeReflectionCoefficients();
-    inline void generateResidues();
+    inline void generateResidues(std::vector<int32_t>& residues);
 
 public:
     explicit ResidueGenerator(const data::LpcDecodedData& data);
@@ -110,10 +109,9 @@ public:
 class SampleGenerator {
 private:
     const std::vector<int32_t>& residues;
-    std::vector<int32_t> samples;
     uint8_t bitsPerSample;
     LinearPredictor& linearPredictor;
-    inline void generateSamples();
+    inline void generateSamples(std::vector<int32_t>& samples);
 
 public:
     explicit SampleGenerator(const data::LpcEncodedData& encodedData);

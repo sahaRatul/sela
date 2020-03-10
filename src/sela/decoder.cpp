@@ -11,12 +11,13 @@ namespace sela {
     void Decoder::processFrames() {
         std::cout << selaFile.selaFrames.size() << std::endl;
         for(size_t i = 0; i < selaFile.selaFrames.size(); i++) {
-            std::cout << "Decoded" << std::endl;
-            frame::FrameDecoder decoder(selaFile.selaFrames[i]);
+            frame::FrameDecoder decoder = frame::FrameDecoder(selaFile.selaFrames[i]);
+            decoder.process();
         }
     }
 
     void Decoder::process() {
+        readFrames();
         processFrames();
     }
 }

@@ -59,7 +59,7 @@ inline void RiceEncoder::generateEncodedBits()
     }
 }
 
-inline void RiceEncoder::writeInts()
+inline void RiceEncoder::writeInts(std::vector<uint32_t>& output)
 {
     uint64_t requiredInts = (uint64_t)ceil((float)requiredBits / 32);
     output.reserve((size_t)requiredInts);
@@ -73,10 +73,11 @@ inline void RiceEncoder::writeInts()
 
 data::RiceEncodedData RiceEncoder::process()
 {
+    std::vector<uint32_t> output;
     convertSignedToUnsigned();
     calculateOptimumRiceParam();
     generateEncodedBits();
-    writeInts();
-    return data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(), output);
+    writeInts(output);
+    return data::RiceEncodedData(optimumRiceParam, (uint32_t)input.size(), std::move(output));
 }
 }

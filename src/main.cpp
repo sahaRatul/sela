@@ -6,10 +6,11 @@
 
 int main(int argc, char** argv)
 {
-    if (argc < 2) {
+    std::cout << argv[0] << std::endl;
+    if (argc < 1) {
         std::cout << "Provide input file" << std::endl;
     } else {
-        std::ifstream inputFile(argv[1], std::ios::binary);
+        std::ifstream inputFile("/home/ratul/Desktop/Source/sela/build/merkury.sela", std::ios::binary);
         try {
             sela::Decoder decoder = sela::Decoder(inputFile);
             decoder.process();

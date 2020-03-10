@@ -14,7 +14,6 @@ class RiceEncoder {
 private:
     const std::vector<int32_t>& input;
     std::vector<uint64_t> unsignedInput;
-    std::vector<uint32_t> output;
     std::vector<bool> bitOutput;
     std::vector<size_t> bitSizes;
     uint32_t optimumRiceParam;
@@ -22,7 +21,7 @@ private:
     inline void convertSignedToUnsigned();
     inline void calculateOptimumRiceParam();
     inline void generateEncodedBits();
-    inline void writeInts();
+    inline void writeInts(std::vector<uint32_t>& output);
 
 public:
     explicit RiceEncoder(const data::RiceDecodedData& decodedData);
@@ -34,12 +33,11 @@ private:
     const std::vector<uint32_t>& input;
     std::vector<bool> bitInput;
     std::vector<uint64_t> unsignedOutput;
-    std::vector<int32_t> output;
     uint32_t dataCount;
     uint32_t optimumRiceParam;
     inline void generateEncodedBits();
     inline void generateDecodedUnsignedInts();
-    inline void convertUnsignedToSigned();
+    inline void convertUnsignedToSigned(std::vector<int32_t>& output);
 
 public:
     explicit RiceDecoder(const data::RiceEncodedData& encodedData);

@@ -9,10 +9,10 @@ class RiceEncodedData {
 public:
     uint32_t optimumRiceParam;
     uint32_t dataCount;
-    const std::vector<uint32_t>& encodedData;
+    const std::vector<uint32_t> encodedData;
     RiceEncodedData(int32_t optimumRiceParam,
         int32_t dataCount,
-        const std::vector<uint32_t>& encodedData)
+        const std::vector<uint32_t>&& encodedData)
         : optimumRiceParam(optimumRiceParam)
         , dataCount(dataCount)
         , encodedData(encodedData)

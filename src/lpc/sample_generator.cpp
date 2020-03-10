@@ -8,10 +8,8 @@ SampleGenerator::SampleGenerator(const data::LpcEncodedData& encodedData)
 {
 }
 
-inline void SampleGenerator::generateSamples()
+inline void SampleGenerator::generateSamples(std::vector<int32_t>& samples)
 {
-    samples = std::vector<int32_t>(residues.size(), 0);
-
     int64_t correction = (int64_t)1 << (CORRECTION_FACTOR - 1);
 
     samples[0] = residues[0];
@@ -33,9 +31,10 @@ inline void SampleGenerator::generateSamples()
 
 data::LpcDecodedData SampleGenerator::process()
 {
+    std::vector<int32_t> samples = std::vector<int32_t>(residues.size(), 0);
     linearPredictor.dequantizeReflectionCoefficients();
     linearPredictor.generatelinearPredictionCoefficients();
-    generateSamples();
-    return data::LpcDecodedData(bitsPerSample, samples);
+    generateSamples(samples);
+    return data::LpcDecodedData(bitsPerSample, std::move(samples));
 }
 }
