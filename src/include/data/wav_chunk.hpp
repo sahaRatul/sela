@@ -10,6 +10,8 @@ public:
     std::string chunkId;
     uint32_t chunkSize;
     std::string format;
+    WavFormatSubChunk formatSubChunk;
+    WavDataSubChunk dataSubChunk;
     std::vector<WavSubChunk> wavSubChunks;
 };
 }

@@ -11,8 +11,6 @@ class WavFile {
 private:
     std::atomic<size_t> framesRead;
     size_t samplesPerChannelPerFrame = 2048;
-    const size_t formatSubChunkLocation = 0;
-    size_t dataSubChunkLocation = 1;
 
 public:
     data::WavChunk wavChunk;
@@ -20,15 +18,6 @@ public:
     void readFromFile(std::ifstream& inputFile);
     void demuxSamples();
     void writeToFile(std::ofstream& outputFile);
-    WavFile()
-    {
-        framesRead.store(0);
-    }
-    explicit WavFile(size_t samplesPerChannelPerFrame)
-        : samplesPerChannelPerFrame(samplesPerChannelPerFrame)
-    {
-        framesRead.store(0);
-    }
 };
 }
 

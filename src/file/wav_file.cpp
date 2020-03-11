@@ -47,14 +47,12 @@ void WavFile::readFromFile(std::ifstream& inputFile)
         //Validate subChunks
         uint8_t bitsPerSample = 0;
         uint8_t channels = 0;
-        size_t dataSubChunkOffset = 0;
 
         //Read subChunkId
         std::string subChunkId = std::string(contents.begin() + offset, contents.begin() + (offset + 4));
         offset += 4;
         if (subChunkId == "fmt ") {
             isFmtSubChunkPresent = true; //Mark fmt subchunk as present
-            dataSubChunkOffset++;
 
             //Assign subChunkId
             data::WavFormatSubChunk wavFormatSubChunk;
@@ -80,8 +78,8 @@ void WavFile::readFromFile(std::ifstream& inputFile)
                 throw data::Exception("Only 16bits per sample wav is supported.");
             }
 
-            //Add to subChunk List
-            wavChunk.wavSubChunks.push_back(wavFormatSubChunk);
+            //Assign formatSubChunk
+            wavChunk.formatSubChunk = wavFormatSubChunk;
 
             //Assign additional values which will be needed while processing data subChunk
             bitsPerSample = (uint8_t)wavFormatSubChunk.bitsPerSample;
@@ -91,7 +89,6 @@ void WavFile::readFromFile(std::ifstream& inputFile)
                 throw data::Exception("Probably corrupt wav, data subChunk present without fmt subChunk.");
             }
             isDataSubChunkPresent = true; //Mark data subchunk as present
-            dataSubChunkLocation = dataSubChunkOffset; //Set dataSubChunkLocation for later use
 
             //Assign subChunkId
             data::WavDataSubChunk wavDataSubChunk(bitsPerSample, channels);
@@ -105,11 +102,10 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             wavDataSubChunk.subChunkData = std::vector<int8_t>(contents.begin() + offset, contents.begin() + offset + wavDataSubChunk.subChunkSize);
             offset += wavDataSubChunk.subChunkSize;
 
-            wavChunk.wavSubChunks.push_back(wavDataSubChunk);
-
+            //Assign formatSubChunk
+            wavChunk.dataSubChunk = wavDataSubChunk;
         } else {
             data::WavSubChunk wavSubChunk;
-            dataSubChunkOffset++;
 
             //Assign subChunkId
             wavSubChunk.subChunkId = subChunkId;
@@ -137,36 +133,37 @@ void WavFile::readFromFile(std::ifstream& inputFile)
 
 void WavFile::demuxSamples()
 {
-    data::WavFormatSubChunk* formatSubChunk = static_cast<data::WavFormatSubChunk*>(&wavChunk.wavSubChunks[formatSubChunkLocation]);
-    data::WavDataSubChunk* dataSubChunk = static_cast<data::WavDataSubChunk*>(&wavChunk.wavSubChunks[dataSubChunkLocation]);
-
-    size_t sampleCount = (dataSubChunk->subChunkData.size() * 8) / formatSubChunk->bitsPerSample;
-    wavFrames.reserve((size_t)(sampleCount / (samplesPerChannelPerFrame * formatSubChunk->numChannels)));
+    size_t sampleCount = (wavChunk.dataSubChunk.subChunkData.size() * 8) / wavChunk.formatSubChunk.bitsPerSample;
+    wavFrames.reserve((size_t)(sampleCount / (samplesPerChannelPerFrame * wavChunk.formatSubChunk.numChannels)));
     size_t offset = 0;
 
     std::vector<int32_t> intSamples;
     intSamples.reserve(sampleCount);
 
     for (size_t i = 0; i < sampleCount; i++) {
-        intSamples.push_back(((uint8_t)dataSubChunk->subChunkData[offset + 1] << 8) | ((uint8_t)dataSubChunk->subChunkData[offset]));
+        intSamples.push_back(((uint8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((uint8_t)wavChunk.dataSubChunk.subChunkData[offset]));
         offset += 2;
     }
 
+    offset = 0;
+
     for (size_t i = 0; i < wavFrames.capacity(); i++) {
         std::vector<std::vector<int32_t>> allSamples;
-        allSamples.reserve((size_t)formatSubChunk->numChannels);
+        allSamples.reserve((size_t)wavChunk.formatSubChunk.numChannels);
         
-        for (size_t j = 0; j < (size_t)formatSubChunk->numChannels; j++) {
+        for (size_t j = 0; j < (size_t)wavChunk.formatSubChunk.numChannels; j++) {
             //Assign buffer
             std::vector<int32_t> samples;
             samples.reserve(samplesPerChannelPerFrame);
+            
             //Read into buffer
             for (size_t k = 0; k < samplesPerChannelPerFrame; k++) {
-                samples.push_back(intSamples[sampleCount * k + j]);
+                samples.push_back(intSamples[offset + (sampleCount * k + j)]);
             }
             allSamples.push_back(samples);
+            offset += (samplesPerChannelPerFrame * wavChunk.formatSubChunk.numChannels);
         }
-        data::WavFrame wavFrame = data::WavFrame((uint8_t)formatSubChunk->bitsPerSample, std::move(allSamples));
+        data::WavFrame wavFrame = data::WavFrame((uint8_t)wavChunk.formatSubChunk.bitsPerSample, std::move(allSamples));
         wavFrames.push_back(wavFrame);
     }
 }

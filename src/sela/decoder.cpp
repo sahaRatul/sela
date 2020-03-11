@@ -10,6 +10,7 @@ namespace sela {
 
     void Decoder::processFrames() {
         for(size_t i = 0; i < selaFile.selaFrames.size(); i++) {
+            std::cout << i << std::endl;
             frame::FrameDecoder decoder = frame::FrameDecoder(selaFile.selaFrames[i]);
             data::WavFrame wavFrame = decoder.process();
         }
