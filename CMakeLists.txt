@@ -8,6 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Don't use e.g. GNU extension (like -std=gnu++11) for portability
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
+
 # Enable CTest
 include(CTest)
 enable_testing()
@@ -36,6 +41,9 @@ set(SOURCES
 )
 add_executable(sela ${SOURCES})
 target_include_directories(sela INTERFACE ${SELA_INCLUDE_DIR})
+target_link_libraries(sela Threads::Threads)
+
+
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
