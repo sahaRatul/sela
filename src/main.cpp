@@ -21,12 +21,14 @@ void encodeFile(std::ifstream& inputFile, std::ofstream& outputFile)
 {
     sela::Encoder encoder = sela::Encoder(inputFile);
     encoder.process();
+    (void)outputFile;
 }
 
 void decodeFile(std::ifstream& inputFile, std::ofstream& outputFile)
 {
     sela::Decoder decoder = sela::Decoder(inputFile);
     decoder.process();
+    (void)outputFile;
 }
 
 int main(int argc, char** argv)
