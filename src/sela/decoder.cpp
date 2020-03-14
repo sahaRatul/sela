@@ -82,7 +82,7 @@ void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
                 decodedWavFrames.push_back(wavFrame);
             }
         }
-    } else {
+    } else { //Single loop execution
         for (data::SelaFrame selaFrame : selaFile.selaFrames) {
             frame::FrameDecoder decoder = frame::FrameDecoder(selaFrame);
             data::WavFrame wavFrame = decoder.process();

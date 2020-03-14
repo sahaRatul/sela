@@ -1,6 +1,8 @@
 #ifndef _WAV_SUB_CHUNK_H_
 #define _WAV_SUB_CHUNK_H_
 
+#include "wav_frame.hpp"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -27,6 +29,7 @@ class WavDataSubChunk : public WavSubChunk {
 public:
     uint8_t bitsPerSample;
     uint8_t channels;
+    std::vector<data::WavFrame> wavFrames;
 };
 }
 

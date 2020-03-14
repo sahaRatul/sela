@@ -3,19 +3,20 @@
 
 #include "../data/wav_chunk.hpp"
 #include "../data/wav_frame.hpp"
-#include <fstream>
 #include <atomic>
+#include <fstream>
 
 namespace file {
 class WavFile {
 private:
     size_t samplesPerChannelPerFrame = 2048;
+    void demuxSamples();
 
 public:
     data::WavChunk wavChunk;
-    std::vector<data::WavFrame> wavFrames;
+    WavFile() {}
+    WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChannels, std::vector<data::WavFrame>&& wavFrames);
     void readFromFile(std::ifstream& inputFile);
-    void demuxSamples();
     void writeToFile(std::ofstream& outputFile);
 };
 }
