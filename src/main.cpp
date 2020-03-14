@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     if (argc < 1) {
         std::cout << "Provide input file" << std::endl;
     } else {
-        std::ifstream inputFile("/home/ratul/Desktop/Source/sela/build/merkury.sela", std::ios::binary);
+        std::ifstream inputFile("C:/Users/Ratul Saha/Desktop/Source/sela/build/merkury.sela", std::ios::binary);
         try {
             sela::Decoder decoder = sela::Decoder(inputFile);
             decoder.process();

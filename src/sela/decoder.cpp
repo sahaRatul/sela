@@ -55,12 +55,6 @@ void Decoder::processFrames()
     for(size_t i = 0; i < nthreads; i++) {
         threadPool[i].join();
     }
-    /*
-    std::for_each(std::execution::seq, selaFile.selaFrames.begin(), selaFile.selaFrames.end(), [](data::SelaFrame selaFrame) {
-        frame::FrameDecoder decoder = frame::FrameDecoder(selaFrame);
-        data::WavFrame wavFrame = decoder.process();
-    });
-    */
 }
 
 void Decoder::process()
@@ -68,6 +62,4 @@ void Decoder::process()
     readFrames();
     processFrames();
 }
-
-
 }

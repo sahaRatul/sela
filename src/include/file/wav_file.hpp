@@ -9,7 +9,6 @@
 namespace file {
 class WavFile {
 private:
-    std::atomic<size_t> framesRead;
     size_t samplesPerChannelPerFrame = 2048;
 
 public:
