@@ -52,7 +52,7 @@ void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
         //Initialize output wavFrames
         std::vector<std::vector<data::WavFrame>> wavFrameSegments;
         wavFrameSegments.reserve(numThreads);
-        for(size_t i = 0; i < numThreads; i++) {
+        for (size_t i = 0; i < numThreads; i++) {
             wavFrameSegments.push_back(std::vector<data::WavFrame>());
         }
 
@@ -66,7 +66,7 @@ void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
 
             //Start thread object and push thread to threadpool
             threadPool.push_back(std::thread(&LoopThrough::process, data, std::ref(wavFrameSegments[i])));
-            
+
             //Increment beginning and end
             begin += framesPerThread;
             end = ((i == numThreads - 2) ? (selaFile.selaFrames.size()) : (end + framesPerThread));
@@ -77,16 +77,13 @@ void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
             threadPool[i].join();
         }
 
-        size_t count = 0;
-        for(std::vector<data::WavFrame> segment: wavFrameSegments) {
-            for(data::WavFrame wavFrame : segment) {
+        for (std::vector<data::WavFrame> segment : wavFrameSegments) {
+            for (data::WavFrame wavFrame : segment) {
                 decodedWavFrames.push_back(wavFrame);
-                count++;
             }
         }
-    }
-    else {
-        for(data::SelaFrame selaFrame: selaFile.selaFrames) {
+    } else {
+        for (data::SelaFrame selaFrame : selaFile.selaFrames) {
             frame::FrameDecoder decoder = frame::FrameDecoder(selaFrame);
             data::WavFrame wavFrame = decoder.process();
             decodedWavFrames.push_back(wavFrame);
