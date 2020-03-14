@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <thread>
-#include <future>
 
 namespace sela {
 
