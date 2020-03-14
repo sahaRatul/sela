@@ -8,10 +8,13 @@ namespace data {
 class RiceDecodedData {
 public:
     const std::vector<int32_t> decodedData;
-    explicit RiceDecodedData(const std::vector<int32_t>&& decodedData) noexcept : decodedData(decodedData)
-    {
-    }
+    explicit RiceDecodedData(const std::vector<int32_t>&& decodedData) noexcept;
 };
+
+RiceDecodedData::RiceDecodedData(const std::vector<int32_t>&& decodedData) noexcept
+    : decodedData(decodedData)
+{
+}
 }
 
 #endif
