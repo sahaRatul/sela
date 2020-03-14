@@ -36,23 +36,23 @@ void Decoder::readFrames()
 
 void Decoder::processFrames()
 {
-    size_t nthreads = std::thread::hardware_concurrency();
+    size_t numThreads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threadPool;
-    threadPool.reserve(nthreads);
+    threadPool.reserve(numThreads);
 
-    const size_t framesPerThread = selaFile.selaFrames.size() / nthreads;
+    const size_t framesPerThread = selaFile.selaFrames.size() / numThreads;
 
     size_t begin = 0;
     size_t end = framesPerThread;
-    for(size_t i = 0; i < nthreads; i++) {
+    for(size_t i = 0; i < numThreads; i++) {
         LoopThrough data = LoopThrough(begin, end, selaFile.selaFrames);
         threadPool.push_back(std::thread(&LoopThrough::process, data));
         begin += framesPerThread;
-        end += framesPerThread;
+        end = ((i == numThreads - 2) ? (selaFile.selaFrames.size()) : (end + framesPerThread));
     }
 
-    for(size_t i = 0; i < nthreads; i++) {
+    for(size_t i = 0; i < numThreads; i++) {
         threadPool[i].join();
     }
 }

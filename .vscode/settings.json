@@ -82,6 +82,7 @@
         "queue": "cpp",
         "bitset": "cpp",
         "bit": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "execution": "cpp"
     }
 }
