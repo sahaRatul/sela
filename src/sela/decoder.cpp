@@ -1,31 +1,36 @@
 #include "../include/sela/decoder.hpp"
-#include "../include/frame.hpp"
 #include "../include/data/exception.hpp"
+#include "../include/frame.hpp"
 
 #include <iostream>
 #include <thread>
+#include <future>
 
 namespace sela {
 
 class LoopThrough {
-    public:
+public:
     const size_t begin;
     const size_t end;
     const std::vector<data::SelaFrame>& selaFrames;
-    LoopThrough(size_t begin, size_t end, const std::vector<data::SelaFrame>& selaFrames) : begin(begin), end(end), selaFrames(selaFrames){}
-    std::vector<data::WavFrame> process() {
-        if((begin >= end) || (end > selaFrames.size())) {
+    LoopThrough(size_t begin, size_t end, const std::vector<data::SelaFrame>& selaFrames)
+        : begin(begin)
+        , end(end)
+        , selaFrames(selaFrames)
+    {
+    }
+    void process(std::vector<data::WavFrame>& wavFrames)
+    {
+        if ((begin >= end) || (end > selaFrames.size())) {
             data::Exception("Something is wrong");
         }
-        std::vector<data::WavFrame> wavFrames;
         wavFrames.reserve(end - begin);
 
-        for(size_t i = begin; i < end; i++) {
+        for (size_t i = begin; i < end; i++) {
             frame::FrameDecoder decoder = frame::FrameDecoder(selaFrames[i]);
             data::WavFrame wavFrame = decoder.process();
             wavFrames.push_back(wavFrame);
         }
-        return wavFrames;
     }
 };
 
@@ -34,32 +39,66 @@ void Decoder::readFrames()
     selaFile.readFromFile(ifStream);
 }
 
-void Decoder::processFrames()
+void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
 {
+    // Get number of threads supported by hardware
     size_t numThreads = std::thread::hardware_concurrency();
+    decodedWavFrames.reserve(selaFile.selaFrames.size());
 
-    std::vector<std::thread> threadPool;
-    threadPool.reserve(numThreads);
+    if (numThreads > 0) {
+        //Initialize ThreadPool
+        std::vector<std::thread> threadPool;
+        threadPool.reserve(numThreads);
 
-    const size_t framesPerThread = selaFile.selaFrames.size() / numThreads;
+        //Initialize output wavFrames
+        std::vector<std::vector<data::WavFrame>> wavFrameSegments;
+        wavFrameSegments.reserve(numThreads);
+        for(size_t i = 0; i < numThreads; i++) {
+            wavFrameSegments.push_back(std::vector<data::WavFrame>());
+        }
 
-    size_t begin = 0;
-    size_t end = framesPerThread;
-    for(size_t i = 0; i < numThreads; i++) {
-        LoopThrough data = LoopThrough(begin, end, selaFile.selaFrames);
-        threadPool.push_back(std::thread(&LoopThrough::process, data));
-        begin += framesPerThread;
-        end = ((i == numThreads - 2) ? (selaFile.selaFrames.size()) : (end + framesPerThread));
+        const size_t framesPerThread = selaFile.selaFrames.size() / numThreads;
+
+        size_t begin = 0;
+        size_t end = framesPerThread;
+        for (size_t i = 0; i < numThreads; i++) {
+            //Create worker object
+            LoopThrough data = LoopThrough(begin, end, selaFile.selaFrames);
+
+            //Start thread object and push thread to threadpool
+            threadPool.push_back(std::thread(&LoopThrough::process, data, std::ref(wavFrameSegments[i])));
+            
+            //Increment beginning and end
+            begin += framesPerThread;
+            end = ((i == numThreads - 2) ? (selaFile.selaFrames.size()) : (end + framesPerThread));
+        }
+
+        for (size_t i = 0; i < numThreads; i++) {
+            // Wait for worker threads to finish execution
+            threadPool[i].join();
+        }
+
+        size_t count = 0;
+        for(std::vector<data::WavFrame> segment: wavFrameSegments) {
+            for(data::WavFrame wavFrame : segment) {
+                decodedWavFrames.push_back(wavFrame);
+                count++;
+            }
+        }
     }
-
-    for(size_t i = 0; i < numThreads; i++) {
-        threadPool[i].join();
+    else {
+        for(data::SelaFrame selaFrame: selaFile.selaFrames) {
+            frame::FrameDecoder decoder = frame::FrameDecoder(selaFrame);
+            data::WavFrame wavFrame = decoder.process();
+            decodedWavFrames.push_back(wavFrame);
+        }
     }
 }
 
 void Decoder::process()
 {
+    std::vector<data::WavFrame> wavFrames;
     readFrames();
-    processFrames();
+    processFrames(std::ref(wavFrames));
 }
 }

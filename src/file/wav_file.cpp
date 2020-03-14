@@ -153,19 +153,7 @@ void WavFile::demuxSamples()
             i++;
         }
     }
-
-    /*
-    std::vector<int32_t> intSamples;
-    intSamples.reserve(sampleCount);
-
-    for (size_t i = 0; i < sampleCount; i++) {
-        intSamples.push_back(((uint8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((uint8_t)wavChunk.dataSubChunk.subChunkData[offset]));
-        offset += 2;
-    }
-
-    offset = 0;
-    */
-
+    
     /*
     for (size_t i = 0; i < wavFrames.capacity(); i++) {
         std::vector<std::vector<int32_t>> allSamples;
