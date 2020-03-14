@@ -95,6 +95,6 @@ void Decoder::process()
 {
     std::vector<data::WavFrame> wavFrames;
     readFrames();
-    processFrames(std::ref(wavFrames));
+    processFrames(wavFrames);
 }
 }

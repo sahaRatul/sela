@@ -82,13 +82,16 @@ inline void ResidueGenerator::quantizeReflectionCoefficients()
     linearPredictor.quantizedReflectionCoefficients.reserve((size_t)linearPredictor.optimalLpcOrder);
 
     if (linearPredictor.quantizedReflectionCoefficients.capacity() > 0) {
-        linearPredictor.quantizedReflectionCoefficients.push_back((int32_t)floor(64 * (-1 + (SQRT2 * sqrt(linearPredictor.reflectionCoefficients[0] + 1)))));
+        double val = floor(64 * (-1 + (SQRT2 * sqrt(linearPredictor.reflectionCoefficients[0] + 1))));
+        linearPredictor.quantizedReflectionCoefficients.push_back(std::isnan(val) ? 0 : (int32_t)val);
     }
     if (linearPredictor.quantizedReflectionCoefficients.capacity() > 1) {
-        linearPredictor.quantizedReflectionCoefficients.push_back((int32_t)floor(64 * (-1 + (SQRT2 * sqrt(-linearPredictor.reflectionCoefficients[1] + 1)))));
+        double val = floor(64 * (-1 + (SQRT2 * sqrt(-linearPredictor.reflectionCoefficients[1] + 1))));
+        linearPredictor.quantizedReflectionCoefficients.push_back(std::isnan(val) ? 0 : (int32_t)val);
     }
     for (size_t i = 2; i < linearPredictor.optimalLpcOrder; i++) {
-        linearPredictor.quantizedReflectionCoefficients.push_back((int32_t)floor(64 * linearPredictor.reflectionCoefficients[i]));
+        double val = floor(64 * linearPredictor.reflectionCoefficients[i]);
+        linearPredictor.quantizedReflectionCoefficients.push_back(std::isnan(val) ? 0 : (int32_t)val);
     }
 }
 
@@ -100,10 +103,10 @@ inline void ResidueGenerator::generateResidues(std::vector<int32_t>& residues)
 
     for (size_t i = 1; i <= (size_t)linearPredictor.optimalLpcOrder; i++) {
         int64_t temp = correction;
-        for (int j = 1; (size_t)j <= i; j++) {
+        for (size_t j = 1; j <= i; j++) {
             temp += linearPredictor.linearPredictionCoefficients[j] * samples[i - j];
         }
-        residues.push_back(samples[i] - (int)(temp >> CORRECTION_FACTOR));
+        residues.push_back(samples[i] - (int32_t)(temp >> CORRECTION_FACTOR));
     }
 
     for (size_t i = linearPredictor.optimalLpcOrder + 1; i < samples.size(); i++) {
@@ -111,7 +114,7 @@ inline void ResidueGenerator::generateResidues(std::vector<int32_t>& residues)
         for (size_t j = 0; j <= linearPredictor.optimalLpcOrder; j++) {
             temp += (linearPredictor.linearPredictionCoefficients[j] * samples[i - j]);
         }
-        residues.push_back(samples[i] - (int)(temp >> CORRECTION_FACTOR));
+        residues.push_back(samples[i] - (int32_t)(temp >> CORRECTION_FACTOR));
     }
 }
 
@@ -129,5 +132,4 @@ data::LpcEncodedData ResidueGenerator::process()
     return data::LpcEncodedData(linearPredictor.optimalLpcOrder, bitsPerSample,
         std::move(linearPredictor.quantizedReflectionCoefficients), std::move(residues));
 }
-
 }

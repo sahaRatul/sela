@@ -48,7 +48,7 @@ inline void RiceEncoder::generateEncodedBits()
         // Write out a zero
         bitOutput.push_back(false);
         // Write out last param bits of input
-        for (int64_t j = optimumRiceParam - 1; j >= 0; j--) {
+        for (int64_t j = (int32_t)optimumRiceParam - 1; j >= 0; j--) {
             bitOutput.push_back((bool)(x >> j & 0x1));
         }
     }
