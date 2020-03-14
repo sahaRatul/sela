@@ -43,7 +43,6 @@ void Encoder::processFrames(std::vector<data::SelaFrame>& encodedSelaFrames)
     size_t numThreads = std::thread::hardware_concurrency();
     encodedSelaFrames.reserve(wavFile.wavChunk.dataSubChunk.wavFrames.size());
 
-    size_t count = 0;
     if (numThreads > 0) {
         //Initialize ThreadPool
         std::vector<std::thread> threadPool;
