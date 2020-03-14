@@ -91,7 +91,9 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             isDataSubChunkPresent = true; //Mark data subchunk as present
 
             //Assign subChunkId
-            data::WavDataSubChunk wavDataSubChunk(bitsPerSample, channels);
+            data::WavDataSubChunk wavDataSubChunk;
+            wavDataSubChunk.bitsPerSample = bitsPerSample;
+            wavDataSubChunk.channels = channels;
             wavDataSubChunk.subChunkId = subChunkId;
 
             //Read subChunkSize
@@ -137,6 +139,22 @@ void WavFile::demuxSamples()
     wavFrames.reserve((size_t)(sampleCount / (samplesPerChannelPerFrame * wavChunk.formatSubChunk.numChannels)));
     size_t offset = 0;
 
+    std::vector<std::vector<int32_t>> demuxedIntSamples;
+    demuxedIntSamples.reserve((size_t)wavChunk.formatSubChunk.numChannels);
+    for (size_t i = 0; i < (size_t)wavChunk.formatSubChunk.numChannels; i++) {
+        demuxedIntSamples.push_back(std::vector<int32_t>());
+        demuxedIntSamples[i].reserve((size_t)(sampleCount / wavChunk.formatSubChunk.numChannels));
+    }
+
+    for (size_t i = 0; i < sampleCount;) {
+        for(size_t j = 0; j < (size_t)wavChunk.formatSubChunk.numChannels; j++) {
+            demuxedIntSamples[j].push_back(((uint8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((uint8_t)wavChunk.dataSubChunk.subChunkData[offset]));
+            offset += 2;
+            i++;
+        }
+    }
+
+    /*
     std::vector<int32_t> intSamples;
     intSamples.reserve(sampleCount);
 
@@ -146,7 +164,9 @@ void WavFile::demuxSamples()
     }
 
     offset = 0;
+    */
 
+    /*
     for (size_t i = 0; i < wavFrames.capacity(); i++) {
         std::vector<std::vector<int32_t>> allSamples;
         allSamples.reserve((size_t)wavChunk.formatSubChunk.numChannels);
@@ -166,6 +186,7 @@ void WavFile::demuxSamples()
         data::WavFrame wavFrame = data::WavFrame((uint8_t)wavChunk.formatSubChunk.bitsPerSample, std::move(allSamples));
         wavFrames.push_back(wavFrame);
     }
+    */
 }
 
 void WavFile::writeToFile(std::ofstream& outputFile)

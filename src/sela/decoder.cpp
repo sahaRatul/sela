@@ -2,22 +2,26 @@
 #include "../include/frame.hpp"
 
 #include <iostream>
+#include <algorithm>
+#include <execution>
 
 namespace sela {
-    void Decoder::readFrames() {
-        selaFile.readFromFile(ifStream);
-    }
+void Decoder::readFrames()
+{
+    selaFile.readFromFile(ifStream);
+}
 
-    void Decoder::processFrames() {
-        for(size_t i = 0; i < selaFile.selaFrames.size(); i++) {
-            std::cout << i << std::endl;
-            frame::FrameDecoder decoder = frame::FrameDecoder(selaFile.selaFrames[i]);
-            data::WavFrame wavFrame = decoder.process();
-        }
-    }
+void Decoder::processFrames()
+{
+    std::for_each(std::execution::par_unseq, selaFile.selaFrames.begin(), selaFile.selaFrames.end(), [](data::SelaFrame selaFrame) {
+        frame::FrameDecoder decoder = frame::FrameDecoder(selaFrame);
+        data::WavFrame wavFrame = decoder.process();
+    });
+}
 
-    void Decoder::process() {
-        readFrames();
-        processFrames();
-    }
+void Decoder::process()
+{
+    readFrames();
+    processFrames();
+}
 }

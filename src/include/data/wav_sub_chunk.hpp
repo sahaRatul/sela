@@ -27,11 +27,6 @@ class WavDataSubChunk : public WavSubChunk {
 public:
     uint8_t bitsPerSample;
     uint8_t channels;
-    WavDataSubChunk(uint8_t bitsPerSample, uint8_t channels)
-        : bitsPerSample(bitsPerSample)
-        , channels(channels)
-    {
-    }
 };
 }
 
