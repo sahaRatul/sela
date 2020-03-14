@@ -13,7 +13,7 @@ public:
     data::SelaHeader selaHeader;
     std::vector<data::SelaFrame> selaFrames;
     void readFromFile(std::ifstream& inputFile);
-    void writeToFile(std::ofstream& outputFile);
+    void writeToFile(const std::ofstream& outputFile);
 };
 }
 

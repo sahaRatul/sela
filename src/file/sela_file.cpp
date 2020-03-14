@@ -91,7 +91,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
     }
 }
 
-void SelaFile::writeToFile(std::ofstream& outputFile)
+void SelaFile::writeToFile(const std::ofstream& outputFile)
 {
     (void)outputFile;
 }

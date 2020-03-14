@@ -200,7 +200,7 @@ void WavFile::demuxSamples()
     }
 }
 
-void WavFile::writeToFile(std::ofstream& outputFile)
+void WavFile::writeToFile(const std::ofstream& outputFile)
 {
     (void)outputFile;
 }
