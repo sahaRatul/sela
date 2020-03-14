@@ -16,12 +16,12 @@ TEST_CASE("Frame Encoder/Decoder combined test")
     }
     samples[0] = sinWave;
 
-    // Generate a cosine wave for channel 2
-    std::vector<int32_t> cosWave = std::vector<int32_t>(2048, 0);
+    // Generate a sine wave for channel 2
+    std::vector<int32_t> sinWave2 = std::vector<int32_t>(2048, 0);
     for (int i = 0; i < sinWave.size(); i++) {
-        cosWave[i] = (int32_t)(INT16_MAX * cos((double)i * (M_PI / 180)));
+        sinWave2[i] = (int32_t)(INT16_MAX * sin((double)i * (M_PI / 180)));
     }
-    samples[1] = cosWave;
+    samples[1] = sinWave2;
 
     data::WavFrame input = data::WavFrame((uint8_t)16, std::move(samples));
     
