@@ -38,28 +38,32 @@ void WavFile::readFromFile(std::ifstream& inputFile)
 
     //Check File size
     if (contents.size() < 44) {
-        throw data::Exception("File is too small, probably not a wav file.");
+        const std::string exceptionMessage = "File is too small, probably not a wav file.";
+        throw data::Exception(exceptionMessage);
     }
 
     //Read RIFF marker
     offset += 4;
     wavChunk.chunkId = std::string(contents.begin(), contents.begin() + offset);
     if (wavChunk.chunkId != "RIFF") {
-        throw data::Exception("chunkId is not RIFF, probably not a wav file.");
+        const std::string exceptionMessage = "chunkId is not RIFF, probably not a wav file.";
+        throw data::Exception(exceptionMessage);
     }
 
     //Read chunkSize
     offset += 4;
     wavChunk.chunkSize = ((uint8_t)contents[7] << 24) | ((uint8_t)contents[6] << 16) | ((uint8_t)contents[5] << 8) | ((uint8_t)contents[4]);
     if ((size_t)wavChunk.chunkSize > contents.size()) {
-        throw data::Exception("chunkSize exceeds file size, probably a corrupted file");
+        const std::string exceptionMessage = "chunkSize exceeds file size, probably a corrupted file";
+        throw data::Exception(exceptionMessage);
     }
 
     //Read format
     offset += 4;
     wavChunk.format = std::string(contents.begin() + (offset - 4), contents.begin() + offset);
     if (wavChunk.format != "WAVE") {
-        throw data::Exception("format is not WAVE, probably not a wav file.");
+        const std::string exceptionMessage = "format is not WAVE, probably not a wav file.";
+        throw data::Exception(exceptionMessage);
     }
 
     bool isFmtSubChunkPresent = false;
@@ -98,7 +102,8 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             wavFormatSubChunk.bitsPerSample = ((uint8_t)wavFormatSubChunk.subChunkData[15] << 8) | ((uint8_t)wavFormatSubChunk.subChunkData[14]);
 
             if (wavFormatSubChunk.bitsPerSample != 16) {
-                throw data::Exception("Only 16bits per sample wav is supported.");
+                const std::string exceptionMessage = "Only 16bits per sample wav is supported.";
+                throw data::Exception(exceptionMessage);
             }
 
             //Assign formatSubChunk
@@ -107,9 +112,12 @@ void WavFile::readFromFile(std::ifstream& inputFile)
             //Assign additional values which will be needed while processing data subChunk
             bitsPerSample = (uint8_t)wavFormatSubChunk.bitsPerSample;
             channels = (uint8_t)wavFormatSubChunk.numChannels;
+            (void)bitsPerSample;
+            (void)channels;
         } else if (subChunkId == "data") {
             if (!isFmtSubChunkPresent) {
-                throw data::Exception("Probably corrupt wav, data subChunk present without fmt subChunk.");
+                const std::string exceptionMessage = "Probably corrupt wav, data subChunk present without fmt subChunk.";
+                throw data::Exception(exceptionMessage);
             }
             isDataSubChunkPresent = true; //Mark data subchunk as present
 
@@ -149,10 +157,12 @@ void WavFile::readFromFile(std::ifstream& inputFile)
 
     //Validate subChunks
     if (!isFmtSubChunkPresent) {
-        throw data::Exception("fmt subChunk is missing from file");
+        const std::string exceptionMessage = "fmt subChunk is missing from file";
+        throw data::Exception(exceptionMessage);
     }
     if (!isDataSubChunkPresent) {
-        throw data::Exception("data subChunk is missing from file");
+        const std::string exceptionMessage = "data subChunk is missing from file";
+        throw data::Exception(exceptionMessage);
     }
 
     //Demux Samples
@@ -189,7 +199,7 @@ void WavFile::demuxSamples()
             //Assign buffer
             std::vector<int32_t> samples;
             samples.reserve(samplesPerChannelPerFrame);
-            
+
             samples.assign((demuxedIntSamples[j].begin() + offset), (demuxedIntSamples[j].begin() + offset + samplesPerChannelPerFrame));
             allSamples.push_back(samples);
         }

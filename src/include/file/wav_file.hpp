@@ -8,11 +8,9 @@
 
 namespace file {
 class WavFile {
-private:
+public:
     size_t samplesPerChannelPerFrame = 2048;
     void demuxSamples();
-
-public:
     data::WavChunk wavChunk;
     WavFile() {}
     WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChannels, std::vector<data::WavFrame>&& wavFrames);
