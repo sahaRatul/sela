@@ -13,7 +13,7 @@ A lossless audio codec which aims to be as simple as possible while still having
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 
-#### Build Requirements
+### Build Requirements
 - cmake
 - MSVC/GCC/clang (Any compiler supporting C++11 should work)
 
