@@ -193,7 +193,8 @@ void WavFile::demuxSamples()
 
     for (size_t i = 0; i < sampleCount;) {
         for (size_t j = 0; j < (size_t)wavChunk.formatSubChunk.numChannels; j++) {
-            demuxedIntSamples[j].push_back(((int8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((int8_t)wavChunk.dataSubChunk.subChunkData[offset]));
+            //MSB << 8 | (LSB & 0xFF);
+            demuxedIntSamples[j].push_back((wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | (wavChunk.dataSubChunk.subChunkData[offset] & 0xFF));
             offset += 2;
             i++;
         }
