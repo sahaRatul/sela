@@ -12,10 +12,10 @@ WavFile::WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChanne
     for (data::WavFrame wavFrame : wavFrames) {
         fileSize += (wavFrame.samples.size() * wavFrame.samples[0].size() * bytesPerSample);
     }
-    
+
     //Set chunk data
     wavChunk.chunkId = "RIFF";
-    wavChunk.chunkSize = (uint32_t)(fileSize - 8);;
+    wavChunk.chunkSize = (uint32_t)(fileSize - 8);
     wavChunk.format = "WAVE";
 
     //Set format subchunk data
@@ -193,7 +193,6 @@ void WavFile::demuxSamples()
 
     for (size_t i = 0; i < sampleCount;) {
         for (size_t j = 0; j < (size_t)wavChunk.formatSubChunk.numChannels; j++) {
-            //MSB << 8 | (LSB & 0xFF);
             demuxedIntSamples[j].push_back((wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | (wavChunk.dataSubChunk.subChunkData[offset] & 0xFF));
             offset += 2;
             i++;

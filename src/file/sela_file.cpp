@@ -126,12 +126,12 @@ void SelaFile::writeToFile(std::ofstream& outputFile)
             outputFile.write(reinterpret_cast<const char*>(&subFrame.reflectionCoefficientRiceParam), sizeof(subFrame.reflectionCoefficientRiceParam));
             outputFile.write(reinterpret_cast<const char*>(&subFrame.reflectionCoefficientRequiredInts), sizeof(subFrame.reflectionCoefficientRequiredInts));
             outputFile.write(reinterpret_cast<const char*>(&subFrame.optimumLpcOrder), sizeof(subFrame.optimumLpcOrder));
-            outputFile.write((char*)&subFrame.encodedReflectionCoefficients[0], subFrame.encodedReflectionCoefficients.size() * sizeof(uint32_t));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.encodedReflectionCoefficients[0]), subFrame.encodedReflectionCoefficients.size() * sizeof(uint32_t));
 
             outputFile.write(reinterpret_cast<const char*>(&subFrame.residueRiceParam), sizeof(subFrame.residueRiceParam));
             outputFile.write(reinterpret_cast<const char*>(&subFrame.residueRequiredInts), sizeof(subFrame.residueRequiredInts));
             outputFile.write(reinterpret_cast<const char*>(&subFrame.samplesPerChannel), sizeof(subFrame.samplesPerChannel));
-            outputFile.write((char*)&subFrame.encodedResidues[0], subFrame.encodedResidues.size() * sizeof(uint32_t));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.encodedResidues[0]), subFrame.encodedResidues.size() * sizeof(uint32_t));
         }
     }
 }
