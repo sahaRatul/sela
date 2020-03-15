@@ -103,6 +103,10 @@ private:
 
 public:
     explicit ResidueGenerator(const data::LpcDecodedData& data);
+    ~ResidueGenerator()
+    {
+        delete &linearPredictor;
+    }
     data::LpcEncodedData process();
 };
 
@@ -115,6 +119,10 @@ private:
 
 public:
     explicit SampleGenerator(const data::LpcEncodedData& encodedData);
+    ~SampleGenerator()
+    {
+        delete &linearPredictor;
+    }
     data::LpcDecodedData process();
 };
 }
