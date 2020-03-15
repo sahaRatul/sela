@@ -1,17 +1,19 @@
+
 # SELA
 ### SimplE Lossless Audio
-A simplified lossless audio codec written for my final year project.
-
-## NOTE: THIS project is currently being rewritten. You can get the legacy code by switching to `legacy` branch.
-You can also check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
+A lossless audio codec which aims to be as simple as possible while still having good enough compression ratios. 
 
 [![Build Status](https://travis-ci.org/sahaRatul/sela.svg?branch=master)](https://travis-ci.org/sahaRatul/sela)
 [![codecov](https://codecov.io/gh/sahaRatul/sela/branch/master/graph/badge.svg)](https://codecov.io/gh/sahaRatul/sela)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+#### Code Quality Metrics
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+
+To understand the core algorithm, see code in frame namespace. frame namespace utilizes maths which is implemented on lpc and rice namespaces.
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
@@ -29,4 +31,6 @@ You can also check out the Java version of this codec at [https://github.com/sah
 - [Paper on shorten, the original open source lossless codec](ftp://svr-ftp.eng.cam.ac.uk/pub/reports/robinson_tr156.ps.Z)
 - ISO/IEC 14496 Part 3, Subpart 11 (Audio Lossless Coding)
 
-### License : MIT
+#### NOTE:  You can get the legacy  C code by switching to `legacy` branch.
+
+Also, check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
