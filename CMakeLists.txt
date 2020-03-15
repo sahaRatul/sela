@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(sela VERSION 2.0.2)
 
+# Verbose toggle
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
 # Require (at least) it
@@ -37,7 +39,7 @@ set(SOURCES
     src/sela/decoder.cpp
 )
 add_executable(sela ${SOURCES})
-target_include_directories(sela INTERFACE ${SELA_INCLUDE_DIR})
+target_include_directories(sela PUBLIC ${SELA_INCLUDE_DIR})
 target_link_libraries(sela Threads::Threads)
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
