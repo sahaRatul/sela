@@ -29,8 +29,6 @@ public:
     uint16_t samplesPerChannel;
     const std::vector<uint32_t> encodedResidues;
 
-    uint32_t getByteCount();
-    void write();
     SelaSubFrame(uint8_t channel, uint8_t subFrameType, uint8_t parentChannelNumber,
         const data::RiceEncodedData& reflectionData, const data::RiceEncodedData& residueData) noexcept
         : channel(channel)

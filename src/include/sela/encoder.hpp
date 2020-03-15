@@ -1,8 +1,9 @@
 #ifndef _ENCODER_H_
 #define _ENCODER_H_
 
-#include "../file/wav_file.hpp"
 #include "../data/sela_frame.hpp"
+#include "../file/sela_file.hpp"
+#include "../file/wav_file.hpp"
 
 namespace sela {
 class Encoder {
@@ -17,7 +18,7 @@ public:
         : ifStream(ifStream)
     {
     }
-    void process();
+    file::SelaFile process();
 };
 }
 

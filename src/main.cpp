@@ -20,8 +20,8 @@ void printUsage(const std::string& programName)
 void encodeFile(std::ifstream& inputFile, std::ofstream& outputFile)
 {
     sela::Encoder encoder = sela::Encoder(inputFile);
-    encoder.process();
-    (void)outputFile;
+    file::SelaFile selaFile = encoder.process();
+    selaFile.writeToFile(outputFile);
 }
 
 void decodeFile(std::ifstream& inputFile, std::ofstream& outputFile)

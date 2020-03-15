@@ -55,7 +55,7 @@ void Encoder::processFrames(std::vector<data::SelaFrame>& encodedSelaFrames)
             selaFrameSegments.push_back(std::vector<data::SelaFrame>());
         }
 
-        const size_t framesPerThread =  wavFile.wavChunk.dataSubChunk.wavFrames.size() / numThreads;
+        const size_t framesPerThread = wavFile.wavChunk.dataSubChunk.wavFrames.size() / numThreads;
 
         size_t begin = 0;
         size_t end = framesPerThread;
@@ -91,10 +91,11 @@ void Encoder::processFrames(std::vector<data::SelaFrame>& encodedSelaFrames)
     }
 }
 
-void Encoder::process()
+file::SelaFile Encoder::process()
 {
     std::vector<data::SelaFrame> selaFrames;
     readFrames();
     processFrames(selaFrames);
+    return file::SelaFile(wavFile.wavChunk.formatSubChunk.sampleRate, wavFile.wavChunk.formatSubChunk.bitsPerSample, (uint8_t)wavFile.wavChunk.formatSubChunk.numChannels, std::move(selaFrames));
 }
 }

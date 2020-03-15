@@ -7,6 +7,15 @@
 #include <iostream>
 
 namespace file {
+SelaFile::SelaFile(uint32_t sampleRate, uint16_t bitsPerSample, uint8_t channels, std::vector<data::SelaFrame>&& selaFrames)
+    : selaFrames(selaFrames)
+{
+    selaHeader.sampleRate = sampleRate;
+    selaHeader.bitsPerSample = bitsPerSample;
+    selaHeader.channels = channels;
+    selaHeader.numFrames = (uint32_t)selaFrames.size();
+}
+
 void SelaFile::readFromFile(std::ifstream& inputFile)
 {
     std::vector<char> contents;
@@ -39,7 +48,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
 
     //Read frames
     selaFrames.reserve(selaHeader.numFrames);
-    for(size_t i = 0; i < (size_t)selaHeader.numFrames; i++) {
+    for (size_t i = 0; i < (size_t)selaHeader.numFrames; i++) {
         //Read SyncWord
         uint32_t sync = ((uint8_t)contents[offset + 3] << 24) | ((uint8_t)contents[offset + 2] << 16) | ((uint8_t)contents[offset + 1] << 8) | ((uint8_t)contents[offset]);
         if (sync != 0xAA55FF00) {
@@ -51,7 +60,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
         frame.subFrames.reserve(selaHeader.channels);
 
         //Read subFrames
-        for(size_t j = 0; j < (size_t)selaHeader.channels; j++) {
+        for (size_t j = 0; j < (size_t)selaHeader.channels; j++) {
             // Get channel info
             uint8_t subFrameChannel = (uint8_t)contents[offset];
             uint8_t subFrameType = (uint8_t)contents[offset + 1];
@@ -93,8 +102,41 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
     }
 }
 
-void SelaFile::writeToFile(const std::ofstream& outputFile)
+void SelaFile::writeToFile(std::ofstream& outputFile)
 {
-    (void)outputFile;
+    std::cout << "Writing to file" << std::endl;
+    //Write Header
+    outputFile.write(reinterpret_cast<const char*>(selaHeader.magicNumber), (size_t)4);
+    outputFile.write(reinterpret_cast<const char*>(&selaHeader.sampleRate), sizeof(selaHeader.sampleRate));
+    outputFile.write(reinterpret_cast<const char*>(&selaHeader.bitsPerSample), sizeof(selaHeader.bitsPerSample));
+    outputFile.write(reinterpret_cast<const char*>(&selaHeader.channels), sizeof(selaHeader.channels));
+    outputFile.write(reinterpret_cast<const char*>(&selaHeader.numFrames), sizeof(selaHeader.numFrames));
+
+    //Write frames
+    for (data::SelaFrame selaFrame : selaFrames) {
+        //Write Syncword
+        outputFile.write(reinterpret_cast<const char*>(&selaFrame.syncWord), sizeof(selaFrame.syncWord));
+
+        //Write subFrames
+        for (data::SelaSubFrame subFrame : selaFrame.subFrames) {
+            //Get byte count
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.channel), sizeof(subFrame.channel));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.subFrameType), sizeof(subFrame.subFrameType));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.parentChannelNumber), sizeof(subFrame.parentChannelNumber));
+
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.reflectionCoefficientRiceParam), sizeof(subFrame.reflectionCoefficientRiceParam));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.reflectionCoefficientRequiredInts), sizeof(subFrame.reflectionCoefficientRequiredInts));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.optimumLpcOrder), sizeof(subFrame.optimumLpcOrder));
+            outputFile.write((char*)&subFrame.encodedReflectionCoefficients[0], subFrame.encodedReflectionCoefficients.size() * sizeof(uint32_t));
+
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.residueRiceParam), sizeof(subFrame.residueRiceParam));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.residueRequiredInts), sizeof(subFrame.residueRequiredInts));
+            outputFile.write(reinterpret_cast<const char*>(&subFrame.samplesPerChannel), sizeof(subFrame.samplesPerChannel));
+            outputFile.write((char*)&subFrame.encodedResidues[0], subFrame.encodedResidues.size() * sizeof(uint32_t));
+
+            std::cout << 12 + (4 * (subFrame.encodedReflectionCoefficients.size() + subFrame.encodedResidues.size())) << std::endl;
+        }
+    }
+    std::cout << "Done" << std::endl;
 }
 }
