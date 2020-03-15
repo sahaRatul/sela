@@ -48,7 +48,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     //Check File size
     if (contents.size() < 44) {
         const std::string exceptionMessage = "File is too small, probably not a wav file.";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Read RIFF marker
@@ -56,7 +56,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     wavChunk.chunkId = std::string(contents.begin(), contents.begin() + offset);
     if (wavChunk.chunkId != "RIFF") {
         const std::string exceptionMessage = "chunkId is not RIFF, probably not a wav file.";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Read chunkSize
@@ -64,7 +64,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     wavChunk.chunkSize = ((uint8_t)contents[7] << 24) | ((uint8_t)contents[6] << 16) | ((uint8_t)contents[5] << 8) | ((uint8_t)contents[4]);
     if ((size_t)wavChunk.chunkSize > contents.size()) {
         const std::string exceptionMessage = "chunkSize exceeds file size, probably a corrupted file";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Read format
@@ -72,7 +72,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     wavChunk.format = std::string(contents.begin() + (offset - 4), contents.begin() + offset);
     if (wavChunk.format != "WAVE") {
         const std::string exceptionMessage = "format is not WAVE, probably not a wav file.";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     bool isFmtSubChunkPresent = false;
@@ -112,7 +112,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
 
             if (wavFormatSubChunk.bitsPerSample != 16) {
                 const std::string exceptionMessage = "Only 16bits per sample wav is supported.";
-                throw data::Exception(exceptionMessage);
+                throw data::Exception(std::move(exceptionMessage));
             }
 
             //Assign formatSubChunk
@@ -126,7 +126,7 @@ void WavFile::readFromFile(std::ifstream& inputFile)
         } else if (subChunkId == "data") {
             if (!isFmtSubChunkPresent) {
                 const std::string exceptionMessage = "Probably corrupt wav, data subChunk present without fmt subChunk.";
-                throw data::Exception(exceptionMessage);
+                throw data::Exception(std::move(exceptionMessage));
             }
             isDataSubChunkPresent = true; //Mark data subchunk as present
 
@@ -167,11 +167,11 @@ void WavFile::readFromFile(std::ifstream& inputFile)
     //Validate subChunks
     if (!isFmtSubChunkPresent) {
         const std::string exceptionMessage = "fmt subChunk is missing from file";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
     if (!isDataSubChunkPresent) {
         const std::string exceptionMessage = "data subChunk is missing from file";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Demux Samples

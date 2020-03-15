@@ -20,7 +20,8 @@ public:
     void process(std::vector<data::SelaFrame>& selaFrames)
     {
         if ((begin >= end) || (end > selaFrames.size())) {
-            data::Exception("Something is wrong");
+            const std::string exceptionMessage = "Something is wrong";
+            data::Exception(std::move(exceptionMessage));
         }
         selaFrames.reserve(end - begin);
 

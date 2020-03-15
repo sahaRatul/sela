@@ -4,7 +4,7 @@ namespace lpc {
 SampleGenerator::SampleGenerator(const data::LpcEncodedData& encodedData)
     : residues(encodedData.residues)
     , bitsPerSample(encodedData.bitsPerSample)
-    , linearPredictor(*(new LinearPredictor(encodedData.quantizedReflectionCoefficients, encodedData.optimalLpcOrder)))
+    , linearPredictor(LinearPredictor(encodedData.quantizedReflectionCoefficients, encodedData.optimalLpcOrder))
 {
 }
 

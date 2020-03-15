@@ -28,7 +28,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
     //Check File size
     if (contents.size() < 15) {
         const std::string exceptionMessage = "File is too small, probably not a sela file.";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Read Magic Number
@@ -36,7 +36,7 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
     std::string header = std::string(contents.begin(), contents.begin() + offset);
     if (header != "SeLa") {
         const std::string exceptionMessage = "Magic number is incorrect, probably not a sela file.";
-        throw data::Exception(exceptionMessage);
+        throw data::Exception(std::move(exceptionMessage));
     }
 
     //Read other details

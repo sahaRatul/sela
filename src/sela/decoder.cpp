@@ -21,7 +21,8 @@ public:
     void process(std::vector<data::WavFrame>& wavFrames)
     {
         if ((begin >= end) || (end > selaFrames.size())) {
-            data::Exception("Something is wrong");
+            const std::string exceptionMessage = "Something is wrong";
+            data::Exception(std::move(exceptionMessage));
         }
         wavFrames.reserve(end - begin);
 

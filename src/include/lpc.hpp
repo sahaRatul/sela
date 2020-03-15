@@ -91,7 +91,7 @@ private:
     const std::vector<int32_t>& samples;
     std::vector<double> quantizedSamples;
     std::vector<double> autocorrelationFactors;
-    LinearPredictor& linearPredictor = *(new LinearPredictor());
+    LinearPredictor linearPredictor;
     uint8_t bitsPerSample;
     int32_t quantizationFactor = INT16_MAX; //Warning: This is hardcoded and subject to change later
     inline void quantizeSamples();
@@ -103,10 +103,6 @@ private:
 
 public:
     explicit ResidueGenerator(const data::LpcDecodedData& data);
-    ~ResidueGenerator()
-    {
-        delete &linearPredictor;
-    }
     data::LpcEncodedData process();
 };
 
@@ -114,15 +110,11 @@ class SampleGenerator {
 private:
     const std::vector<int32_t>& residues;
     uint8_t bitsPerSample;
-    LinearPredictor& linearPredictor;
+    LinearPredictor linearPredictor;
     inline void generateSamples(std::vector<int32_t>& samples);
 
 public:
     explicit SampleGenerator(const data::LpcEncodedData& encodedData);
-    ~SampleGenerator()
-    {
-        delete &linearPredictor;
-    }
     data::LpcDecodedData process();
 };
 }
