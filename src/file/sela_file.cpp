@@ -8,7 +8,7 @@
 
 namespace file {
 SelaFile::SelaFile(uint32_t sampleRate, uint16_t bitsPerSample, uint8_t channels, std::vector<data::SelaFrame>&& selaFrames)
-    : selaFrames(std::move(selaFrames))
+    : selaFrames(selaFrames)
 {
     selaHeader.sampleRate = sampleRate;
     selaHeader.bitsPerSample = bitsPerSample;
