@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(sela VERSION 0.1.0)
+project(sela VERSION 2.0.2)
 
 # Use C++11
 set(CMAKE_CXX_STANDARD 11)
@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Don't use e.g. GNU extension (like -std=gnu++11) for portability
 set(CMAKE_CXX_EXTENSIONS OFF)
 # Add support for threading library
-set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 # Enable CTest
