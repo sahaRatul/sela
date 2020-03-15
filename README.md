@@ -13,7 +13,20 @@ A lossless audio codec which aims to be as simple as possible while still having
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=security_rating)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 [![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=sahaRatul_sela&metric=ncloc)](https://sonarcloud.io/dashboard?id=sahaRatul_sela)
 
-To understand the core algorithm, see code in frame namespace. frame namespace utilizes maths which is implemented on lpc and rice namespaces.
+To understand the core algorithm, see code in frame namespace, frame namespace utilizes maths which is implemented in lpc and rice namespaces.
+
+### Current status
+|Task|Status|
+|:----:|:------:|
+|Encoder|**DONE**|
+|Decoder|**DONE**|
+|Reading and Writing WAV files|**DONE**|
+|Reading and Writing SELA files|**DONE**|
+|Multithreaded Encoder & Decoder|**DONE**|
+|Player|**TODO**|
+|Metadata support|**TODO**|
+|Seektable support|**TODO**|
+|Support for 24 bit audio|**TODO**|
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
