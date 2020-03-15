@@ -22,7 +22,7 @@ To understand the core algorithm, see code in frame namespace, frame namespace u
 |Decoder|**DONE**|
 |Reading and Writing WAV files|**DONE**|
 |Reading and Writing SELA files|**DONE**|
-|Multithreaded Encoder & Decoder|**DONE**|
+|Multithreaded Encoding & Decoding|**DONE**|
 |Player|**TODO**|
 |Metadata support|**TODO**|
 |Seektable support|**TODO**|
