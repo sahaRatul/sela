@@ -2,6 +2,7 @@
 #define _DECODER_H_
 
 #include "../file/sela_file.hpp"
+#include "../file/wav_file.hpp"
 #include "../data/wav_frame.hpp"
 
 namespace sela {
@@ -17,7 +18,7 @@ public:
         : ifStream(ifStream)
     {
     }
-    void process();
+    file::WavFile process();
 };
 }
 

@@ -27,8 +27,8 @@ void encodeFile(std::ifstream& inputFile, std::ofstream& outputFile)
 void decodeFile(std::ifstream& inputFile, std::ofstream& outputFile)
 {
     sela::Decoder decoder = sela::Decoder(inputFile);
-    decoder.process();
-    (void)outputFile;
+    file::WavFile wavFile = decoder.process();
+    wavFile.writeToFile(outputFile);
 }
 
 int main(int argc, char** argv)

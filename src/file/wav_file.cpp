@@ -6,9 +6,16 @@
 namespace file {
 WavFile::WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChannels, std::vector<data::WavFrame>&& wavFrames)
 {
+    //Calculate File Size
+    size_t fileSize = 44;
+    const size_t bytesPerSample = bitsPerSample / 8;
+    for (data::WavFrame wavFrame : wavFrames) {
+        fileSize += (wavFrame.samples.size() * wavFrame.samples[0].size() * bytesPerSample);
+    }
+    
     //Set chunk data
     wavChunk.chunkId = "RIFF";
-    wavChunk.chunkSize = 36;
+    wavChunk.chunkSize = (uint32_t)(fileSize - 8);;
     wavChunk.format = "WAVE";
 
     //Set format subchunk data
@@ -22,6 +29,8 @@ WavFile::WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChanne
     wavChunk.formatSubChunk.bitsPerSample = bitsPerSample;
 
     //Set dataSubChunk
+    wavChunk.dataSubChunk.subChunkId = "data";
+    wavChunk.dataSubChunk.subChunkSize = (uint32_t)(fileSize - 44);
     wavChunk.dataSubChunk.bitsPerSample = (uint8_t)bitsPerSample;
     wavChunk.dataSubChunk.channels = (uint8_t)numChannels;
     wavChunk.dataSubChunk.wavFrames = wavFrames;
@@ -210,8 +219,50 @@ void WavFile::demuxSamples()
     }
 }
 
-void WavFile::writeToFile(const std::ofstream& outputFile)
+void WavFile::writeToFile(std::ofstream& outputFile)
 {
-    (void)outputFile;
+    const size_t bytesPerSample = wavChunk.formatSubChunk.bitsPerSample / 8;
+
+    //Write chunk
+    outputFile << wavChunk.chunkId;
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.chunkSize), sizeof(wavChunk.chunkSize));
+    outputFile << wavChunk.format;
+
+    //Write format subchunk
+    outputFile << wavChunk.formatSubChunk.subChunkId;
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.subChunkSize), sizeof(wavChunk.formatSubChunk.subChunkSize));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.audioFormat), sizeof(wavChunk.formatSubChunk.audioFormat));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.numChannels), sizeof(wavChunk.formatSubChunk.numChannels));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.sampleRate), sizeof(wavChunk.formatSubChunk.sampleRate));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.byteRate), sizeof(wavChunk.formatSubChunk.byteRate));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.blockAlign), sizeof(wavChunk.formatSubChunk.blockAlign));
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.formatSubChunk.bitsPerSample), sizeof(wavChunk.formatSubChunk.bitsPerSample));
+
+    //Write data subChunk
+    outputFile << wavChunk.dataSubChunk.subChunkId;
+    outputFile.write(reinterpret_cast<const char*>(&wavChunk.dataSubChunk.subChunkSize), sizeof(wavChunk.dataSubChunk.subChunkSize));
+    if (wavChunk.formatSubChunk.numChannels == 2 && wavChunk.formatSubChunk.bitsPerSample == 16) { //Faster version of 16bit and 2channel files
+        int16_t* samples = new int16_t[10000];
+        for (data::WavFrame wavFrame : wavChunk.dataSubChunk.wavFrames) {
+            size_t offset = 0;
+            const size_t bufferSize = wavFrame.samples[0].size() * wavFrame.samples.size() * bytesPerSample;
+            for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
+                samples[offset] = wavFrame.samples[0][i];
+                offset++;
+                samples[offset] = wavFrame.samples[1][i];
+                offset++;
+            }
+            outputFile.write(reinterpret_cast<const char*>(samples), (bufferSize));
+        }
+        delete[] samples;
+    } else { //Slow as molasses version
+        for (data::WavFrame wavFrame : wavChunk.dataSubChunk.wavFrames) {
+            for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
+                for (std::vector<int32_t> samples : wavFrame.samples) {
+                    outputFile.write(reinterpret_cast<const char*>(&samples[i]), bytesPerSample);
+                }
+            }
+        }
+    }
 }
 }

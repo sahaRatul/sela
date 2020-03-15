@@ -15,7 +15,7 @@ public:
     WavFile() {}
     WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChannels, std::vector<data::WavFrame>&& wavFrames);
     void readFromFile(std::ifstream& inputFile);
-    void writeToFile(const std::ofstream& outputFile);
+    void writeToFile(std::ofstream& outputFile);
 };
 }
 

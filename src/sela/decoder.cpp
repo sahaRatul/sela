@@ -91,10 +91,11 @@ void Decoder::processFrames(std::vector<data::WavFrame>& decodedWavFrames)
     }
 }
 
-void Decoder::process()
+file::WavFile Decoder::process()
 {
     std::vector<data::WavFrame> wavFrames;
     readFrames();
     processFrames(wavFrames);
+    return file::WavFile(selaFile.selaHeader.sampleRate, selaFile.selaHeader.bitsPerSample, selaFile.selaHeader.channels, std::move(wavFrames));
 }
 }
