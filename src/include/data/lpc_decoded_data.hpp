@@ -9,7 +9,6 @@ class LpcDecodedData {
 public:
     uint8_t bitsPerSample;
     const std::vector<int32_t> samples;
-    LpcDecodedData(data::LpcDecodedData &&) noexcept;
     LpcDecodedData(uint8_t bitsPerSample, const std::vector<int32_t>&& samples) noexcept
         : bitsPerSample(bitsPerSample)
         , samples(samples)
