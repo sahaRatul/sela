@@ -7,7 +7,7 @@ namespace data {
 class Exception {
 public:
     const std::string exceptionMessage;
-    explicit Exception(const std::string&& exceptionMessage)
+    explicit Exception(const std::string&& exceptionMessage) noexcept
         : exceptionMessage(exceptionMessage)
     {
     }
