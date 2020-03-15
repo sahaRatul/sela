@@ -33,7 +33,7 @@ WavFile::WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChanne
     wavChunk.dataSubChunk.subChunkSize = (uint32_t)(fileSize - 44);
     wavChunk.dataSubChunk.bitsPerSample = (uint8_t)bitsPerSample;
     wavChunk.dataSubChunk.channels = (uint8_t)numChannels;
-    wavChunk.dataSubChunk.wavFrames = wavFrames;
+    wavChunk.dataSubChunk.wavFrames = std::move(wavFrames);
 }
 
 void WavFile::readFromFile(std::ifstream& inputFile)
