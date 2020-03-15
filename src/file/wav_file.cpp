@@ -193,7 +193,7 @@ void WavFile::demuxSamples()
 
     for (size_t i = 0; i < sampleCount;) {
         for (size_t j = 0; j < (size_t)wavChunk.formatSubChunk.numChannels; j++) {
-            demuxedIntSamples[j].push_back(((uint8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((uint8_t)wavChunk.dataSubChunk.subChunkData[offset]));
+            demuxedIntSamples[j].push_back(((int8_t)wavChunk.dataSubChunk.subChunkData[offset + 1] << 8) | ((int8_t)wavChunk.dataSubChunk.subChunkData[offset]));
             offset += 2;
             i++;
         }
@@ -247,9 +247,9 @@ void WavFile::writeToFile(std::ofstream& outputFile)
             size_t offset = 0;
             const size_t bufferSize = wavFrame.samples[0].size() * wavFrame.samples.size() * bytesPerSample;
             for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
-                samples[offset] = wavFrame.samples[0][i];
+                samples[offset] = (uint16_t)wavFrame.samples[0][i];
                 offset++;
-                samples[offset] = wavFrame.samples[1][i];
+                samples[offset] = (uint16_t)wavFrame.samples[1][i];
                 offset++;
             }
             outputFile.write(reinterpret_cast<const char*>(samples), (bufferSize));

@@ -104,7 +104,6 @@ void SelaFile::readFromFile(std::ifstream& inputFile)
 
 void SelaFile::writeToFile(std::ofstream& outputFile)
 {
-    std::cout << "Writing to file" << std::endl;
     //Write Header
     outputFile.write(reinterpret_cast<const char*>(selaHeader.magicNumber), (size_t)4);
     outputFile.write(reinterpret_cast<const char*>(&selaHeader.sampleRate), sizeof(selaHeader.sampleRate));
@@ -133,10 +132,7 @@ void SelaFile::writeToFile(std::ofstream& outputFile)
             outputFile.write(reinterpret_cast<const char*>(&subFrame.residueRequiredInts), sizeof(subFrame.residueRequiredInts));
             outputFile.write(reinterpret_cast<const char*>(&subFrame.samplesPerChannel), sizeof(subFrame.samplesPerChannel));
             outputFile.write((char*)&subFrame.encodedResidues[0], subFrame.encodedResidues.size() * sizeof(uint32_t));
-
-            std::cout << 12 + (4 * (subFrame.encodedReflectionCoefficients.size() + subFrame.encodedResidues.size())) << std::endl;
         }
     }
-    std::cout << "Done" << std::endl;
 }
 }
