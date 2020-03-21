@@ -15,7 +15,7 @@ A lossless audio codec which aims to be as simple as possible while still having
 
 ### Build Requirements
 - cmake
-- MSVC/GCC/clang (Any compiler supporting C++11 should work)
+- MSVC/GCC/CLANG/INTEL (Any compiler supporting C++11 should work)
 
 ### Current status
 |Task|Status|
