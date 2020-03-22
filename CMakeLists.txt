@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.12)
 project(sela VERSION 2.0.2)
+INCLUDE(CheckIncludeFiles)
 
 # Verbose toggle
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -11,6 +12,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 # Add support for threading library
 find_package(Threads REQUIRED)
+# Check if libao header is available or not
+CHECK_INCLUDE_FILES(ao/ao.h _HAVE_AO_H_)
 
 # Enable CTest
 include(CTest)
@@ -37,10 +40,12 @@ set(SOURCES
     src/file/wav_file.cpp
     src/sela/encoder.cpp
     src/sela/decoder.cpp
+    src/sela/player.cpp
 )
+
 add_executable(sela ${SOURCES})
 target_include_directories(sela PUBLIC ${SELA_INCLUDE_DIR})
-target_link_libraries(sela Threads::Threads)
+target_link_libraries(sela Threads::Threads ao)
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
