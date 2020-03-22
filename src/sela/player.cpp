@@ -25,7 +25,6 @@ void Player::play(file::WavFile wavFile)
     setAoFormat(wavFile.wavChunk.formatSubChunk);
     audioPackets.reserve(wavFile.wavChunk.dataSubChunk.wavFrames.size());
 
-    const size_t bytesPerSample = wavFile.wavChunk.formatSubChunk.bitsPerSample / 8;
     for (data::WavFrame wavFrame : wavFile.wavChunk.dataSubChunk.wavFrames)
     {
         int16_t *samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()];
