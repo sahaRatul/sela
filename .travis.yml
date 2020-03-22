@@ -15,7 +15,9 @@ install:
 
 addons:
   apt:
-    packages: lcov
+    packages: 
+      - lcov
+      - libao-dev
   sonarcloud:
     organization: "saharatul"
     token:

@@ -15,6 +15,10 @@ find_package(Threads REQUIRED)
 # Check if libao header is available or not
 CHECK_INCLUDE_FILES(ao/ao.h _HAVE_AO_H_)
 
+if(NOT _HAVE_AO_H_)
+    message(FATAL_ERROR "libao not found")
+endif()
+
 # Enable CTest
 include(CTest)
 enable_testing()
