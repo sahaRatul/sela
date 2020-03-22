@@ -1,5 +1,9 @@
 #include "../include/sela/player.hpp"
 
+#include <chrono>
+#include <iostream>
+#include <thread>
+
 namespace sela {
 
 void Player::initializeAo()
@@ -18,9 +22,9 @@ void Player::setAoFormat(const data::WavFormatSubChunk& format)
     dev = ao_open_live(driver, &ao_format, NULL);
 }
 
-void Player::transform(const file::WavFile& wavFile)
+void Player::transform(const std::vector<data::WavFrame>& wavFrames)
 {
-    for (data::WavFrame wavFrame : wavFile.wavChunk.dataSubChunk.wavFrames) {
+    for (data::WavFrame wavFrame : wavFrames) {
         int16_t* samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()];
         size_t offset = 0;
         for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
@@ -29,6 +33,11 @@ void Player::transform(const file::WavFile& wavFile)
             samples[offset] = (uint16_t)wavFrame.samples[1][i];
             offset++;
         }
+        if (transformCount.load() == 100) {
+            std::unique_lock<std::mutex> lock(mutex);
+            condVar.wait(lock);
+        }
+        transformCount.store(transformCount.load() + 1);
         audioPackets.push_back(data::AudioPacket((char*)samples, wavFrame.samples.size() * wavFrame.samples[0].size() * sizeof(int16_t)));
     }
 }
@@ -36,17 +45,28 @@ void Player::transform(const file::WavFile& wavFile)
 void Player::play(const file::WavFile& wavFile)
 {
     audioPackets.reserve(wavFile.wavChunk.dataSubChunk.wavFrames.size());
+    transformCount.store(0);
 
     initializeAo();
     setAoFormat(wavFile.wavChunk.formatSubChunk);
-    transform(wavFile);
+
+    //Start transformer thread
+    std::thread transformThread = std::thread(&Player::transform, this, std::ref(wavFile.wavChunk.dataSubChunk.wavFrames));
+
+    //Wait for 1 ms on this thread
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
     //Transform data to proper format
-    for (data::AudioPacket audioPacket : audioPackets) {
-        ao_play(dev, audioPacket.audio, audioPacket.bufferSize);
-        delete[] audioPacket.audio;
+    for (size_t i = 0; i < wavFile.wavChunk.dataSubChunk.wavFrames.size(); i++) {
+        ao_play(dev, audioPackets[i].audio, audioPackets[i].bufferSize);
+        delete[] audioPackets[i].audio;
+        transformCount.store(transformCount.load() - 1);
+        if (transformCount.load() < 10) {
+            condVar.notify_one();
+        }
     }
 
+    transformThread.join();
     destroyAo();
 }
 
