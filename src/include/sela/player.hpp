@@ -14,9 +14,10 @@ private:
     std::vector<data::AudioPacket> audioPackets;
     void initializeAo();
     void setAoFormat(const data::WavFormatSubChunk &format);
+    void transform(const file::WavFile& wavFile);
     void destroyAo();
 
 public:
-    void play(file::WavFile wavFile);
+    void play(const file::WavFile& wavFile);
 };
 } // namespace sela
