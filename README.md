@@ -25,10 +25,11 @@ A lossless audio codec which aims to be as simple as possible while still having
 |Reading and Writing WAV files|**DONE**|
 |Reading and Writing SELA files|**DONE**|
 |Multithreaded Encoding & Decoding|**DONE**|
-|Player|**TODO**|
+|Player|**DONE**|
 |Metadata support|**TODO**|
 |Seektable support|**TODO**|
 |Support for 24 bit audio|**TODO**|
+|Optimization|**TODO**|
 
 ### Block Diagrams
 ![Encoder](https://cloud.githubusercontent.com/assets/12273725/8868411/c24585e6-31f5-11e5-937a-e3c11c632704.png)
@@ -48,6 +49,6 @@ To understand the core algorithm, see code in frame namespace, frame namespace u
 - [Paper on shorten, the original open source lossless codec](ftp://svr-ftp.eng.cam.ac.uk/pub/reports/robinson_tr156.ps.Z)
 - ISO/IEC 14496 Part 3, Subpart 11 (Audio Lossless Coding)
 
-#### NOTE:  You can get the legacy  C code by switching to `legacy` branch.
+#### NOTE: You can get the legacy C code by switching to `legacy` branch.
 
 Also, check out the Java version of this codec at [https://github.com/sahaRatul/sela-java](https://github.com/sahaRatul/sela-java)
