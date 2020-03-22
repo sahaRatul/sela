@@ -30,7 +30,6 @@ void Player::play(file::WavFile wavFile)
     {
         int16_t *samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()];
         size_t offset = 0;
-        const size_t bufferSize = wavFrame.samples[0].size() * wavFrame.samples.size() * bytesPerSample;
         for (size_t i = 0; i < wavFrame.samples[0].size(); i++)
         {
             samples[offset] = (uint16_t)wavFrame.samples[0][i];
