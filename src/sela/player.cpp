@@ -82,7 +82,7 @@ void Player::printProgress(size_t& current, size_t total)
     while (current != total) {
         double progress = (double)current / total;
         output = "[";
-        int32_t pos = (int32_t)(barWidth * progress);
+        size_t pos = (int32_t)(barWidth * progress);
         for (size_t i = 0; i < barWidth; ++i) {
             if (i < pos)
                 output += "=";
