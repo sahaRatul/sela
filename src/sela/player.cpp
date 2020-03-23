@@ -25,8 +25,9 @@ void Player::setAoFormat(const data::WavFormatSubChunk& format)
 void Player::transform(const std::vector<data::WavFrame>& wavFrames)
 {
     for (data::WavFrame wavFrame : wavFrames) {
-        int16_t* samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()];
+        int16_t* samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()]; //Alloc
         size_t offset = 0;
+        //Flattening of n-d array to 1d array done here
         for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
             samples[offset] = (uint16_t)wavFrame.samples[0][i];
             offset++;
@@ -47,31 +48,35 @@ void Player::play(const file::WavFile& wavFile)
     audioPackets.reserve(wavFile.wavChunk.dataSubChunk.wavFrames.size());
     transformCount.store(0);
     size_t currentProgress = 0;
+
     initializeAo();
     setAoFormat(wavFile.wavChunk.formatSubChunk);
 
     //Start transformer thread
-    std::thread transformThread = std::thread(&Player::transform, this, std::ref(wavFile.wavChunk.dataSubChunk.wavFrames));
+    std::thread transformThread(&Player::transform, this, std::ref(wavFile.wavChunk.dataSubChunk.wavFrames));
 
     //Start print thread
-    std::thread printThread = std::thread(&Player::printProgress, this, std::ref(currentProgress), wavFile.wavChunk.dataSubChunk.wavFrames.size());
+    std::thread printThread(&Player::printProgress, this, std::ref(currentProgress), wavFile.wavChunk.dataSubChunk.wavFrames.size());
 
     //Wait for 1 ms on this thread
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
-    //Transform data to proper format
+    //Audio loop
     for (size_t i = 0; i < wavFile.wavChunk.dataSubChunk.wavFrames.size(); i++) {
         currentProgress++;
         ao_play(dev, audioPackets[i].audio, (uint32_t)audioPackets[i].bufferSize);
-        delete[] audioPackets[i].audio;
+        delete[] audioPackets[i].audio; //Free for L28
         transformCount.store(transformCount.load() - 1);
         if (transformCount.load() < 10) {
             condVar.notify_one();
         }
     }
 
+    //Wait for worker threads to finish
     transformThread.join();
     printThread.join();
+
+    //Close AO
     destroyAo();
 }
 
@@ -94,7 +99,7 @@ void Player::printProgress(size_t& current, size_t total)
         output += ("] " + std::to_string(uint32_t(progress * 100)) + "% (" + std::to_string(current) + "/" + std::to_string(total) + ")\r");
 
         std::cout << output << std::flush;
-        //Wait for 100 ms on this thread
+        //Wait for 100 ms on this thread to reduce CPU usage
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     std::cout << output << std::endl;
