@@ -1,0 +1,85 @@
+<html>
+
+<head>
+<title>libao - function - ao_open_live</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_open_live</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>Open a live playback audio device for output. 
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+<a href="ao_device.html">ao_device</a>* ao_open_live(int driver_id, <a href="ao_sample_format.html">ao_sample_format</a> *format, <a href="ao_option.html">ao_option</a> *options);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>driver_id</i></dt>
+<dd>The ID number of the driver as returned by either 
+<a href="ao_driver_id.html">ao_driver_id()</a> or 
+<a href="ao_default_driver_id.html">ao_default_driver_id()</a>.</dd>
+<dt><i>format</i></dt>
+<dd>Pointer to a struct describing the sample format.  The caller retains ownership of this structure.</dd>
+<dt><i>options</i></dt>
+<dd>A linked list of options to be passed to the driver or NULL if no options
+are needed.  Unsupported options are ignored.</dd>
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>
+non-NULL pointer inicates success.  This pointer must be passed in subsequent 
+calls to <a href="ao_play.html">ao_play()</a> and 
+<a href="ao_close.html">ao_close()</a>.</li>
+
+<li>NULL indicates failure.  <tt>errno</tt> will contain the specific cause of the failure:</li>
+<ul>
+<li>AO_ENODRIVER - No driver corresponds to <tt>driver_id</tt>.</li>
+<li>AO_ENOTLIVE - This driver is not a live output device.</li>
+<li>AO_EBADOPTION - A valid option key has an invalid value.</li>
+<li>AO_EOPENDEVICE - Cannot open the device (for example, if /dev/dsp cannot be
+opened for writing).</li>
+<li>AO_EFAIL - Any other cause of failure.</li>
+</ul>
+</blockquote>
+<p>
+
+
+<h3>Notes</h3>
+
+<p>File output drivers cannot be used with this function.  Use <a
+href="ao_open_file.html">ao_open_file()</a> instead.
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

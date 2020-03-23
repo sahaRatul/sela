@@ -1,0 +1,115 @@
+1.2.1 - unreleased snapshot
+ - no changes yet
+
+1.2.0 - January 27, 2014
+ - Added missing ao_file_extension() (see Trac #1841)
+ - Fixed memory leak in ao_shutdown() (see Trac #1799)
+ - Updated manpage libao.conf.5 (see Trac #1822)
+ - Corrected doc/ao_play.html (see Trac #1808)
+ - Latency adjustments
+ - Implement PulseAudio client_name (see Trac #1924)
+ - Other ALSA, Pulse, Roar, sndio and MacOS driver improvements
+
+1.1.0 - February 21, 2011
+ - Add autofoo ld symbol versioning to build system
+ - Update Roar driver to latest API
+ - Fix Roar driver to not block on SLP lookup during probe
+ - Improve/correct latency setup in ALSA (see Trac #1762)
+ - Add missing ctype.h header in build (see Trac #1760)
+ - Move toward more consistent option naming across drivers
+ - Fix Mac OS X AUHAL support to properly handle suspend/wakeup,
+   headphone plug/unplug, other hardware events
+ - Correct ao_example.c source to not pass dangling pointer for 
+   the matrix argument.
+ - Add 24 bit playback to Pulse plugin
+ - Fix 24 bit playback in ALSA plugin
+ - Fix segfaults when closing a driver that did not successfully open.
+ - Fix compilation of sndio plugin
+ - Fix building Mac OS X driver AUHAL compilation for 10.5,
+   restore Mac OS X 10.4 support
+
+1.0.0 - March 25, 2010
+ - AO returns to active development
+ - Added surround channel mapping API and capability
+ - Update and test all drivers on modern installs
+ - New config file options
+ - Driver options may be specifid in config file
+ - Support for MacosX < 10.5 dropped, driver modded to AUHAL
+ - Build in WMM driver rather than using dlopen()
+ - Added Roar Audio driver
+ - Added OpenBSD SNDIO driver
+ - Work around ESD non-4096 byte write bug
+ - Work around aRts server crash bug
+ - Workaround for VIA82xx click/crackle bugs under ALSA
+ - Remove dead/unused drivers (solaris, alasa05, mmsound)
+ - Numerous patches from multiple downstreams
+
+0.8.8 - May 24, 2007
+ - New win32 driver
+ - Few fixes and changes in autotools and configuration files.
+
+0.8.7 - unreleased snapshot
+- obsolete alsa device renamed to alsa05
+- the 'alsa' device now uses the 0.9/1.0 API
+- ALSA driver fixes
+
+0.8.6 - January 11, 2005
+- Added Polypaudio driver(libao-polyp 0.4) 
+  from Lennart Poettering <mzyvonbcbylc (at) 0pointer (dot) de>
+- Use esd_close() in the esd driver
+- Broaden sample rate tolerance in the OSS driver for nForce 
+  compatibility
+
+0.8.5 - March 19, 2004
+- Support now for the ALSA 1.0 API
+- Can build with --disable-esd option again
+- Minor build fixes
+- ALSA mmap() mode can be enabled/disabled at runtime using "use_mmap"
+  option.
+- Patch to OSS plugin to fix skipping issues with some drivers
+  (like emu10k1).
+
+0.8.4 - October 4, 2003
+- Added AIX sound driver from Stefan Tibus <sjti@gmx.net>
+- Committed some fixes from the Fink project to allow compiling on
+  OS X (still with all the dlcompat stuff)
+- Improvements in plugin detection code by David Walser, especially
+  when ESD or aRts are present.
+- NAS plugin from Antoine Mathys.
+- Portability fixes for various platforms (including dlopen() bugs) 
+  including HP-UX and *BSD.
+- Memory/resource leak fixes
+- Significant fixes to ALSA 0.9.x plugin by Kevin Cody, Jr.  This
+  should fix stuttering audio for mpg321 users.  The
+  --enable-alsa09-mmap option to ./configure turns on memory-mapped
+  I/O.  Note this is an experimental feature and causes some problems
+  with some sound card drivers and also users of the dmix software mixer.
+
+0.8.3 - July 2002
+- fix to ao.m4 macro
+- minor alsa09 plugin updates
+- fixes to irix plugin
+
+0.8.2 - December 2001
+- alsa09 plugin updated
+
+0.8.0 - August 2000
+- Major API rewrite.  Old apps and plugins will not work with this library!
+- Default driver detection now works.
+- /etc/libao.conf and ~/.libao config files now supported, see libao.conf man
+  page for details.
+- WAV files can now be piped to non-picky applications.  (Please don't
+  complain if this fails.  You shouldn't be using be using WAV for this
+  anyway.)
+- Various portability fixes for Solaris and *BSD.
+
+0.7.0 - June 2000
+- minor build fixes for different platforms
+
+0.6.0 - December 2000
+- slight api modification with ao_append_option()
+- fixed an option leak
+
+0.5.0 - November 2000
+- first official release under the Xiphophorus projects
+

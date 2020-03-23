@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>libao - function - ao_open_file</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_open_file</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>Open a file for audio output.  The file format is determined by the
+audio driver used.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+<a href="ao_device.html">ao_device</a>* ao_open_file(int driver_id, const char *filename, int overwrite, 
+                               <a href="ao_sample_format.html">ao_sample_format</a> *format, <a href="ao_option.html">ao_option</a> *options);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>driver_id</i></dt>
+<dd>The ID number of the driver as returned by 
+<a href="ao_driver_id.html">ao_driver_id()</a>.</dd>
+<dt><i>filename</i></dt>
+<dd>Name of the file in which to store the audio.  The special filename "-" corresponds to <tt>stdout</tt>.</dd>
+<dt><i>overwrite</i></dt>
+<dd>If non-zero, the file is automatically overwritten.  If zero, then a
+preexisting file will cause the function to report a failure.</dd>
+<dt><i>format</i></dt>
+<dd>Pointer to a struct describing the sample format.  The caller retains ownership of this structure.</dd>
+<dt><i>options</i></dt>
+<dd>A linked list of options to be passed to the driver or NULL if no options
+are needed.  Unsupported options are ignored.</dd>
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>
+non-NULL pointer inicates success.  This pointer must be passed in subsequent 
+calls to <a href="ao_play.html">ao_play()</a> and 
+<a href="ao_close.html">ao_close()</a>.</li>
+
+<li>NULL indicates failure.  <tt>errno</tt> will contain the specific cause of the failure:</li>
+<ul>
+<li>AO_ENODRIVER - No driver corresponds to <tt>driver_id</tt>.</li>
+<li>AO_ENOTFILE - This driver is not a file output driver.</li>
+<li>AO_EBADOPTION - A valid option key has an invalid value.</li>
+<li>AO_EOPENFILE - Cannot open the file.</li>
+<li>AO_EFILEEXISTS - The file already exists.  
+(Only if <tt>overwrite == 0</tt>)</li>
+<li>AO_EFAIL - Any other cause of failure.</li>
+</ul>
+</blockquote>
+<p>
+
+
+<h3>Notes</h3>
+
+<p>Live output drivers cannot be used with this function.  Use <a
+href="ao_open_live.html">ao_open_live()</a> instead.  Some file
+formats (notably .WAV) cannot be correctly written to non-seekable
+files (like <tt>stdout</tt>).
+
+<p>When passed to <a href="ao_open_file.html">ao_open_file()</a>, the
+<tt>byte_format</tt> member of an ao_sample_format struct does not
+specify the byte format that will be used in the file <i>output</i>,
+just the input sample format.
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

@@ -1,7 +1,7 @@
+#include <catch.hpp>
 #include <cmath>
 
 #include "../src/include/lpc.hpp"
-#include "include/catch.hpp"
 
 #ifndef M_PI
 #define M_PI 3.141592653589793238462643383279502884
@@ -26,7 +26,7 @@ TEST_CASE("LPC Encoder/Decoder combined test")
     // Generate samples
     lpc::SampleGenerator sampleGen = lpc::SampleGenerator(encoded);
     data::LpcDecodedData decoded = sampleGen.process();
-    
+
     REQUIRE(input.samples.size() == decoded.samples.size());
     REQUIRE(input.samples == decoded.samples);
 }

@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>libao - datatype - ao_info</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_info</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>This structure describes the attributes of an output driver.
+
+<br><br>
+<table border=0 width=100% color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+        <td>
+<pre><b>typedef struct {
+  int  type; /* live output or file output? */
+  char *name; /* full name of driver */
+  char *short_name; /* short name of driver */
+  char *comment; /* driver comment */
+  int  preferred_byte_format;
+  int  priority;
+  char **options;
+  int  option_count;
+} ao_info;</b></pre>
+        </td>
+</tr>
+</table>
+
+<h3>Relevant Struct Members</h3>
+<dl>
+<dt><i>type</i></dt>
+<dd>The output type of the driver:
+<ul>
+<li>AO_TYPE_LIVE - Live output.</li>
+<li>AO_TYPE_FILE - File output.</li>
+</ul>
+</dd>
+<dt><i>name</i></dt>
+<dd>A longer name for the driver which may contain whitespace, but no
+newlines.  It is useful for telling users what output driver is in use.</dd>
+<dt><i>short_name</i></dt>
+<dd>A short identifier for the driver.  The short name contains only
+alphanumeric characters, and no whitespace.  It is used to look up the driver
+ID number using <a href="ao_driver_id.html">ao_driver_id()</a>.</dd>
+<dt><i>preferred_byte_format</i></dt>
+<dd>Specifies the preferred ordering of the sample bytes.  Using the driver
+with this byte format usually results in slightly less memory usage and
+slightly less CPU usage because a swap buffer will not be needed.
+See
+<a href="ao_sample_format.html">ao_sample_format</a> for a list of
+allowed values.
+</dd>
+<dt><i>priority</i></dt>
+<dd>A positive integer ranking how likely it is for this driver to be
+the default.  The default driver will be a functioning driver with
+highest priority.  See the <a href="drivers.html">drivers document</a>
+for more explanation.</dd>
+<dt><i>comment</i></dt>
+<dd>Pointer to a driver comment string (possibly <tt>NULL</tt>).  It may 
+contain newlines.</dd>
+<dt><i>options</i></dt>
+<dd>An array of strings which list the option keys accepted by this 
+driver.</dd>
+<dt><i>option_count</i></dt>
+<dd>Number of strings in <tt>options</tt> array.</dd>
+</dl>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

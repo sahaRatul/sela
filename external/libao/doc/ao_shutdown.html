@@ -1,0 +1,55 @@
+<html>
+
+<head>
+<title>libao - function - ao_shutdown</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_shutdown</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>This function unloads all of the plugins and deallocates any
+internal data structures the library has created.  It should be called
+prior to program exit.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+void ao_shutdown();
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Notes</h3>
+
+<p>Do not invoke this function before closing all of the open devices.
+You may call <a href="ao_shutdown.html">ao_initialize()</a> after
+calling ao_shutdown().
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

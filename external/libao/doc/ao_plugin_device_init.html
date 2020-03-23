@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>libao - function - ao_plugin_device_init</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_plugin_device_init</h1>
+
+<p><i>declared in "ao/plugin.h";</i></p>
+
+<p>Initialize the private device data structures.  Memory should be
+allocated, and default values set if necessary, but devices should not
+be opened until <a href="ao_plugin_open.html">ao_plugin_open()</a> is
+called.
+
+<p>Drivers that wish to support automatic surround channel mapping should set <tt>device->output_matrix_order</tt> to one of:
+<ul>
+
+<li>AO_OUTPUT_MATRIX_FIXED - The audio driver outputs a fixed channel
+order that is always the same for a given number of channels and can't
+be changed.  One example is ALSA where to play to the side right
+speaker, it is necessary to open eight channels and write to side
+right as channel eight, even if the other seven channels are unused.
+
+<li>AO_OUTPUT_MATRIX_COLLAPSIBLE - The audio driver outputs a fixed
+channel order that is always the same, but unused channels are not
+sent.  In such a driver with the channel order 'L,R,C,LFE,BL,BR', we
+can write to the two rear speakers without opening six channels but
+the rear speakers must still be in the order 'BL,BR'.  Such drivers
+usually use a bitmap to represent the channels present in the output.
+Examples are wav, wmm and macosx.
+
+<li>AO_OUTPUT_MATRIX_PERMUTABLE - Channels may be arranged in any
+order.  An example of such a driver is pulse.
+</ul>
+
+In addition, a driver may set <tt>device->output_matrix</tt> to the
+list of possible output channels in order.  Note that even
+AO_OUTPUT_MATRIX_PERMUTABLE drivers usually have a fixed numbering
+scheme for channels even if the channels may be sent in any order.  A
+driver that is unable to set an output matrix without inspecting the
+input sample format (for example, the roar driver), may set
+<tt>device->output_matrix_order</tt> to
+<tt>AO_OUTPUT_MATRIX_FIXED</tt> and delay channel mapping
+initialization until <a
+href="ao_plugin_open.html">ao_plugin_open()</a>.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+int ao_plugin_device_init(<a href="ao_device.html">ao_device</a> *device);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>device</i></dt>
+<dd>Pointer to pre-allocated device structure.  The driver should
+store the address of its private memory in <tt>device->internal</tt>.</dd>
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>1 indicates success.</li>
+
+<li>0 indicates failure, probably due to memory allocation problems.
+<a href="ao_plugin_device_clear.html">ao_plugin_device_clear()</a> should be
+called to ensure the deallocate of all private data structures.</li>
+</blockquote>
+<p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+               RoarAudio output plugin for libao
+         -------------------------------------------
+
+Copyright (C) Philipp 'ph3-der-loewe' Schafft - 2008-2010
+based on ao_esd.c of libao by Stan Seibert - July 2000, July 2001
+
+This is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2, or (at your option)
+any later version.
+
+This (as all of the RoarAudio package) is distributed in the hope
+that it will be useful, but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+---------------------------------------------------------------------
+
+OVERVIEW
+
+This plugin adds support for RoarAudio to libao. It is part of
+the RoarAudio distribution but may be distributed separately.
+For a documentation of RoarAudio see the full package.
+
+OPTIONS
+
+ host           - The roard to connect to (ip/hostname[:port] or /.../sock)
+
+

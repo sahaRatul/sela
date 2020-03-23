@@ -1,5 +1,5 @@
 #include "../src/include/frame.hpp"
-#include "include/catch.hpp"
+#include <catch.hpp>
 
 #ifndef M_PI
 #define M_PI 3.141592653589793238462643383279502884
@@ -24,7 +24,7 @@ TEST_CASE("Frame Encoder/Decoder combined test ")
     samples[1] = cosineWave;
 
     data::WavFrame input = data::WavFrame((uint8_t)16, std::move(samples));
-    
+
     frame::FrameEncoder encoder = frame::FrameEncoder(std::move(input));
     data::SelaFrame frame = encoder.process();
 
@@ -32,7 +32,7 @@ TEST_CASE("Frame Encoder/Decoder combined test ")
     data::WavFrame output = decoder.process();
 
     REQUIRE(input.samples.size() == output.samples.size());
-    for(size_t i = 0; i < samples.size(); i++) {
+    for (size_t i = 0; i < samples.size(); i++) {
         REQUIRE(input.samples[i] == output.samples[i]);
     }
 }
@@ -56,7 +56,7 @@ TEST_CASE("Frame Encoder/Decoder + difference coding combined test ")
     samples[1] = sinWave2;
 
     data::WavFrame input = data::WavFrame((uint8_t)16, std::move(samples));
-    
+
     frame::FrameEncoder encoder = frame::FrameEncoder(std::move(input));
     data::SelaFrame frame = encoder.process();
 
@@ -64,7 +64,7 @@ TEST_CASE("Frame Encoder/Decoder + difference coding combined test ")
     data::WavFrame output = decoder.process();
 
     REQUIRE(input.samples.size() == output.samples.size());
-    for(size_t i = 0; i < samples.size(); i++) {
+    for (size_t i = 0; i < samples.size(); i++) {
         REQUIRE(input.samples[i] == output.samples[i]);
     }
 }

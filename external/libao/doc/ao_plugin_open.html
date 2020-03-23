@@ -1,0 +1,93 @@
+<html>
+
+<head>
+<title>libao - function - ao_plugin_open</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_plugin_open</h1>
+
+<p><i>declared in "ao/plugin.h";</i></p>
+
+<p>Open the device for playback.  All of the device options will have
+already been set by previous calls to <a
+href="ao_plugin_set_option.html">ao_plugin_set_option()</a>.  If this is a
+file output driver, the file itself will have be already opened and a
+pointer to a <tt>FILE</tt> structure stored in <tt>device->file</tt>.
+
+<p>If the plugin wishes to support automatic channel mapping, but it
+was not possible to set <tt>device->output_matrix</tt> in <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a>, the
+plugin should now set <tt>device->inter_matrix</tt> to the channel
+ordering that will be expected for buffers submitted to <a
+href="ao_plugin_play.html">ao_plugin_play()</a>.
+
+<p>Plugins should use <tt>device->output_channels</tt> to determine
+the number of output channels to configure, not
+<tt>format->channels</tt>.  <tt>device->output_channels</tt> is the
+number of channels libao will be submitting upon each call to <a
+href="ao_plugin_play.html">ao_plugin_play()</a>.  A plugin may alter
+the value of <tt>device->output_channels</tt> to demand a different
+number of channels if necessary (such as if a plugin is manufacturing
+a channel mapping manually).
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+int ao_plugin_open(<a href="ao_device.html">ao_device</a> *device, <a href="ao_sample_format.html">ao_sample_format</a> *format);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>device</i></dt>
+<dd>Pointer to pre-allocated device structure.  The plugin should
+set its desired byte format in <tt>device->driver_byte_format</tt>.</dd>
+<dt><i>format</i></dt>
+
+<dd>Output device sample format.  <tt>format->byte_format</tt> should
+be ignored as it is relevant only to the library core.
+<tt>format->channels</tt> is relevant only if a plugin is constructing
+a channel mapping manually; otherwise <tt>device->output</tt> should
+be used as it is the actual number of channels that will be sent to <a
+href="ao_plugin_play.html">ao_plugin_play()</a>.</dd>
+
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>1 indicates success.</li>
+
+<li>0 indicates failure to open the device.
+<a href="ao_plugin_device_clear.html">ao_plugin_device_clear()</a> should be
+called to ensure the deallocate of all private data structures.</li>
+</blockquote>
+<p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

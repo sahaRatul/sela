@@ -1,0 +1,111 @@
+<html>
+
+<head>
+<title>libao - datatype - ao_sample_format</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_sample_format</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>This structure describes the format of audio samples.
+
+<br><br>
+<table border=0 width=100% color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+        <td>
+<pre><b>typedef struct {
+  int  bits; /* bits per sample */
+  int  rate; /* samples per second (in a single channel) */
+  int  channels; /* number of audio channels */
+  int  byte_format; /* Byte ordering in sample, see constants below */
+  char *matrix; /* channel input matrix */
+} ao_sample_format;</b></pre>
+</td>
+</tr>
+</table>
+
+<h3>Relevant Struct Members</h3>
+<dl>
+<dt><i>byte_format</i></dt>
+<dd>Specifies the ordering of the sample bytes.  The value of this member is ignored when samples have only 8 bits.  Use the following constants:
+<ul>
+<li>AO_FMT_LITTLE - Samples are in little-endian order.</li>
+<li>AO_FMT_BIG - Samples are in big-endian order.</li>
+<li>AO_FMT_NATIVE - Samples are in the native ordering of the computer.</li>
+</ul>
+</dd>
+<dt><i>matrix</i></dt> <dd>Specifies the mapping of input channels to
+intended speaker/ouput location (or NULL to specify no mapping).  The matrix is specified as a comma
+seperated list of channel locations equal to the number and in the
+order of the input channels.  The channel mnemonics are as follows:
+<ul>
+<li>L - Left speaker, located forward and to the left of the listener.</li>
+<li>R - Right speaker, located forward and to the right of the listener.</li>
+<li>C - Center speaker, located directly forward of the listener between the Left and Right speakers.</li>
+<li>M - Monophonic, a virtual speaker for single-channel output.</li>
+<li>CL - Left of Center speaker (used in some Widescreen formats), located forward of the listener between the Center and Left speakers.  Alternatively referred to as 'Left Center'.</li>
+<li>CR - Right of Center speaker (used in some Widescreen formats), located forward of the listener between the Center and Right speakers.  Alternatively referred to as 'Right Center'.</li>
+<li>BL - Back Left speaker, located behind and to the left of the listener.  Alternatively called 'Left Surround' (primarily by Apple) or 'Surround Rear Left' (primarily by Dolby).
+<li>BR - Back Right speaker, located behind and to the right of the listener.  Alternatively called 'Right Surround' (primarily by Apple) or 'Surround Rear Right' (primarily by Dolby).
+<li>BC - Back Center speaker, located directly behind the listener.  Alternatively called 'Center Surround' (primarily by Apple) or 'Surround Rear Center' (primarily by Dolby).
+<li>SL - Side Left speaker, located directly to the listener's left side.  The Side Left speaker is also referred to as 'Left Surround Direct' (primarily by Apple) or 'Surround Left' (primarily by Dolby) </li>
+<li>SR - Side Right speaker, located directly to the listener's right side.  The Side Right speaker is also referred to as 'Right Surround Direct' (primarily by Apple) or 'Surround Right' (primarily by Dolby) </li>
+<li>LFE - Low Frequency Effect (subwoofer) channel.  This is channel is usually lowpassed and meant only for bass, though in some recent formats it is a discrete, full-range channel.  Microsoft calls this the 'Low Frequency' channel.
+<li>A1, A2, A3, A4 - 'auxiliary' channels, not mapped to a location.  Intended for driver-specific use.</li>
+<li>X - Unused/Invalid channel, to be dropped in the driver and not output to any speaker.</li>
+</ul>
+
+<p><i>Note that the 'surround' speakers referred to in other systems
+can be either the side or back speakers depending on vendor.  For
+example, Apple calls the back speakers 'surround' and the side
+speakers 'direct surround'.  Dolby calls the back speakers 'surround
+rear' and the side speakers 'surround', resulting in a direct naming
+conflict.  For this reason, libao explicitly refers to speakers as
+'back' and 'side' rather than 'surround'.</i>
+
+<p> Common examples of channel orderings:
+<ul>
+<li> "L,R" - Stereo ordering in virtually all file formats</li>
+<li> "L,R,BL,BR" - Quadraphonic ordering for most file formats</li>
+<li> "L,R,C,LFE,BR,BL" - channel order of a 5.1 WAV or FLAC file </li>
+<li> "L,R,C,LFE,BR,BL,SL,SR" - channel order of a 7.1 WAV or FLAC file </li>
+<li> "L,C,R,BR,BL,LFE" - channel order of a six channel (5.1) Vorbis I file </li>
+<li> "L,C,R,BR,BL,SL,SR,LFE" - channel order of an eight channel (7.1) Vorbis file </li>
+<li> "L,CL,C,R,RC,BC" - channel order of a six channel AIFF[-C] file</li>
+</ul>
+
+<p>Channel mappings for most formats are usually not tied to a single
+channel matrix (there are a few exceptions like Vorbis I, where the
+number of channels always maps to a specific order); the above
+examples cannot be blindly applied to a given file type and number of
+channels.  The mapping must usually be read or intuited from the input.
+
+</dd>
+</dl>
+
+<p>
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

@@ -1,8 +1,8 @@
-#include <random>
+#include <catch.hpp>
 #include <iostream>
+#include <random>
 
 #include "../src/include/rice.hpp"
-#include "include/catch.hpp"
 
 TEST_CASE("Rice Encoder/Decoder combined test")
 {
@@ -12,7 +12,7 @@ TEST_CASE("Rice Encoder/Decoder combined test")
         input.push_back(200 + (std::rand() % (201)));
     }
     data::RiceDecodedData data = data::RiceDecodedData(std::move(input));
-    
+
     //Encode
     rice::RiceEncoder enc = rice::RiceEncoder(data);
     data::RiceEncodedData encodedData = enc.process();

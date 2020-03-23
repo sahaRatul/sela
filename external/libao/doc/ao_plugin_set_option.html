@@ -1,0 +1,73 @@
+<html>
+
+<head>
+<title>libao - function - ao_plugin_set_option</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_plugin_set_option</h1>
+
+<p><i>declared in "ao/plugin.h";</i></p>
+
+<p>Set a new option key-value pair for a device.  This will only be
+called after <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a> is called.
+Unrecognized option keys are silently ignored, but invalid option
+values will cause the function to return a failing error code.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+int ao_plugin_set_option(<a href="ao_device.html">ao_device</a> *device, const char *key, const char *value);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>device</i></dt>
+<dd>Pointer to the device structure.</dd>
+<dt><i>key</i></dt>
+<dd>A string holding the option key.  The calling function retains ownership
+of this memory.</dd>
+<dt><i>value</i></dt>
+<dd>A string holding the option value.  The calling function retains ownership
+of this memory.</dd>
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>1 indicates success.</li>
+
+<li>0 indicates failure.  <a
+href="ao_plugin_device_clear.html">ao_plugin_device_clear()</a> should be
+called to ensure the deallocate of all private data structures.</li>
+</blockquote>
+<p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

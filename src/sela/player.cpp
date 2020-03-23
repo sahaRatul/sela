@@ -58,7 +58,7 @@ void Player::play(const file::WavFile& wavFile)
 
     //Transform data to proper format
     for (size_t i = 0; i < wavFile.wavChunk.dataSubChunk.wavFrames.size(); i++) {
-        ao_play(dev, audioPackets[i].audio, audioPackets[i].bufferSize);
+        ao_play(dev, audioPackets[i].audio, (uint32_t)audioPackets[i].bufferSize);
         delete[] audioPackets[i].audio;
         transformCount.store(transformCount.load() - 1);
         if (transformCount.load() < 10) {

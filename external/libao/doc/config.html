@@ -1,0 +1,70 @@
+<html>
+
+<head>
+<title>libao - Documentation</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>libao Configuration Files</h1>
+<p>
+
+When libao is <a href="ao_initialize.html">initialized</a>, it reads
+two configuration files: the system-wide configuration in
+"/etc/libao.conf" and the user configuration in
+"~/.libao".  Neither file needs to be present on the system for
+libao to load.  If both are present, the system configuration file is
+read first, followed by the user configuration file.  Options set in
+the user configuration will take precedence.
+<p>
+
+Options are specified in these files in the form:
+<pre>
+option=value
+</pre>
+There can be no extra spaces anywhere on the line.  Comment lines begin with a <tt>#</tt> symbol.
+
+<h2>AO Options</h2>
+
+<dl>
+<dt><i>default_driver</i></dt>
+<dd>Set this equal to the short name of the driver you want the system to use by default.  If this is not specified in any of the configuration files, the library will try to guess an appropriate driver to use.
+<dt><i>debug</i> (Value optional/ignored)</dt>
+<dd>Sets all the drivers as well as AO itself into debugging output mode.  Unlike passing the debug option to a driver, <tt>debug</tt> will also print debugging information from driver loading and testing.
+</dd>
+<dt><i>quiet</i> (Value optional/ignored)</dt>
+<dd>Sets all the drivers as well as AO itself into silent mode.  Errors will return only error codes; neither ao nor the drivers will print any output whatsoever to stderr.
+</dd>
+<dt><i>verbose</i> (Value optional/ignored)</dt>
+<dd>Sets all the drivers as well as AO itself into verbose mode.
+</dd>
+
+</dl>
+
+<h2>Driver Options</h2>
+
+<a href="drivers.html">Driver options</a> may be set in the configuration files using <tt>option=value</tt> pairs, just as they would be set by passing <a href="ao_option.html">options</a> to <a href="ao_open_live.html">ao_open_live()</a> or <a href="ao_open_file.html">ao_open_file()</a>.  Options passed to <a href="ao_open_live.html">ao_open_live()</a> or <a href="ao_open_file.html">ao_open_file()</a> take precedence over options specified in a configuration file.  Options specified in a configuration file will be passed to whatever driver is eventually opened; they cannot be set specific to a single driver.
+<p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

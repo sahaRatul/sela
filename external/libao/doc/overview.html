@@ -1,0 +1,109 @@
+<html>
+
+<head>
+<title>libao - Documentation</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>libao Overview</h1>
+
+<p>
+Libao is designed to make it easy to do simple audio output using
+various audio devices and libraries.  For this reason, complex audio
+control features are missing and will probably never be added.
+However, if you just want to be able to open whatever audio device is
+available and play sound, libao should be just fine.
+
+<p>
+The libao API makes a distinction between drivers and devices.  A
+driver is a set of functions that allow audio to be played on a
+particular platform (i.e. Solaris, ESD, etc.).  A device is a
+particular output target that uses a driver.  In addition, libao
+distinguishes between <i>live</i> output drivers, which write audio to
+playback devices (sound cards, etc.), and <i>file</i> output drivers,
+which write audio to disk in a particular format.
+
+<p>
+To use libao in your program, you need to follow these steps:
+<ul>
+<li>Include the &lt;ao/ao.h&gt; header into your program.
+<p>
+
+<li>Call <a href="ao_initialize.html">ao_initialize()</a> to
+initialize the library.  This loads the plugins from disk, reads the
+libao <a href="config.html">configuration files</a>, and identifies an
+appropriate default output driver if none is specified in the
+configuration files.
+<p>
+
+<li>Call <a
+href="ao_default_driver_id.html">ao_default_driver_id()</a> to get the
+ID number of the default output driver.  This may not be successful if
+no audio hardware is available, it is in use, or is not in the "standard"
+configuration.  If you want to specify a particular output driver, you
+may call <a href="ao_driver_id.html">ao_driver_id()</a> with a string
+corresponding to the short name of the device (i.e. "oss", "wav",
+etc.) instead.
+<p>
+
+<li>If you are using the default device, no extra options are needed.
+However, if you wish to to pass special options to the driver, you
+will need to:
+<p>
+
+<ul>
+<li>Create an option list pointer of type <tt>(<a
+href="ao_option.html">ao_option</a> *)</tt> and initialize it to
+<tt>NULL</tt>.
+<p>
+
+<li>Through successive calls to <a
+href="ao_append_option.html">ao_append_option()</a>, add any
+driver-specific options you need.  Note that the options take the form
+of key/value pairs where supported keys are listed in the <a
+href="drivers.html">driver documentation</a>.
+</ul>
+<p>
+
+<li>Call <a href="ao_open_live.html">ao_open_live()</a> and save the
+returned device pointer.  If you are using a file output driver, you
+will need to call <a href="ao_open_file.html">ao_open_file()</a>
+instead.
+<p>
+
+<li>Call <a href="ao_play.html">ao_play()</a> to output each
+block of audio.
+<p>
+
+<li>Call <a href="ao_close.html">ao_close()</a> to close the device.
+Note that this will automatically free the memory that was allocated
+for the device.  Do not attempt to free the device pointer yourself!
+<p>
+
+<li>Call <a href="ao_shutdown.html">ao_shutdown()</a> to close the
+library.
+</ul>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

@@ -1,0 +1,62 @@
+<html>
+
+<head>
+<title>libao - function - ao_default_driver_id</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_default_driver_id</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>Returns the ID number of the default live output driver.
+If the <a href="ao_conf.html">configuration files</a> specify a
+default driver, its ID is returned, otherwise the library tries to
+pick a live output driver that will work on the host platform.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+int ao_default_driver_id();
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>a non-negative value is the ID number of the default driver.</li>
+
+<li>-1 indicates failure to find a usable audio output device.</li>
+</blockquote>
+<p>
+
+<h3>Notes</h3>
+<p>If no default device is available, you may still use the null device
+to test your application.</p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

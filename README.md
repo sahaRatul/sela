@@ -16,7 +16,7 @@ A lossless audio codec which aims to be as simple as possible while still having
 ### Build Requirements
 - cmake
 - MSVC/GCC/CLANG/INTEL (Any compiler supporting C++11 should work)
-- libao-dev
+- libao-dev (linux/bsd) / On windows you can skip this dependency
 
 ### Current status
 |Task|Status|

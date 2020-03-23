@@ -1,0 +1,63 @@
+<html>
+
+<head>
+<title>libao - function - ao_driver_id</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>ao_driver_id</h1>
+
+<p><i>declared in "ao/ao.h";</i></p>
+
+<p>Looks up the ID number for a driver based upon its short name.  The
+ID number is need to open the driver or get info on it.
+
+<br><br>
+<table border=0 color=black cellspacing=0 cellpadding=7>
+<tr bgcolor=#cccccc>
+	<td>
+<pre><b>
+int ao_driver_id(char *short_name);
+</b></pre>
+	</td>
+</tr>
+</table>
+
+<h3>Parameters</h3>
+<dl>
+<dt><i>short_name</i></dt>
+<dd>The short name of the driver.  See the <a href="drivers.html">list of 
+drivers</a> for valid short names.</dd>
+</dl>
+
+<h3>Return Values</h3>
+<blockquote>
+<li>a non-negative value is the ID number of the driver.</li>
+
+<li>-1 indicates failure.  No driver by that name exists.</li>
+</blockquote>
+<p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

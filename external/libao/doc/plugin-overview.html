@@ -1,0 +1,200 @@
+<html>
+
+<head>
+<title>libao - Documentation</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>libao Plugin Writer's Overview</h1>
+
+<p>
+Plugins are drivers that are loaded dynamically when libao is first
+initialized by the client application.  Drivers that are operating
+system dependent, like the <tt>oss</tt> and <tt>sun</tt> drivers, or
+that depend on external libraries, like the <tt>esd</tt> driver, must
+be implemented as plugins in order to keep binary packagers happy.
+There are also statically linked drivers, which are written in a
+nearly identical way, but won't be covered here.  In nearly all cases,
+a dynamically loadable plugin is the preferred way to write a driver,
+and the required way if the driver depends upon any external
+libraries.
+</p>
+
+<h2>Life Cycle</h2>
+
+<p>
+The life cycle of a plugin is:
+<ul>
+<li>When libao is first <a href="ao_initialize.html">initialized</a>,
+it loads all of the plugins from disk.
+
+<li>Libao then <a href="ao_plugin_test.html">tests</a> each plugin to
+see if can be used as the default driver.
+
+<li>When the user opens a device, libao will:
+
+  <ul>
+
+  <li>Call <a
+  href="ao_plugin_device_init.html">ao_plugin_device_init()</a> to
+  allow the plugin to allocate and initialize any private data
+  structures it will use.
+
+  <li>Call <a
+  href="ao_plugin_set_option.html">ao_plugin_set_option()</a> for each
+  parameter passed to the library by the client application.
+
+  <li>Call <a href="ao_plugin_open.html">ao_plugin_open.html</a> to
+  open the device for playback.  
+  
+  </ul>
+
+<li>Each time the client app calls <a
+href="ao_play.html">ao_play()</a>, the library will reorder the byte
+format (little-endian vs. big-endian) and rearrange input channels to
+match the format requested by the plugin.  The library will then call
+<a href="ao_plugin_play.html">ao_plugin_play()</a> for the block of
+audio data.
+
+<li>When the client app closes the audio device, the library calls <a
+href="ao_plugin_close.html">ao_plugin_close()</a> to close the device,
+followed by a call to <a
+href="ao_plugin_clear.html">ao_plugin_device_clear()</a> to deallocate
+the private data structures.
+
+<li>When the library is <a href="ao_shutdown.html">shutdown</a>, the
+plugin will be unloaded from memory.
+
+</ul>
+
+In case of errors, <a
+href="ao_plugin_device_clear.html">ao_plugin_device_clear()</a> will
+always be called if <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a> executed
+successfully.  Similarly, <a
+href="ao_plugin_close.html">ao_plugin_close()</a> will always be
+called if <a href="ao_plugin_open.html">ao_plugin_open()</a> executed
+successfully.
+</p>
+
+<h2>Creating a New Plugin</h2>
+
+<p>
+In order to write a new plugin, follow these steps:
+<ul>
+
+<li>Decide upon a new short name for your plugin.  It should be less
+than 8 characters and contain only alphanumeric characters
+(underscores are okay, but discouraged).
+
+<li>Make a new directory in the src/plugins directory with the short name of your plugin.
+
+<li>Study the contents of one of the other plugin directories.  The
+Sun driver is a good example of a driver that uses system devices for
+output, and the ALSA driver is a good example of a plugin that uses an
+external library.  Rename the source file to ao_shortname.c, where
+"shortname" is the short name of your plugin.
+
+<li>Create an <a href="ao_info.html">ao_info</a> structure.
+
+<li>Implement the all of the methods defined in the <a
+href="plugin-api.html">plugin API</a>.
+
+<li>Create src/plugins/shortname/Makefile.am ("shortname" is as
+described above) and edit the files configure.ac and
+src/plugins/Makefile.am.  There should be a an configure option to
+disable your plugin.  Look at the existing configure.ac file for
+examples of how to do this.
+
+<li>Test it thoroughly!  :)
+
+<li>Send a tarball of the src/plugin/shortname directory (only this
+directory, please!) and a cvs diff -u of the changes you have made to
+the <a href="mailto:vorbis-dev@xiph.org">vorbis-dev</a> list and we'll
+take a look at it for inclusion.
+
+</ul>
+</p>
+
+<h2>API Implementation Tips</h2>
+
+<p>
+<ul>
+
+<li>Remember to close any devices/connections you openned in <a
+href="ao_plugin_test.html">ao_plugin_test()</a>.  <li>Although you
+should try to allocate all of your data structures in <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a>, there
+are cases where you won't be able to allocate memory until <a
+href="ao_plugin_open.html">ao_plugin_open()</a> is called.  That is
+acceptable, but the rule is that you must deallocate memory in <a
+href="ao_plugin_close.html">ao_plugin_close()</a> that was allocated
+in <a href="ao_plugin_open.html">ao_plugin_open()</a> and deallocate
+memory in <a
+href="ao_plugin_device_clear.html">ao_plugin_device_clear()</a> that
+was allocated in <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a>.
+
+<li>Don't forget to set device->driver_byte_format in <a
+href="ao_plugin_open.html">ao_plugin_open()</a> to the byte ordering
+your plugin needs.  The libao core will reorder the bytes for you if
+it necessary.
+
+<li>Depending on the driver, a channel mapping may be very easy,
+tricky, or impossible.  If the audio backend uses a fixed numbering
+for its channels (not necessarily a fixed order), your new driver can
+simply set an <tt>output_matrix</tt> and
+<tt>output_matrix_ordering</tt> in <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a> and not
+need to worry about much else.  Libao will automatically permute
+channels, as well has hand over the needed mapping information in a
+form that can usually be submitted directly to the audio backend
+during device configuration. Examples of drivers that do this are WAV,
+ALSA and PULSE.
+
+<li>Some drivers can't perform channel mapping determination until
+they see the input sample format in <a
+href="ao_plugin_open.html">ao_plugin_open()</a>.  Such a driver
+supports channel mapping by setting the overall
+<tt>output_matrix_ordering</tt> in <a
+href="ao_plugin_device_init.html">ao_plugin_device_init()</a> and then
+setting the <tt>inter_matrix</tt> field in <a
+href="ao_plugin_open.html">ao_plugin_open()</a>.  One driver that
+works this way is the Roar plugin.
+
+<li>The number of channels to be sent to the hardware is not the
+number of channels declared in the sample format; use the
+device->output_channels field instead.  The number of channels an
+application submits to libao is not necessarily the same as the number
+of channels libao sends to the plugin to play.
+
+<li>Read the <a href="drivers.html">driver documentation</a> to see
+what priority you should set for your plugin in the <a
+href="ao_info.html">ao_info</a> structure.
+
+</ul>
+</p>
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

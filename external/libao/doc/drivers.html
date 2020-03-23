@@ -1,0 +1,416 @@
+<html>
+
+<head>
+<title>libao - Documentation</title>
+<link rel=stylesheet href="style.css" type="text/css">
+</head>
+
+<body bgcolor=white text=black link="#5555ff" alink="#5555ff" vlink="#5555ff">
+<table border=0 width=100%>
+<tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+<h1>libao Drivers</h1>
+    
+<p>
+Libao supports both <i>live</i> output drivers and <i>file</i> output
+drivers.  Live output drivers send audio data to sound cards and sound
+daemons.  File output drivers write audio to disk using a particular
+file format (such as WAV, AU, etc.).  You must invoke the
+ao_open_????() function that corresponds to the type of driver you are
+using, but otherwise live and file drivers are treated identically in
+libao.
+
+<p>Driver options may be passed to the drivers via the
+<tt>*options</tt> argument to <a
+href="ao_open_live.html">ao_open_live()</a> and <a
+href="ao_open_file.html">ao_open_file()</a>, or they may be set in the
+<a href="config.html">configuration file</a> as <tt>name=value</tt>
+pairs.
+
+<h2>Options Understood by All Drivers</h2>
+<ul>
+
+<li>"debug" - (value not required) Requests driver print detailed
+debugging information.
+
+<li>"matrix" - Set an output channel mapping similar to the use of the
+<i>matrix</i> field in <a
+href="ao_sample_format.html">ao_sample_format</a>.  The specified
+matrix overrides the backend's native channel ordering/numbering.  The
+channel numbering used by the driver does not necessarily reflect the
+physical ordering; for example, the fourth PulseAudio channel is
+always 'Center' by default whether the channel physically exists or not.
+
+<li>"quiet" - (value not required) Requests the driver print no output
+whatsoever, even in the event of error.
+
+<li>"verbose" - (value not required) Requests that the driver print
+more detailed information concerning normal operation.
+</ul>
+
+<h2>Standard Driver Options</h2>
+
+These are options that have the same use in each driver, but may not
+be supported by all drivers (due to the option being meaningless or
+unimplemented for a given audio backend).
+
+<ul>
+<li>"id" - Request a specific playback device/sink/output by number.
+In most audio backends, this will correspond to a specific output
+device, but for all devices, this means 'give me the Nth output'.
+<li>"dev" - Request a specific playback device/sink/output by name.
+This name will be in a format determined by the specific driver
+backend (eg, the first hardware device in ALSA format would be 'hw:0',
+and for OSS it would be '/dev/dsp').
+<li>"server" - Daemon-based sound subsystems often support connecting
+to non-default local or remote servers.  The "server" option allows
+specifying the connection for a given driver in a format specific to
+that system.
+<li>"client_name" - specify a descriptive name for the application;
+this is often used by sound backends to display status information
+about which applications are currently making use of playback.
+</ul>
+
+<h2>Live Output Drivers</h2>
+
+<h3>aixs</h3>
+
+IBM AIX sound driver.  According to the author, "tested on AIX 5.1 with
+the Crystal chipsets only (found as internal audio in the 7043-140 and
+on the MCA adapter DFE5 (7-6)), but it should work with other AIX
+releases and the ACPA also."
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"dev" - (see 'Standard Driver Options' above).  By default, the
+driver tries "/dev/baud0/1" (device for MCA machines with the Crystal
+chipset).  Other possible devices are "/dev/paud0/1" for PCI machines
+with the Crystal chipset, and "/dev/acpa0/1" for MCA machines with the
+ACPA.
+<li>"id" - (see 'Standard Driver Options' above).
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>alsa</h3>
+
+Advanced Linux Sound Architecture (API versions 0.9.x/1.x.x; earlier
+API versions are now deprecated). 
+<p>
+
+<b>Option keys:</b>
+<ul>
+
+<li>"buffer_time" - Override the default hardware buffer size (in
+milliseconds).
+
+<li>"dev" - (see 'Standard Driver Options' above). ALSA device label
+to use. Examples include "hw:0" for the first soundcard and "hw:1" for
+the second.  The alsa driver normally chooses one of "surround71",
+"surround51", "surround40", "front", or "default" automatically
+depending on number of output channels.
+
+<li>"id" - (see 'Standard Driver Options' above).
+
+<li>"period_time" - Override the default hardware period size (in
+microseconds).
+		
+<li>"use_mmap" - set to "yes" or "no" to override the compiled-in
+default to use or not use mmap device access.  In
+the past, some buggy alsa drivers have behaved
+better when not using mmap access at the penalty
+of slightly higher CPU usage.
+
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>arts</h3>
+
+aRts Sound Daemon live output driver.
+<p>
+
+<b>Option keys:</b>
+<ul>
+
+<li>"multi" - set to "yes" to allow opening the aRts playback device
+for multiply concurrent playback.  Although the driver works properly
+in multi mode, it is known to occasionally crash the aRts server
+itself.  Default behavior is "no".
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>esd</h3>
+
+ESounD audio driver.  Although declining in poularity, this sound
+daemon is still used on some Linux systems.  It permits multiple
+programs to play sound simultaneously and sound to be sent to
+networked computers.
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"host" - Deprecated synonym for 'server' below.
+
+<li>"server" - (see 'Standard Driver Options' above). The hostname
+where esd is running.  By default sound is played on the local host. A
+port number can be specified after a colon, as in "whizbang.com:555".
+<li>"client_name" - descriptive name for this client (eg, the application name).
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>irix</h3>
+
+IRIX audio driver.  This was inherited from the original
+libao, but has not been tested.  Use at your own risk.  (Better yet,
+fix it!  I don't have access to an IRIX system.)
+<p>
+
+<hr width="50%">
+
+<h3>macosx</h3>
+
+MacOS X AUHAL live output driver.  This driver supports MacOS X 10.5
+and later (10.4 and earlier uses an earlier, incompatable interface).
+
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"buffer_time" - Set the hardware buffer size to the equivalent of
+value in milliseconds.
+<li>"dev" - specify the audio device to use by name (eg, 'speaker', 'headphones', 'hdmi' or 'iMic'), or by audio device UID (eg 'AppleHDAEngineOutputDP:8,5,1,0:0:{2D4C-05ED-00000000}').  Partial matches are allowed, matching is case insensivtive.
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>nas</h3>
+Network Audio System live output driver. 
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"buf_size" - Set size of audio buffer on server in bytes.
+<li>"host" - Deprecated synonym for 'server' below.
+<li>"server" - (see 'Standard Driver Options' above). Set location of
+NAS server; See nas(1) for format.
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>null</h3>
+
+Null driver.  This is just a test device which does not write the
+audio data anywhere.
+<p>
+
+<hr width="50%">
+
+<h3>oss</h3>
+
+Open Sound System driver.  This is the audio system for
+older Linux and FreeBSD as well as some other UNIX-like systems.
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"buffer_time" - Override the default hardware buffer size (in
+milliseconds).
+<li>"dev" - (see 'Standard Driver Options' above). By default, the driver tries
+"/dev/sound/dsp", followed by "/dev/dsp".
+<li>"dsp" - Deprecated synonym for "dev".
+<li>"id" - (see 'Standard Driver Options' above).
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>pulse</h3>
+
+PulseAudio live audio sound driver.  Pulse is a sound server daemon
+used by the modern Gnome desktop on UNIX-like systems.
+
+<p>
+<b>Option keys:</b>
+<ul>
+<li>"buffer_time" - Override the default hardware buffer size (in milliseconds).
+<li>"dev" - (see 'Standard Driver Options' above). This maps to a specific Pulse sink; it may be specified by Pulse sink name, or by number.
+<li>"id" - (see 'Standard Driver Options' above). Maps to a specific pulse sink number.
+<li>"server" - Specifies Pulseaudio server to use.
+<li>"sink" - Deprecated synonym for "dev".
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>roar</h3>
+
+RoarAudio live audio sound driver. 
+
+<p>
+<b>Option keys:</b>
+<ul>
+<li>"server" - Specifies Roar server to use.
+<li>"host" - Specifies Roar server to use (legacy synonym for 'server').
+<li>"id" - Selects audio device to use for playback by number.  For a roar server, this is mapped to a given output mixer.
+<li>"dev" - Selects audio device to use for playback by name.  For a roar server, this is a number and thus synonymous with 'id' above.
+<li>"client_name" - descriptive name for this client (eg, the application name).
+<li>"role" - stream type as enumerated by Roar; see RoarAudio documentation.
+
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>sndio</h3>
+
+SNDIO is the modern audio interface used by OpenBSD.
+
+<p>
+<b>Option keys:</b>
+<ul>
+<li>"dev" - (see 'Standard Driver Options' above).
+<li>"id" - (see 'Standard Driver Options' above).
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>sun</h3>
+
+Sun audio driver.  This is the audio system for NetBSD, OpenBSD, and
+Solaris.
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"dev" - (see 'Standard Driver Options' above). By default, the
+driver tries "/dev/sound/0"
+<li>"id" - (see 'Standard Driver Options' above).
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>wmm</h3>
+
+Windows MMSound output driver for Win98 and later.
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"dev" - (see 'Standard Driver Options' above).
+<li>"id" - (see 'Standard Driver Options' above).
+</ul>
+<p>
+
+<hr>
+
+<h2>File Output Drivers</h2>
+
+<h3>au</h3>
+
+Sun audio file driver.  Writes a .au file from audio output.  This
+driver can write usable data to unseekable files (like standard out),
+which the wav driver cannot do.
+<p>
+
+<hr width="50%">
+
+<h3>raw</h3>
+
+Raw sample driver.  Writes the sound to disk in uncompressed,
+headerless form using the byte order specified.
+<p>
+
+<b>Option keys:</b>
+<ul>
+<li>"byteorder" - Byte order used in the output.  Use "native" for
+native machine byte order, "big" for big-endian order, and "little"
+for little-endian order.  By default this is "native".
+</ul>
+<p>
+
+<hr width="50%">
+
+<h3>wav</h3>
+
+Windows 'WAV' sound file output.  Because of the way WAV files are
+structured, this driver cannot correct files unless the target file is
+seekable.  Writing WAVs to stdout will result in broken files.  Use
+either the raw or the au driver instead. 
+<p>
+
+<hr>
+
+<a name="default_driver">
+<h2>Default Driver Detection</h2>
+
+In the absence of <a href="config.html">configuration files</a> to
+explicit identify a default driver, the library will try to detect a
+suitable default driver.  It does this by testing every available live
+output driver (using <a
+href="ao_plugin_test.html">ao_plugin_test()</a>) and finding the
+driver with the highest priority (see the <a
+href="ao_info.html">ao_info</a> struct) that works.  Drivers with
+priority 0, such as the null and file output drivers, are never
+selected as the default.
+<p>
+
+The ranking system currently used is:
+<center>
+<table border="1">
+  <tr><th>Priority</th><th>Drivers</th>                   </tr>
+  <tr><td>50</td>      <td>pulse, roar</td>               </tr>
+  <tr><td>45</td>      <td>arts*</td>                     </tr>
+  <tr><td>40</td>      <td>esd</td>                       </tr>
+  <tr><td>35</td>      <td>alsa</td>                      </tr>
+  <tr><td>30</td>      <td>macosx, sndio </td>      </tr>
+  <tr><td>20</td>      <td>aixs, oss, irix, sun, wmm</td> </tr>
+  <tr><td>15</td>      <td>arts*</td>                     </tr>
+  <tr><td>10</td>      <td>nas</td>                       </tr>
+  <tr bgcolor="#888888"><td> 0</td>      <td>null, all file output</td></tr>
+</table>
+</center>
+<p>
+<i>*arts priority depends on whether or not the arts install was built
+with <tt>HAVE_ARTS_SUSPENDED</tt>; when present, the default aRts
+priority is 45, else it is 15.</i>
+
+<p>Clearly, any ranking scheme will fail to make everybody happy.  For
+such cases, the <a href="config.html">configuration files</a> can be
+easily used to define an appropriate default output device.
+
+<p>Adding <tt>debug</tt> to the libao <a
+href="config.html">configuration file</a> on a line by itself will
+cause libao to print what static and dynamic drivers are available for
+use, as well as print the testing order.
+
+<br><br>
+<hr noshade>
+<table border=0 width=100%>
+<tr valign=top>
+<td><p class=tiny>copyright &copy; 2001-2003 Stan Seibert, 2010-2016 Monty</p></td>
+<td align=right><p class=tiny><a href="http://www.xiph.org/">xiph.org</a><br><a href="mailto:monty@xiph.org">monty@xiph.org</a></p></td>
+</tr><tr>
+<td><p class=tiny>libao documentation</p></td>
+<td align=right><p class=tiny>libao version 1.2.2 - 20161114</p></td>
+</tr>
+</table>
+
+</body>
+
+</html>

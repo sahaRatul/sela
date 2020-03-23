@@ -1,0 +1,12 @@
+I think these are the next steps:
+
+- make the plugins dynamically loadable (done)
+- make a ao-config liek gtk-config instead of ao_libs.inc (done)
+- extend the configuration files to allow default options for
+  each driver
+- Sample rate conversion on the fly to support sound cards that have few
+  sample rate options (like the i810 audio device, which only does 48000)
+- Actually test the IRIX plugin.  :)
+- Test the macosx plugin
+
+
