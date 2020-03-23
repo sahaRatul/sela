@@ -1,11 +1,17 @@
+#include <fstream>
+#include <iostream>
+
 #include "include/data/exception.hpp"
 #include "include/file/wav_file.hpp"
 #include "include/rice.hpp"
 #include "include/sela/decoder.hpp"
 #include "include/sela/encoder.hpp"
 #include "include/sela/player.hpp"
-#include <fstream>
-#include <iostream>
+
+void print(std::string& data)
+{
+    std::cout << data << std::endl;
+}
 
 void printUsage(const std::string &programName)
 {
@@ -16,8 +22,8 @@ void printUsage(const std::string &programName)
     usageString += "Decoding a file:\n";
     usageString += programName + " -d path/to/input.sela path/to/output.wav\n\n";
     usageString += "Playing a file:\n";
-    usageString += programName + " -p path/to/input.sela\n";
-    std::cout << usageString << std::endl;
+    usageString += programName + " -p path/to/input.sela";
+    print(usageString);
 }
 
 void encodeFile(std::ifstream &inputFile, std::ofstream &outputFile)
@@ -36,8 +42,9 @@ void decodeFile(std::ifstream &inputFile, std::ofstream &outputFile)
 
 void playFile(std::ifstream &inputFile)
 {
-    sela::Decoder decoder = sela::Decoder(inputFile);
-    file::WavFile wavFile = decoder.process();
+    sela::Decoder* decoder = new sela::Decoder(inputFile);
+    file::WavFile wavFile = decoder->process();
+    delete decoder;
 
     sela::Player player;
     player.play(wavFile);
@@ -60,17 +67,29 @@ int main(int argc, char **argv)
             {
                 std::ifstream inputFile(argv[2], std::ios::binary);
                 std::ofstream outputFile(argv[3], std::ios::binary);
+
+                std::string str = "Encoding: " + std::string(argv[2]);
+                print(str);
+
                 encodeFile(inputFile, outputFile);
             }
             else if (secondArg == "-d" && argc == 4)
             {
                 std::ifstream inputFile(argv[2], std::ios::binary);
                 std::ofstream outputFile(argv[3], std::ios::binary);
+
+                std::string str = "Decoding: " + std::string(argv[2]);
+                print(str);
+
                 decodeFile(inputFile, outputFile);
             }
             else if (secondArg == "-p" && argc == 3)
             {
                 std::ifstream inputFile(argv[2], std::ios::binary);
+
+                std::string str = "Playing: " + std::string(argv[2]);
+                print(str);
+
                 playFile(inputFile);
             }
             else

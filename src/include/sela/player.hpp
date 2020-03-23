@@ -2,16 +2,14 @@
 #include <condition_variable>
 #include <mutex>
 
-#include "../file/wav_file.hpp"
 #include "../data/audio_packet.hpp"
+#include "../file/wav_file.hpp"
 
-namespace sela
-{
-class Player
-{
+namespace sela {
+class Player {
 private:
     ao_sample_format ao_format;
-    ao_device *dev;
+    ao_device* dev;
     int32_t driver;
     std::vector<data::AudioPacket> audioPackets;
 
@@ -20,12 +18,12 @@ private:
     std::atomic<size_t> transformCount;
 
     void initializeAo();
-    void setAoFormat(const data::WavFormatSubChunk &format);
+    void setAoFormat(const data::WavFormatSubChunk& format);
     void transform(const std::vector<data::WavFrame>& wavFrames);
-    void printProgress(size_t current, size_t total);
+    void printProgress(size_t& current, size_t total);
     void destroyAo();
 
 public:
-    void play(const file::WavFile &wavFile);
+    void play(const file::WavFile& wavFile);
 };
 } // namespace sela

@@ -2,7 +2,6 @@
 #include "../include/data/exception.hpp"
 #include "../include/frame.hpp"
 
-#include <iostream>
 #include <thread>
 
 namespace sela {

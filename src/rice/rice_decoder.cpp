@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "../include/rice.hpp"
 
 namespace rice {
@@ -13,7 +11,7 @@ RiceDecoder::RiceDecoder(const data::RiceEncodedData& encodedData)
 inline void RiceDecoder::generateEncodedBits()
 {
     bitInput.reserve(input.size() * 32);
-    for(uint64_t x: input) {
+    for (uint64_t x : input) {
         for (uint64_t j = 0; j < 32; j++) {
             bitInput.push_back((bool)(x >> j & 0x1));
         }
@@ -22,7 +20,7 @@ inline void RiceDecoder::generateEncodedBits()
 
 inline void RiceDecoder::generateDecodedUnsignedInts()
 {
-    uint32_t count = 0; 
+    uint32_t count = 0;
     uint32_t temp = 0;
     uint32_t i = 0;
     uint32_t bitReadCounter = 0;
