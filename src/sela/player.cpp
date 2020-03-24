@@ -27,16 +27,29 @@ void Player::transform(const std::vector<data::WavFrame>& wavFrames)
     for (data::WavFrame wavFrame : wavFrames) {
         int16_t* samples = new int16_t[wavFrame.samples.size() * wavFrame.samples[0].size()]; //Alloc
         size_t offset = 0;
-        //Flattening of n-d array to 1d array done here
-        for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
-            samples[offset] = (uint16_t)wavFrame.samples[0][i];
-            offset++;
-            samples[offset] = (uint16_t)wavFrame.samples[1][i];
-            offset++;
-        }
-        if (transformCount.load() == 100) {
-            std::unique_lock<std::mutex> lock(mutex);
-            condVar.wait(lock);
+        if (wavFrame.samples.size() == 2) { //If number of channels is 2
+            //Flattening of n-d array to 1d array done here
+            for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
+                samples[offset] = (uint16_t)wavFrame.samples[0][i];
+                offset++;
+                samples[offset] = (uint16_t)wavFrame.samples[1][i];
+                offset++;
+            }
+            if (transformCount.load() == 100) {
+                std::unique_lock<std::mutex> lock(mutex);
+                condVar.wait(lock);
+            }
+        } else {
+            for (size_t i = 0; i < wavFrame.samples[0].size(); i++) {
+                for (size_t j = 0; j < wavFrame.samples.size(); j++) {
+                    samples[offset] = (uint16_t)wavFrame.samples[j][i];
+                    offset++;
+                }
+            }
+            if (transformCount.load() == 100) {
+                std::unique_lock<std::mutex> lock(mutex);
+                condVar.wait(lock);
+            }
         }
         transformCount.store(transformCount.load() + 1);
         audioPackets.push_back(data::AudioPacket((char*)samples, wavFrame.samples.size() * wavFrame.samples[0].size() * sizeof(int16_t)));
