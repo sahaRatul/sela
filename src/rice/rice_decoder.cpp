@@ -47,8 +47,7 @@ inline void RiceDecoder::convertUnsignedToSigned(std::vector<int32_t>& output)
 {
     output.reserve(dataCount);
     for (uint64_t x : unsignedOutput) {
-        output.push_back(
-            (int32_t)(((x & 0x01) == 0x01) ? -(int64_t)((x + 1) >> 1) : (x >> 1)));
+        output.push_back((int32_t)(((x & 0x01) == 0x01) ? -(int64_t)((x + 1) >> 1) : (x >> 1)));
     }
 }
 
