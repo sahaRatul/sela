@@ -3,6 +3,7 @@
 #include <thread>
 
 #include "../include/sela/player.hpp"
+#include "../include/data/exception.hpp"
 
 namespace sela {
 
@@ -10,6 +11,10 @@ void Player::initializeAo()
 {
     ao_initialize();
     driver = ao_default_driver_id();
+    if(driver == -1) {
+        const std::string exceptionMessage = "Driver cannot be initialized, bailing out....";
+        throw data::Exception(std::move(exceptionMessage));
+    }
 }
 
 void Player::setAoFormat(const data::WavFormatSubChunk& format)
