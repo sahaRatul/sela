@@ -11,7 +11,7 @@ void Player::initializeAo()
 {
     ao_initialize();
     driver = ao_default_driver_id();
-    if(driver == -1) {
+    if(driver < 0) {
         const std::string exceptionMessage = "Driver cannot be initialized, bailing out....";
         throw data::Exception(std::move(exceptionMessage));
     }
