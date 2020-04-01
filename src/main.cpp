@@ -52,7 +52,8 @@ void playFile(std::ifstream &inputFile)
 
 int main(int argc, char **argv)
 {
-    std::cout << "SimplE Lossless Audio. Released under MIT license" << std::endl;
+    std::string header = "SimplE Lossless Audio v2. Released under MIT license";
+    print(header);
     std::string programName = std::string(argv[0]);
     if (argc < 2)
     {
