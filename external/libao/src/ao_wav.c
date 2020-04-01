@@ -134,7 +134,7 @@ static int ao_wav_device_init(ao_device *device)
 	memset(&(internal->wave), 0, sizeof(internal->wave));
 
 	device->internal = internal;
-        device->output_matrix = _strdup("L,R,C,LFE,BL,BR,CL,CR,BC,SL,SR");
+        device->output_matrix = strdup("L,R,C,LFE,BL,BR,CL,CR,BC,SL,SR");
         device->output_matrix_order = AO_OUTPUT_MATRIX_COLLAPSIBLE;
 
 	return 1; /* Memory alloc successful */
@@ -162,11 +162,11 @@ static int ao_wav_open(ao_device *device, ao_sample_format *format)
 	memset(buf, 0, WAV_HEADER_LEN);
 
 	/* Fill out our wav-header with some information. */
-	strncpy_s(internal->wave.riff.id, 4, "RIFF",4);
+	strncpy(internal->wave.riff.id, "RIFF",4);
 	internal->wave.riff.len = size - 8;
-	strncpy_s(internal->wave.riff.wave_id, 4, "WAVE",4);
+	strncpy(internal->wave.riff.wave_id, "WAVE",4);
 
-	strncpy_s(internal->wave.format.id, 4, "fmt ",4);
+	strncpy(internal->wave.format.id, "fmt ",4);
 	internal->wave.format.len = 40;
 
 	internal->wave.common.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
@@ -182,14 +182,14 @@ static int ao_wav_open(ao_device *device, ao_sample_format *format)
 	internal->wave.common.subFormat = WAVE_FORMAT_PCM;
         internal->wave.common.dwChannelMask=device->output_mask;
 
-	strncpy_s(internal->wave.data.id, 4, "data",4);
+	strncpy(internal->wave.data.id, "data",4);
 
 	internal->wave.data.len = size - WAV_HEADER_LEN;
 
-	strncpy_s(buf, 4, internal->wave.riff.id, 4);
+	strncpy(buf, internal->wave.riff.id, 4);
 	WRITE_U32(buf+4, internal->wave.riff.len);
-	strncpy_s(buf+8, 4, internal->wave.riff.wave_id, 4);
-	strncpy_s(buf+12, 4, internal->wave.format.id,4);
+	strncpy(buf+8, internal->wave.riff.wave_id, 4);
+	strncpy(buf+12, internal->wave.format.id, 4);
 	WRITE_U32(buf+16, internal->wave.format.len);
 	WRITE_U16(buf+20, internal->wave.common.wFormatTag);
 	WRITE_U16(buf+22, internal->wave.common.wChannels);
@@ -202,7 +202,7 @@ static int ao_wav_open(ao_device *device, ao_sample_format *format)
 	WRITE_U32(buf+40, internal->wave.common.dwChannelMask);
 	WRITE_U16(buf+44, internal->wave.common.subFormat);
         memcpy(buf+46,"\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71",14);
-	strncpy_s(buf+60, 4, internal->wave.data.id, 4);
+	strncpy(buf+60, internal->wave.data.id, 4);
 	WRITE_U32(buf+64, internal->wave.data.len);
 
 	if (fwrite(buf, sizeof(char), WAV_HEADER_LEN, device->file)

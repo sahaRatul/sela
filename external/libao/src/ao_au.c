@@ -162,7 +162,7 @@ static int ao_au_open(ao_device *device, ao_sample_format *format)
 	WRITE_U32(buf + 12, internal->au.encoding);
 	WRITE_U32(buf + 16, internal->au.sample_rate);
 	WRITE_U32(buf + 20, internal->au.channels);
-	strncpy_s (buf + 24, 4, internal->au.info, 4);
+	strncpy(buf + 24, internal->au.info, 4);
 
 	if (fwrite(buf, sizeof(char), AU_HEADER_LEN, device->file)
 	    != AU_HEADER_LEN) {
@@ -172,7 +172,7 @@ static int ao_au_open(ao_device *device, ao_sample_format *format)
         if(!device->inter_matrix){
           /* set up matrix such that users are warned about > stereo playback */
           if(device->output_channels<=2)
-            device->inter_matrix=_strdup("L,R");
+            device->inter_matrix=strdup("L,R");
           //else no matrix, which results in a warning
         }
 

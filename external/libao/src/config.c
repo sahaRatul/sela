@@ -72,7 +72,7 @@ static int ao_read_config_file(ao_config *config, const char *config_file)
 
 			if (!strcmp(key, "default_driver")) {
 				free(config->default_driver);
-				config->default_driver = _strdup(val?val:"");
+				config->default_driver = strdup(val?val:"");
 			} else {
 				/* entries in the config file that don't parse as
 				   directives to AO at large are treated as driver
