@@ -3,3 +3,5 @@ CMakeFiles/
 Testing/
 _CPack_Packages/
 .vscode/
+latex/
+html/
