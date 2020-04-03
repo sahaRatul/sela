@@ -101,7 +101,7 @@ static int ao_null_open(ao_device *device, ao_sample_format *format)
         if(!device->inter_matrix){
           /* by default, we want inter == in */
           if(format->matrix)
-            device->inter_matrix = _strdup(format->matrix);
+            device->inter_matrix = strdup(format->matrix);
         }
 
 	return 1;

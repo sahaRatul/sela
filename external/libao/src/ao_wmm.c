@@ -203,7 +203,7 @@ int ao_wmm_device_init(ao_device *device)
 
   res = internal != NULL;
 
-  device->output_matrix = _strdup("L,R,C,LFE,BL,BR,CL,CR,BC,SL,SR");
+  device->output_matrix = strdup("L,R,C,LFE,BL,BR,CL,CR,BC,SL,SR");
   device->output_matrix_order = AO_OUTPUT_MATRIX_COLLAPSIBLE;
 
   return res;
