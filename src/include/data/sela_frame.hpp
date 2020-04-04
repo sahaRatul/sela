@@ -1,9 +1,6 @@
 #ifndef _SELA_FRAME_H_
 #define _SELA_FRAME_H_
 
-#include <cstdint>
-#include <vector>
-
 #include "sela_sub_frame.hpp"
 
 namespace data {

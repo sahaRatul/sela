@@ -3,9 +3,7 @@
 
 #include "wav_frame.hpp"
 
-#include <cstdint>
 #include <string>
-#include <vector>
 
 namespace data {
 class WavSubChunk {

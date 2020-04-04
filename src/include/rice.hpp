@@ -1,9 +1,6 @@
 #ifndef _RICE_H_
 #define _RICE_H_
 
-#include <cstdint>
-#include <vector>
-
 #include "./data/rice_decoded_data.hpp"
 #include "./data/rice_encoded_data.hpp"
 
