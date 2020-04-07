@@ -2,8 +2,6 @@
 #include "../include/lpc.hpp"
 #include "../include/rice.hpp"
 
-#include <vector>
-
 namespace frame {
 FrameDecoder::FrameDecoder(const data::SelaFrame& selaFrame)
     : selaFrame(selaFrame)

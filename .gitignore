@@ -6,3 +6,6 @@ _CPack_Packages/
 .vscode/
 .vs/
 .idea/
+latex/
+html/
+.vs/

@@ -1,7 +1,7 @@
 #include "../include/file/wav_file.hpp"
 #include "../include/data/exception.hpp"
+
 #include <iostream>
-#include <vector>
 
 namespace file {
 WavFile::WavFile(uint32_t sampleRate, uint16_t bitsPerSample, uint16_t numChannels, std::vector<data::WavFrame>&& wavFrames)

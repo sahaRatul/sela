@@ -5,7 +5,6 @@
 #include "../data/sela_header.hpp"
 
 #include <fstream>
-#include <vector>
 
 namespace file {
 class SelaFile {

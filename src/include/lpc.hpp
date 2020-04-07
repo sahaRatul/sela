@@ -1,9 +1,6 @@
 #ifndef _LPC_H_
 #define _LPC_H_
 
-#include <cstdint>
-#include <vector>
-
 #include "data/lpc_decoded_data.hpp"
 #include "data/lpc_encoded_data.hpp"
 

@@ -1,8 +1,6 @@
 #ifndef _SELA_SUB_FRAME_H_
 #define _SELA_SUB_FRAME_H_
 
-#include <cstdint>
-
 #include "rice_encoded_data.hpp"
 
 namespace data {

@@ -2,9 +2,6 @@
 #include "../include/lpc.hpp"
 #include "../include/rice.hpp"
 
-#include <vector>
-#include <list>
-
 namespace frame {
 FrameEncoder::FrameEncoder(const data::WavFrame& wavFrame)
     : wavFrame(wavFrame)
