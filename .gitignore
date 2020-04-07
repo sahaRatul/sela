@@ -1,6 +1,8 @@
 build/
 CMakeFiles/
+cmake-build-debug/
 Testing/
 _CPack_Packages/
 .vscode/
 .vs/
+.idea/
