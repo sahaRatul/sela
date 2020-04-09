@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+
 project(sela VERSION 2.0.2)
 INCLUDE(CheckIncludeFiles)
+include(generate_product_version)
 
 # Verbose toggle
 set(CMAKE_VERBOSE_MAKEFILE OFF)
@@ -84,12 +87,28 @@ set(SOURCES
     src/sela/player.cpp
 )
 
-add_executable(sela ${SOURCES})
+generate_product_version(
+   VersionFilesOutputVariable
+   NAME "SimplE Lossless Audio - SELA"
+   VERSION_MAJOR 2
+   VERSION_MINOR 0
+   VERSION_PATCH 2
+   VERSION_REVISION ${BUILD_REVISION}
+)
+
+add_executable(sela ${SOURCES} ${VersionFilesOutputVariable})
 target_include_directories(sela PUBLIC ${SELA_INCLUDE_DIR})
 if(NOT HAVE_AO_H)
     target_include_directories(sela PRIVATE external/libao/include)
 endif()
-target_link_libraries(sela Threads::Threads ao)
+
+#Generate static build on Mingw and Windows
+if(WIN32 AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(sela INTERFACE -static-libgcc -static-libstdc++ -lwsock32 -lws2_32 ${CMAKE_CXX_STANDARD_LIBRARIES})
+    target_link_libraries(sela ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive ao)
+else()
+    target_link_libraries(sela Threads::Threads ao)
+endif()
 
 # Enable Warnings for MSVC/GCC/Clang on Debug Mode
 if(CMAKE_BUILD_TYPE MATCHES "Debug")
@@ -121,7 +140,8 @@ set(TEST_SOURCES
     test/ricetests.cpp
     test/main.cpp
 )
-add_executable(selatests ${TEST_SOURCES})
+
+add_executable(selatests ${TEST_SOURCES} ${VersionFilesOutputVariable})
 target_include_directories(selatests PRIVATE ${CATCH_INCLUDE_DIR})
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
